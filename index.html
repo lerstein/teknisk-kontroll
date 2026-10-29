@@ -132,6 +132,16 @@ dl.info dd{margin:0;font-weight:600;text-align:right}
 .tommel span{position:absolute;left:0;right:0;bottom:0;font-size:11px;font-weight:700;padding:3px 6px;background:rgba(0,0,0,.66);color:#fff;text-align:left}
 .tommel .fjern{position:absolute;top:4px;right:4px;width:30px;height:30px;min-height:0;padding:0;border-radius:50%;background:rgba(0,0,0,.72);border:0;color:#fff;font-size:19px;line-height:1}
 img.stor{width:100%;border-radius:10px;display:block;background:#0c0e11;min-height:220px}
+/* wolfpack */
+.wp{display:flex;flex-direction:column;gap:8px}
+.wprad{display:flex;gap:10px;align-items:center;background:var(--kort);border:1px solid var(--linje);border-radius:var(--r);padding:10px 12px}
+.wprad.forst{border-color:var(--aksent);box-shadow:inset 0 0 0 1px var(--aksent)}
+.wpnr{width:30px;flex:none;text-align:center;font-weight:800;font-size:18px;color:var(--dempet);font-variant-numeric:tabular-nums}
+.wpinfo{flex:1;min-width:0}
+.wpkm{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.wpbar{height:12px;border-radius:6px;background:#0c0e11;margin:6px 0 4px;overflow:hidden}
+.wpbar span{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#b07c0c,var(--aksent))}
+.wprad.forst .wpbar span{background:linear-gradient(90deg,var(--aksent),#ffd65a)}
 /* season strip */
 .sesong{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px}
 .sesong span{display:flex;align-items:center;justify-content:center;height:28px;border-radius:6px;font-size:11.5px;font-weight:800;background:#20242a;color:#6d7682;border:1px solid transparent}
@@ -214,6 +224,11 @@ const TXT = {
     fyllEgenFor: 'Fyll ut egenerklæring for {0}', velgSykkelForst: 'Velg sykkel først.', egenAllerede: '{0} har allerede levert egenerklæring for {1} ({2}).',
     regAv: 'Registrert av {0} på vegne av medlemmet',
     forhandsutfylt: 'Olje, batteri og dekkår er hentet fra tidligere kontroller. Endre bare det som er nytt.',
+    f_wolfpack: 'Wolfpack', wpTittel: 'Wolfpack {0}', wpPeriode: 'Kjørte km fra 1. april til 30. oktober', wpAlle: 'Hele klubben',
+    wpIngen: 'Ingen har nok km-målinger i perioden ennå.', wpLaster: 'Regner ut …', wpSykler: '{0} sykler',
+    wpForklaring: 'Km regnes fra første måling etter 1. april til siste måling før 30. oktober. Bare kontroller og egenerklæringer med km teller.',
+    profil: 'Profil', sisteEgen: 'Fra egenerklæring {0}', ingenEgenProfil: 'Ingen egenerklæring ennå.', kmTittel: 'Kilometer',
+    kmAar: '{0}: {1} → {2} ({3} kjørt)', kmEn: '{0}: {1} (én måling)', kmIngen: 'Ingen km registrert.', antMedlemmer: '{0} medlemmer',
     forrigeMerknad: 'Merknad fra {0}: {1}', sistKort: 'sist: {0}', paVegneAv: 'Du registrerer egenerklæringen på vegne av {0}.',
     mineSykler: 'Mine sykler', ingenMine: 'Du har ingen sykler registrert.', leggTilSykkel: '+ Legg til sykkel',
     egenTittel: 'Egenerklæring (april)', egenLevert: 'Levert for {0} ({1}).', egenIkke: 'Ikke levert for {0}.', fyllEgen: 'Fyll ut egenerklæring',
@@ -300,6 +315,11 @@ const TXT = {
     fyllEgenFor: 'Fill in self-declaration for {0}', velgSykkelForst: 'Choose a bike first.', egenAllerede: '{0} has already submitted a self-declaration for {1} ({2}).',
     regAv: 'Registered by {0} on behalf of the member',
     forhandsutfylt: 'Oil, battery and tyre dates are carried over from earlier inspections. Only change what is new.',
+    f_wolfpack: 'Wolfpack', wpTittel: 'Wolfpack {0}', wpPeriode: 'Kilometres ridden from 1 April to 30 October', wpAlle: 'Whole club',
+    wpIngen: 'Nobody has enough odometer readings in the period yet.', wpLaster: 'Calculating …', wpSykler: '{0} bikes',
+    wpForklaring: 'Counted from the first reading after 1 April to the last reading before 30 October. Only inspections and self-declarations with an odometer reading count.',
+    profil: 'Profile', sisteEgen: 'From self-declaration {0}', ingenEgenProfil: 'No self-declaration yet.', kmTittel: 'Odometer',
+    kmAar: '{0}: {1} → {2} ({3} ridden)', kmEn: '{0}: {1} (one reading)', kmIngen: 'No odometer readings.', antMedlemmer: '{0} members',
     forrigeMerknad: 'Note from {0}: {1}', sistKort: 'last: {0}', paVegneAv: 'You are registering the self-declaration on behalf of {0}.',
     mineSykler: 'My bikes', ingenMine: "You don't have any bikes registered.", leggTilSykkel: '+ Add bike',
     egenTittel: 'Self-declaration (April)', egenLevert: 'Submitted for {0} ({1}).', egenIkke: 'Not submitted for {0}.', fyllEgen: 'Fill in self-declaration',
@@ -403,6 +423,7 @@ const IKON = {
   sykkel: '<circle cx="5.5" cy="16" r="3.5"/><circle cx="18.5" cy="16" r="3.5"/><path d="M5.5 16 9.5 9h4.5l4.5 7"/><path d="M14 9l-1.6-3.5H15.5M9.5 9 8 6.5H5.5"/>',
   folk: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c1.8.7 3 2.4 3.5 5.2"/>',
   person: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.2 4-6.5 8-6.5s7 2.3 8 6.5"/>',
+  pokal: '<path d="M8 4h8v4.5a4 4 0 0 1-8 0z"/><path d="M8 5.5H5v1a3 3 0 0 0 3 3M16 5.5h3v1a3 3 0 0 1-3 3"/><path d="M12 12.5V16M9 20h6l-.6-4h-4.8z"/>',
   kamera: '<path d="M3.5 8.5h3.5l2-2.8h6l2 2.8h3.5v10.8h-17z"/><circle cx="12" cy="13.6" r="3.6"/>'
 };
 const svg = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
@@ -445,6 +466,7 @@ async function medKnapp(btn, fn) {
 
 async function lastData() {
   S.d = await api('hentData');
+  Object.keys(WP).forEach(k => delete WP[k]);
   const r = rolle();
   if (r !== 'admin') S.avd = S.d.bruker.avdeling;
   else if (S.avd !== 'Alle' && !S.d.avdelinger.includes(S.avd)) S.avd = 'Alle';
@@ -693,7 +715,7 @@ function visTvungen() {
 function faner() {
   const f = [];
   if (erLeder()) f.push(['oversikt', IKON.liste], ['kontroll', IKON.skjema]);
-  f.push(['mine', IKON.sykkel]);
+  f.push(['mine', IKON.sykkel], ['wolfpack', IKON.pokal]);
   if (erLeder()) f.push(['medlemmer', IKON.folk]);
   f.push(['konto', IKON.person]);
   return f;
@@ -704,13 +726,14 @@ function render() {
   document.body.classList.remove('uten-nav');
   document.title = t('app');
   const b = meg();
-  const innhold = { oversikt: visOversikt, kontroll: visKontrollSkjema, mine: visMine, medlemmer: visMedlemmer, konto: visKonto }[S.fane] || visMine;
+  const innhold = { oversikt: visOversikt, kontroll: visKontrollSkjema, mine: visMine, wolfpack: visWolfpack, medlemmer: visMedlemmer, konto: visKonto }[S.fane] || visMine;
   $('#app').innerHTML = `
     <header class="topp"><h1>${t('app')}</h1>
       <div class="hvem">${esc(b.navn)}<br>${esc(t('r_' + b.rolle))} · ${esc(b.avdeling)}</div></header>
     <main>${innhold()}</main>
     <nav class="bunn">${faner().map(([id, ik]) => `<button data-fane="${id}" class="${S.fane === id ? 'aktiv' : ''}">${svg(ik)}${t('f_' + id)}</button>`).join('')}</nav>`;
   if (S.fane === 'kontroll') oppdaterStatus();
+  if (S.fane === 'wolfpack') lastWolfpack();
 }
 
 // overlay stack
@@ -771,6 +794,48 @@ function visOversikt() {
 }
 
 // ─── Bike detail ────────────────────────────────────────────
+/** Odometer per year: first and last reading (inspections + self-declarations). 0 / empty = not read. */
+function kmLogg(sykkelId) {
+  const m = [...S.d.kontroller, ...S.d.egenerklaeringer]
+    .filter(x => x.sykkel_id === sykkelId && Number(x.km) > 0)
+    .map(x => ({ dato: String(x.dato).slice(0, 10), km: Number(x.km) }))
+    .sort((a, b) => a.dato.localeCompare(b.dato));
+  const aar = {};
+  m.forEach(x => { const y = x.dato.slice(0, 4); (aar[y] = aar[y] || []).push(x); });
+  return Object.keys(aar).sort().reverse().map(y => ({ aar: y, start: aar[y][0], slutt: aar[y][aar[y].length - 1], n: aar[y].length }));
+}
+const kmNr = v => Number(v).toLocaleString(LANG === 'en' ? 'en-GB' : 'nb-NO');
+function kmLinjer(sykkelId) {
+  const l = kmLogg(sykkelId);
+  if (!l.length) return `<span class="tom">${t('kmIngen')}</span>`;
+  return l.map(x => x.n > 1 && x.slutt.km >= x.start.km
+    ? esc(t('kmAar', x.aar, kmNr(x.start.km), kmNr(x.slutt.km) + ' km', kmNr(x.slutt.km - x.start.km) + ' km'))
+    : esc(t('kmEn', x.aar, kmNr(x.slutt.km) + ' km'))).join('<br>');
+}
+
+/** Member profile: latest self-declaration + bikes with odometer log. */
+function profilKort(tlf) {
+  const egne = egenFor(tlf);
+  const e = egne[0];
+  const sykler = S.d.sykler.filter(s => s.telefon === tlf);
+  const hk = e && e.helsetrygdekort_utloper;
+  const hkKl = hk && hk < idag() ? 'rodt' : hk && hk < omDager(60) ? 'oransje' : '';
+  return `<div class="kort"><h3>${t('profil')}</h3>
+    ${e ? `<dl class="info">
+      <dt>${t('reiseforsikring')}</dt><dd>${jaNei(e.reiseforsikring)}${e.reiseforsikring_selskap ? ' – ' + esc(e.reiseforsikring_selskap) : ''}</dd>
+      <dt>${t('forerkortKort')}</dt><dd>${esc(e.forerkort_klasse) || '–'}${e.forerkort_merknad ? ' (' + esc(e.forerkort_merknad) + ')' : ''}</dd>
+      <dt>${t('helsekortKort')}</dt><dd class="${hkKl}">${jaNei(e.helsetrygdekort)}${hk ? t('tilDato', fmtDato(hk)) : ''}</dd>
+    </dl><p class="dempet" style="margin:6px 0 0">${esc(t('sisteEgen', fmtDato(e.dato)))}</p>` : `<p class="tom" style="margin:0">${t('ingenEgenProfil')}</p>`}
+    ${sykler.map(s => {
+      const es = egne.find(x => x.sykkel_id === s.id && x.mc_forsikring_selskap);
+      return `<div style="border-top:1px solid var(--linje);margin-top:12px;padding-top:10px">
+        <div class="linje1"><b>${esc(s.regnr)} ${esc(s.modell)}</b><span class="dempet">${esc(s.aarsmodell || '')}</span></div>
+        ${es ? `<div class="dempet">${t('forsikringKort')}: ${esc(es.mc_forsikring_selskap)}</div>` : ''}
+        <div class="dempet" style="margin-top:4px">${kmLinjer(s.id)}</div></div>`;
+    }).join('')}
+  </div>`;
+}
+
 function visSykkel(id) {
   const s = finnSykkel(id);
   if (!s) return tilbake();
@@ -779,7 +844,8 @@ function visSykkel(id) {
   tegnLag(s.regnr, `
     <div class="kort"><div class="linje1"><h2 style="margin:0">${esc(s.eier)}</h2>${ks[0] && ks[0].kjoreforbud === 'Ja' ? `<span class="merke">${t('forbudMerke')}</span>` : ''}</div>
       <div class="dempet" style="margin-top:4px">${esc(s.regnr)}${s.modell ? ' · ' + esc(s.modell) : ''}${s.aarsmodell ? ' · ' + esc(s.aarsmodell) : ''} · ${esc(s.avdeling)}</div>
-      ${sesongStripe(s)}${ks[0] ? chips(ks[0]) : ''}</div>
+      ${sesongStripe(s)}${ks[0] ? chips(ks[0]) : ''}
+      <div class="status">${kmLinjer(id)}</div></div>
     ${erLeder() ? `<button class="primar bred" data-ny-kontroll="${esc(id)}">${t('nyKontrollDenne')}</button>` : ''}
     ${erLeder() || s.telefon === meg().telefon ? `<button class="bred" data-egen-ny="${esc(id)}">${t('fyllEgen')}</button>` : ''}
     <button class="bred" data-sykkel-skjema="${esc(id)}">${t('redigerSykkel')}</button>
@@ -998,6 +1064,40 @@ function oppdaterStatus() {
   el.className = 'banner ' + kl; el.textContent = tekst;
 }
 
+// ─── Wolfpack ───────────────────────────────────────────────
+const WP = {};                 // cache per year
+let wpAvd = 'Alle';
+function visWolfpack() {
+  const aar = S.wpAar || new Date().getFullYear();
+  return `<h2>${esc(t('wpTittel', aar))} 🐺</h2>
+    <p class="dempet" style="margin-top:-8px">${t('wpPeriode')}</p>
+    <div class="faner2" style="margin-bottom:14px">
+      <button type="button" data-wp-avd="Alle" class="${wpAvd === 'Alle' ? 'aktiv' : ''}">${t('wpAlle')}</button>
+      <button type="button" data-wp-avd="${esc(meg().avdeling)}" class="${wpAvd !== 'Alle' ? 'aktiv' : ''}">${esc(meg().avdeling)}</button></div>
+    <div id="wolfpack"><div class="laster" style="min-height:30vh"><div><div class="spinn"></div>${t('wpLaster')}</div></div></div>
+    <p class="dempet" style="margin-top:14px">${t('wpForklaring')}</p>`;
+}
+async function lastWolfpack() {
+  const aar = S.wpAar || new Date().getFullYear();
+  try {
+    if (!WP[aar]) WP[aar] = await api('wolfpack', { aar });
+    tegnWolfpack(WP[aar]);
+  } catch (e) { const el = $('#wolfpack'); if (el) el.innerHTML = `<div class="banner v1">${esc(e.message)}</div>`; }
+}
+function tegnWolfpack(d) {
+  const el = $('#wolfpack');
+  if (!el) return;
+  const liste = d.liste.filter(p => wpAvd === 'Alle' || p.avdeling === wpAvd);
+  if (!liste.length) { el.innerHTML = `<p class="tom">${t('wpIngen')}</p>`; return; }
+  const maks = liste[0].km;
+  const medalje = ['🥇', '🥈', '🥉'];
+  el.innerHTML = `<div class="wp">${liste.map((p, i) => `<div class="wprad${i === 0 ? ' forst' : ''}">
+      <div class="wpnr">${medalje[i] || i + 1}</div>
+      <div class="wpinfo"><div class="linje1"><b>${esc(p.navn)}</b><span class="wpkm">${kmNr(p.km)} km</span></div>
+        <div class="wpbar"><span style="width:${Math.max(2, Math.round(p.km / maks * 100))}%"></span></div>
+        <div class="dempet" style="font-size:12.5px">${esc(p.avdeling)}${p.sykler > 1 ? ' · ' + esc(t('wpSykler', p.sykler)) : ''}</div></div></div>`).join('')}</div>`;
+}
+
 // ─── Mine ───────────────────────────────────────────────────
 function visMine() {
   const b = meg();
@@ -1005,7 +1105,8 @@ function visMine() {
   const egne = egenFor(b.telefon);
   const y = String(aar());
   const iAar = egne.find(e => String(e.dato).startsWith(y));
-  return `<h2>${t('mineSykler')}</h2>
+  return `${profilKort(b.telefon)}
+    <h2>${t('mineSykler')}</h2>
     ${mine.length ? mine.map(i => sykkelKort(i, false)).join('') : `<p class="tom">${t('ingenMine')}</p>`}
     <button class="bred" data-sykkel-skjema="" data-eier="${esc(b.telefon)}">${t('leggTilSykkel')}</button>
     <h3>${t('egenTittel')}</h3>
@@ -1108,14 +1209,15 @@ function brukerStatus(u) {
   return u.rolle !== 'medlem' ? `<span class="merke bla">${esc(t('r_' + u.rolle).toUpperCase())}</span>` : '';
 }
 function visMedlemmer() {
-  const liste = S.d.brukere.filter(iAvd).sort((a, b) => (a.aktiv === b.aktiv ? 0 : a.aktiv ? -1 : 1) || rolleRekke[a.rolle] - rolleRekke[b.rolle] || a.navn.localeCompare(b.navn, 'nb'));
+  const liste = S.d.brukere.filter(iAvd).sort((a, b) => a.avdeling.localeCompare(b.avdeling, 'nb') || (a.aktiv === b.aktiv ? 0 : a.aktiv ? -1 : 1) || rolleRekke[a.rolle] - rolleRekke[b.rolle] || a.navn.localeCompare(b.navn, 'nb'));
+  const antIAvd = a => liste.filter(u => u.avdeling === a).length;
   const antSykler = tlf => { const n = S.d.sykler.filter(s => s.telefon === tlf).length; return n === 1 ? t('sykkel1') : t('syklerN', n); };
   return `<h2>${t('medlemmer')}${S.avd !== 'Alle' ? ' – ' + esc(S.avd) : ''}</h2>
     ${avdVelger()}
     <button class="primar bred" data-bruker="">${t('leggTilMedlem')}</button>
-    ${liste.map(u => `<button class="kort" data-bruker="${esc(u.telefon)}">
+    ${liste.map((u, i) => `${S.avd === 'Alle' && (i === 0 || liste[i - 1].avdeling !== u.avdeling) ? `<h3>${esc(u.avdeling)} · ${t('antMedlemmer', antIAvd(u.avdeling))}</h3>` : ''}<button class="kort" data-bruker="${esc(u.telefon)}">
       <div class="linje1"><b>${esc(u.navn)}</b>${brukerStatus(u)}</div>
-      <div class="dempet">${esc(u.telefon)}${S.avd === 'Alle' ? ' · ' + esc(u.avdeling) : ''} · ${antSykler(u.telefon)}${!u.harPassord && u.kode ? ' · ' + t('kode', esc(u.kode)) : ''}</div></button>`).join('') || `<p class="tom">${t('ingenMedlemmer')}</p>`}`;
+      <div class="dempet">${esc(u.telefon)} · ${antSykler(u.telefon)}${!u.harPassord && u.kode ? ' · ' + t('kode', esc(u.kode)) : ''}</div></button>`).join('') || `<p class="tom">${t('ingenMedlemmer')}</p>`}`;
 }
 
 function smsLenke(u, kode) {
@@ -1137,6 +1239,7 @@ function visBruker(tlf) {
     ${u && !u.harPassord && u.kode ? `<div class="kort"><h3>${t('aktivering')}</h3><p>${esc(t('ikkeLagetPassord', u.navn.split(' ')[0]))}</p>
       <div class="kodeboks"><b>${esc(u.kode)}</b><span class="dempet">${t('gjelderTil', fmtDato(u.kode_utloper))}</span></div>
       <a class="knapp primar bred" href="${esc(smsLenke(u, u.kode))}">${t('sendSms')}</a></div>` : ''}
+    ${u ? profilKort(u.telefon) : ''}
     <div class="kort">
       <label class="felt"><span>${t('navn')}</span><input data-f="navn" value="${esc(B.navn)}" ${kanEndre ? '' : 'readonly'} autocomplete="off"></label>
       <label class="felt"><span>${t('telefon')}${u ? t('brukernavn') : ''}</span><input data-f="telefon" type="tel" inputmode="tel" value="${esc(B.telefon)}" ${u ? 'readonly' : ''} autocomplete="off"></label>
@@ -1283,6 +1386,7 @@ document.addEventListener('click', ev => {
   if ('modus' in ds) return visLogin(ds.modus);
   if ('fane' in ds) { S.fane = ds.fane; lukkAlle(); render(); return scrollTo(0, 0); }
   if ('filter' in ds) { S.filter = S.filter === ds.filter ? 'alle' : ds.filter; return render(); }
+  if ('wpAvd' in ds) { wpAvd = ds.wpAvd; $$('[data-wp-avd]').forEach(b => b.classList.toggle('aktiv', b === el)); const aar = S.wpAar || new Date().getFullYear(); if (WP[aar]) tegnWolfpack(WP[aar]); return; }
   if ('sett' in ds) {
     const sk = skjemaFor(el); if (!sk || !sk.obj) return;
     const v = 'num' in ds ? Number(ds.v) : ds.v;
