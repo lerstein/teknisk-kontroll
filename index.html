@@ -1,0 +1,1358 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111316">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kontroll">
+<title>Teknisk kontroll</title>
+<style>
+:root{color-scheme:dark;--bg:#111316;--kort:#1b1e23;--kort2:#252930;--linje:#323741;--tekst:#eceef1;--dempet:#98a1ac;
+  --aksent:#f2b01e;--aksent-t:#1a1300;--s0:#2e9e4f;--s1:#d6a915;--s2:#d43a3a;--r:12px}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tekst);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+body.uten-nav{padding-bottom:0}
+header.topp{position:sticky;top:0;z-index:5;background:rgba(17,19,22,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--linje);padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;gap:10px;min-height:56px}
+.topp h1{font-size:17px;margin:0;font-weight:700}
+.topp .hvem{margin-left:auto;font-size:12.5px;color:var(--dempet);text-align:right;line-height:1.25}
+.topp .tilbake{min-height:36px;padding:6px 12px;font-size:15px}
+main{max-width:760px;margin:0 auto;padding:16px}
+nav.bunn{position:fixed;bottom:0;left:0;right:0;z-index:6;background:#16191d;border-top:1px solid var(--linje);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav.bunn button{flex:1;background:none;border:0;border-radius:0;color:var(--dempet);padding:9px 2px 8px;font:600 11.5px system-ui;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:58px}
+nav.bunn svg{width:23px;height:23px}
+nav.bunn button.aktiv{color:var(--aksent)}
+h2{font-size:21px;margin:2px 0 14px;line-height:1.2}
+h3{font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--dempet);margin:22px 0 8px;font-weight:700}
+.kort h3:first-child{margin-top:0}
+p{margin:0 0 10px}
+.dempet{color:var(--dempet);font-size:14px}
+.tom{color:var(--dempet);font-style:italic}
+.kort{display:block;width:100%;text-align:left;background:var(--kort);border:1px solid var(--linje);border-radius:var(--r);padding:14px;margin:0 0 10px;color:var(--tekst);font:inherit}
+button.kort{cursor:pointer}
+button.kort:active{background:var(--kort2)}
+button,.knapp{font:600 15px system-ui;border-radius:10px;border:1px solid var(--linje);background:var(--kort2);color:var(--tekst);padding:11px 14px;min-height:46px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+button:disabled{opacity:.55;cursor:default}
+.primar{background:var(--aksent);color:var(--aksent-t);border-color:var(--aksent)}
+.fare{background:transparent;color:#ff8d8d;border-color:#6b2e2e}
+.bred{width:100%;margin-bottom:10px}
+.knapperad{display:flex;gap:8px;flex-wrap:wrap}
+.knapperad>*{flex:1}
+input,select,textarea{width:100%;font:16px system-ui;color:var(--tekst);background:#0c0e11;border:1px solid var(--linje);border-radius:10px;padding:11px 12px;min-height:46px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--aksent);outline-offset:-1px}
+input[readonly]{opacity:.7}
+label.felt{display:block;margin-bottom:12px}
+label.felt>span,.felt-tittel{display:block;font-size:13px;color:var(--dempet);margin-bottom:5px}
+.rad2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sjekk{display:flex;align-items:center;gap:10px;padding:8px 0;font-weight:600}
+.sjekk input{width:24px;height:24px;min-height:0;accent-color:var(--aksent)}
+.linje1{display:flex;align-items:center;justify-content:space-between;gap:8px}
+/* scale */
+.punkt{padding:12px 0;border-top:1px solid var(--linje)}
+.punkt:first-of-type{border-top:0;padding-top:4px}
+.punkt .pnavn{font-weight:650;margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline}
+.punkt.mangler .pnavn::after{content:attr(data-mangler);color:#ff9b54;font-size:12px;font-weight:700}
+.skala{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.skala button{padding:8px 2px;font-size:14px;min-height:48px;line-height:1.1}
+.skala button.valgt[data-v="0"]{background:var(--s0);border-color:var(--s0);color:#fff}
+.skala button.valgt[data-v="1"]{background:var(--s1);border-color:var(--s1);color:#1a1400}
+.skala button.valgt[data-v="2"]{background:var(--s2);border-color:var(--s2);color:#fff}
+.ekstra{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.ekstra input{min-height:42px;padding:9px 10px;font-size:15px}
+.valg2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.valg2 button{min-height:42px;padding:8px}
+.valg2 button.valgt{background:var(--s0);border-color:var(--s0);color:#fff}
+.valg2 button.valgt.neg{background:var(--s2);border-color:var(--s2)}
+.valg2.noy button.valgt{background:#3c4452;border-color:#566070}
+.oljerad{display:grid;grid-template-columns:1fr 1.1fr 1.6fr;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--linje)}
+.oljerad:first-of-type{border-top:0}
+.oljerad input{min-height:42px;padding:8px 10px;font-size:15px}
+.oljerad b{font-weight:650;font-size:15px}
+.banner{border-radius:10px;padding:12px 14px;font-weight:650;margin-bottom:12px;background:var(--kort2)}
+.banner.v0{background:rgba(46,158,79,.16);color:#7fe39c;border:1px solid rgba(46,158,79,.4)}
+.banner.v1{background:rgba(214,169,21,.14);color:#f1d062;border:1px solid rgba(214,169,21,.4)}
+.banner.v2{background:rgba(212,58,58,.18);color:#ff9a9a;border:1px solid rgba(212,58,58,.55)}
+.banner.info{background:rgba(70,120,200,.14);color:#a9c6f5;border:1px solid rgba(70,120,200,.4);font-weight:550}
+/* chips & badges */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{font-size:12px;font-weight:700;padding:4px 9px;border-radius:999px;background:var(--kort2);color:var(--dempet);white-space:nowrap}
+.chip.v0{background:rgba(46,158,79,.2);color:#7fe39c}
+.chip.v1{background:rgba(214,169,21,.2);color:#f1d062}
+.chip.v2{background:rgba(212,58,58,.28);color:#ffa3a3}
+.merke{display:inline-block;font-size:11px;font-weight:800;padding:3px 7px;border-radius:6px;background:var(--s2);color:#fff;letter-spacing:.05em;white-space:nowrap}
+.merke.gul{background:var(--s1);color:#1a1400}
+.merke.gra{background:#3a414c;color:#d5dae0}
+.merke.bla{background:#2d5b9a;color:#fff}
+.status{font-size:13.5px;color:var(--dempet);margin-top:8px}
+.rodt{color:#ff8d8d;font-weight:650}
+.oransje{color:#ffab6b;font-weight:650}
+.stat{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.stat button{flex-direction:column;gap:0;padding:10px 4px;min-height:66px;background:var(--kort);font-weight:600}
+.stat b{font-size:22px;line-height:1.1}
+.stat span{font-size:11.5px;color:var(--dempet)}
+.stat button.aktiv{border-color:var(--aksent);box-shadow:inset 0 0 0 1px var(--aksent)}
+.forklaring{font-size:12.5px;color:var(--dempet);margin:-4px 0 14px;display:flex;gap:10px;flex-wrap:wrap}
+.forklaring i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+dl.info{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0}
+dl.info dt{color:var(--dempet);font-size:14px}
+dl.info dd{margin:0;font-weight:600;text-align:right}
+.kodeboks{background:#0c0e11;border:1px dashed var(--aksent);border-radius:12px;padding:14px;text-align:center;margin:10px 0}
+.kodeboks b{font-size:32px;letter-spacing:.18em;color:var(--aksent);display:block;font-variant-numeric:tabular-nums}
+/* login */
+.login{max-width:420px;padding-top:calc(48px + env(safe-area-inset-top))}
+.logo{width:64px;height:64px;border-radius:16px;background:var(--aksent);color:var(--aksent-t);display:grid;place-items:center;margin:0 auto 14px}
+.logo svg{width:40px;height:40px}
+.login h1{text-align:center;font-size:24px;margin:0 0 4px}
+.login .under{text-align:center;color:var(--dempet);margin-bottom:22px}
+.faner2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+.faner2 button.aktiv{border-color:var(--aksent);color:var(--aksent)}
+.hint{text-align:center;color:var(--dempet);font-size:14px;margin-top:12px}
+/* overlay & toast */
+#lag{position:fixed;inset:0;z-index:20;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
+#lag main{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+#toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translate(-50%,16px);opacity:0;transition:opacity .2s,transform .2s;
+  background:#f1f2f4;color:#111;padding:11px 16px;border-radius:10px;font-weight:650;z-index:40;max-width:calc(100vw - 32px);pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+#toast.vis{opacity:1;transform:translate(-50%,0)}
+#toast.feil{background:var(--s2);color:#fff}
+.laster{display:grid;place-items:center;min-height:60vh;color:var(--dempet)}
+.spinn{width:28px;height:28px;border:3px solid var(--linje);border-top-color:var(--aksent);border-radius:50%;animation:spinn .8s linear infinite;margin:0 auto 10px}
+@keyframes spinn{to{transform:rotate(360deg)}}
+/* photos */
+.bildeknapper{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.bildeknapper .knapp{flex:1 1 0;flex-direction:column;gap:4px;font-size:13.5px;padding:9px 4px;min-width:0;min-height:62px;text-align:center;line-height:1.15}
+.bildeknapper svg{width:22px;height:22px;flex:none}
+.bilderad{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:10px}
+.tommel{position:relative;padding:0;border-radius:10px;overflow:hidden;border:1px solid var(--linje);background:#0c0e11;aspect-ratio:1/1;display:block;min-height:0;width:100%}
+.tommel img{width:100%;height:100%;object-fit:cover;display:block}
+.tommel span{position:absolute;left:0;right:0;bottom:0;font-size:11px;font-weight:700;padding:3px 6px;background:rgba(0,0,0,.66);color:#fff;text-align:left}
+.tommel .fjern{position:absolute;top:4px;right:4px;width:30px;height:30px;min-height:0;padding:0;border-radius:50%;background:rgba(0,0,0,.72);border:0;color:#fff;font-size:19px;line-height:1}
+img.stor{width:100%;border-radius:10px;display:block;background:#0c0e11;min-height:220px}
+/* season strip */
+.sesong{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px}
+.sesong span{display:flex;align-items:center;justify-content:center;height:28px;border-radius:6px;font-size:11.5px;font-weight:800;background:#20242a;color:#6d7682;border:1px solid transparent}
+.sesong span.v0{background:var(--s0);color:#fff}
+.sesong span.v1{background:var(--s1);color:#1a1400}
+.sesong span.v2{background:var(--s2);color:#fff}
+.sesong span.mangler{border:1px dashed #b4652e;color:#ffab6b;background:transparent}
+.sesong span.na{box-shadow:0 0 0 2px var(--aksent)}
+.sesong span.fremtid{opacity:.4}
+.skjemavalg{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:4px}
+.lenkeknapp{background:none;border:0;color:var(--aksent);padding:4px 0;min-height:0;font-weight:600;font-size:14px;text-decoration:underline}
+.sprak{display:flex;gap:6px;justify-content:center;margin-top:18px}
+.sprak button{min-height:36px;padding:6px 14px;font-size:14px}
+.sprak button.aktiv{border-color:var(--aksent);color:var(--aksent)}
+@media (min-width:600px){.stat span{font-size:12.5px}}
+@media print{nav.bunn,header.topp,#toast{display:none}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<div id="app"><div class="laster"><div><div class="spinn"></div>…</div></div></div>
+<div id="lag" hidden></div>
+<div id="toast"></div>
+<script>
+'use strict';
+// ─── Settings ───────────────────────────────────────────────
+const API_URL = 'https://script.google.com/macros/s/AKfycbzQ6G2EWbndE-2-MohZIaGeNGO9WOss2pFeHcVEWSDVo2wjYhzyHXOIucbHBjZ6qXbhUQ/exec';   // Apps Script web app URL (…/exec)
+
+// ─── Texts (Norwegian / English) ────────────────────────────
+const TXT = {
+  no: {
+    app: 'Teknisk kontroll', undertittel: 'Månedlig kontroll av MC', laster: 'Laster…', vent: 'Vent…', tilbake: '‹ Tilbake',
+    loggInn: 'Logg inn', forsteGang: 'Første gang', telefon: 'Telefonnummer', passord: 'Passord',
+    kodeFraRc: 'Aktiveringskode fra Road Captain', velgPassord: 'Velg passord (minst 6 tegn)', gjentaPassord: 'Gjenta passord',
+    lagPassordLogg: 'Lag passord og logg inn',
+    hintAktiver: 'Koden får du av Road Captain i avdelingen din. Den gjelder i 14 dager.',
+    hintLogin: 'Har du fått et midlertidig passord, logger du inn med det her. Glemt passordet? Be Road Captain om en ny kode, og velg «Første gang».',
+    byttTittel: 'Velg ditt eget passord', byttHint: 'Du er logget inn med et midlertidig passord. Lag ditt eget før du går videre.',
+    midlertidig: 'Midlertidig passord', lagreGaVidere: 'Lagre og gå videre',
+    passordUlike: 'Passordene er ikke like', loggInnPaNytt: 'Logg inn på nytt',
+    ingenKontakt: 'Får ikke kontakt med serveren. Sjekk nettet.', uventet: 'Uventet svar fra serveren ({0})', ukjentFeil: 'Ukjent feil',
+    apiMangler: 'API_URL er ikke satt i index.html.', provIgjen: 'Prøv igjen', loggUt: 'Logg ut',
+    r_admin: 'Administrator', r_rc: 'Road Captain', r_medlem: 'Medlem',
+    f_oversikt: 'Oversikt', f_kontroll: 'Ny kontroll', f_mine: 'Mine', f_medlemmer: 'Medlemmer', f_konto: 'Konto',
+    avdeling: 'Avdeling', alleAvd: 'Alle avdelinger',
+    s0: 'OK', s1: 'Bør utbedres', s2: 'Kjøreforbud', s0k: 'OK', s1k: 'Bør<br>utbedres', s2k: 'Kjøre&shy;forbud', forbudMerke: 'KJØREFORBUD',
+    g_lys: 'Lys', g_dekk: 'Dekk', g_bremser: 'Brems', g_ramme: 'Ramme', g_motor: 'Motor', g_allmenn: 'Allmenn tilstand',
+    sk_egen: 'Egenerklæring', sk_stor: 'Stor kontroll', sk_enkel: 'Enkel kontroll',
+    oversikt: 'Oversikt', st_sykler: 'sykler', st_mangler: 'mangler {0}', st_avvik: 'med avvik', st_forbud: 'kjøreforbud', st_utenfor: 'utenfor sesong',
+    ingenUtvalg: 'Ingen sykler i dette utvalget.', ingenSykler: 'Ingen sykler registrert ennå. Legg dem inn under Medlemmer.',
+    kontrollert: 'Kontrollert {0}', aldri: 'Aldri kontrollert', manglerMnd: '{0} mangler', frist: 'frist {0}', passert: ' – passert',
+    egenOk: 'egenerklæring ✓', egenMangler: 'egenerklæring mangler', hkUtlopt: 'helsetrygdekort utløpt', hkUtloper: 'helsetrygdekort utløper {0}',
+    sesong: 'Sesong {0}',
+    nyKontrollDenne: 'Ny kontroll av denne sykkelen', redigerSykkel: 'Rediger sykkel', kontroller: 'Kontroller ({0})',
+    ingenKontroller: 'Ingen kontroller registrert.', egenerkl: 'Egenerklæringer ({0})', ingenEgen: 'Ingen egenerklæring for denne sykkelen.',
+    altOk: 'Alt OK', ikkeOkAnt: '{0} IKKE OK', bilde1: ' · 1 bilde', bilderN: ' · {0} bilder',
+    kontrollTittel: 'Kontroll {0}', forbudFrist: 'Kjøreforbud – må fikses innen {0}', forbudUten: 'Kjøreforbud', borFrist: 'Bør utbedres innen {0}', bor: 'Bør utbedres',
+    eier: 'Eier', sykkel: 'Sykkel', km: 'Kilometer', bildeAvis: 'Bilde m/avis', kontrollor: 'Kontrollør', registrert: 'Registrert',
+    maaned: 'Måned', skjema: 'Skjema', oljeTittel: 'Olje og væsker', batteri: 'Batteri', merknad: 'Merknad', slettKontroll: 'Slett kontroll',
+    ja: 'Ja', nei: 'Nei', ok: 'OK', ikkeOk: 'Ikke OK',
+    sek_dekk: 'Dekk', sek_bremser: 'Bremser', sek_hjullager: 'Hjullager', sek_foring: 'Foring og styrelager', sek_dempere: 'Dempere', sek_lys: 'Lys', sek_drivverk: 'Drivverk',
+    p_foran: 'Foran', p_bak: 'Bak', p_foring: 'Foring baksving', p_styre: 'Styrelager', p_naer: 'Nærlys', p_fjern: 'Fjernlys', p_brems: 'Bremselys',
+    p_blinkf: 'Blink foran', p_blinkb: 'Blink bak', p_belt: 'Belt / kjede', p_blinklys: 'Blinklys', p_olje: 'Olje byttet',
+    x_monster: 'Mønster mm', x_dekkdato: 'Dekkdato / år', x_belegg: 'Belegg (mm / ok)',
+    o_primaer: 'Primær', o_clutch: 'Clutch', o_hydr: 'Hydr. clutch', o_motor: 'Motorolje', o_kjole: 'Kjølevæske', aarDato: 'År/dato', datoNytt: 'Dato/nytt',
+    nyKontroll: 'Ny kontroll', velgSykkel: 'Velg sykkel…', forrigeKontroll: 'Forrige kontroll {0}', dato: 'Dato', sist: 'Sist {0}',
+    bildeAvisLevert: 'Bilde m/avis levert', levert: 'Levert', ikkeLevert: 'Ikke levert',
+    bilderTittel: 'Bilder', bilderHint: 'Kilometerstand, bilde m/avis, skader, slitte dekk …',
+    alleOk: 'Sett alle punkter til «OK»', alleOkToast: 'Alle umerkede punkter satt til OK', oljeByttet: 'Olje og væsker – byttet',
+    status: 'Status', fiksesInnen: 'Må fikses innen', merknadPh: 'F.eks. hva som må gjøres', lagreKontroll: 'Lagre kontroll', tomSkjema: 'Tøm skjemaet',
+    autoLagret: 'Skjemaet lagres automatisk på telefonen mens du fyller ut. Signeres med ditt navn.',
+    stForbud: 'Kjøreforbud – minst ett punkt er satt til kjøreforbud. Sett frist og skriv hva som må gjøres.',
+    stForbudManuelt: 'Kjøreforbud. Sett frist og skriv hva som må gjøres.', stBor: 'Bør utbedres – sett gjerne en frist.',
+    stOk: 'Alt i orden så langt.', stIngen: 'Ingen punkter vurdert ennå.', stGjen1: ' 1 punkt gjenstår.', stGjenN: ' {0} punkter gjenstår.',
+    velgSykkelToast: 'Velg sykkel', ikkeVurdert1: '1 punkt er ikke vurdert', ikkeVurdertN: '{0} punkter er ikke vurdert', ikkeVurdertLbl: 'Ikke vurdert',
+    ingenFrist: 'Ingen frist satt for utbedring. Lagre likevel?', annenSykkelUtkast: 'Du har et påbegynt skjema for en annen sykkel. Forkaste det?',
+    tommeSkjema: 'Tømme skjemaet?', lagret: 'Kontroll lagret', provHer: ' Prøv igjen herfra.',
+    skjemaFor: '{0} – {1}', brukStor: 'Bruk stor kontroll i stedet', brukEnkel: 'Bruk enkel kontroll i stedet',
+    finnesAllerede: 'Det finnes allerede en kontroll for {0} ({1}). Den nye blir gjeldende status.',
+    enkelHint: 'Vurder hvert område samlet.', aprilEgen: 'April er egenerklæring. Medlemmet fyller den ut selv under «Mine», eller du kan registrere den for medlemmet her.',
+    fyllEgenFor: 'Fyll ut egenerklæring for {0}', velgSykkelForst: 'Velg sykkel først.', egenAllerede: '{0} har allerede levert egenerklæring for {1} ({2}).',
+    regAv: 'Registrert av {0} på vegne av medlemmet',
+    forhandsutfylt: 'Olje, batteri og dekkår er hentet fra tidligere kontroller. Endre bare det som er nytt.',
+    forrigeMerknad: 'Merknad fra {0}: {1}', sistKort: 'sist: {0}', paVegneAv: 'Du registrerer egenerklæringen på vegne av {0}.',
+    mineSykler: 'Mine sykler', ingenMine: 'Du har ingen sykler registrert.', leggTilSykkel: '+ Legg til sykkel',
+    egenTittel: 'Egenerklæring (april)', egenLevert: 'Levert for {0} ({1}).', egenIkke: 'Ikke levert for {0}.', fyllEgen: 'Fyll ut egenerklæring',
+    egenerklaering: 'Egenerklæring', omDeg: 'Om deg', navn: 'Navn', reiseforsikring: 'Reiseforsikring', selskap: 'Selskap',
+    forerkort: 'Førerkort klasse', hvisIkkeA: 'Hvis ikke A – når?', helsekort: 'Helsetrygdekort (EU)', utlopsdato: 'Utløpsdato',
+    forsikring: 'Forsikringsselskap', settAlleOk: 'Sett alle til OK', bekreftTekst: 'Jeg bekrefter at opplysningene er riktige',
+    sendEgen: 'Send egenerklæring', egenSendt: 'Egenerklæring sendt', egenBekreftToast: 'Kryss av for at opplysningene er riktige',
+    egenDetalj: 'Egenerklæring {0}', forerkortKort: 'Førerkort', helsekortKort: 'Helsetrygdekort', tilDato: ' – til {0}', aarsmodell: 'Årsmodell',
+    forsikringKort: 'Forsikring', bekreftetAv: 'Bekreftet av {0} {1}',
+    nySykkel: 'Ny sykkel', eierLabel: 'Eier:', regnr: 'Registreringsnummer', modell: 'Modell / type', lagre: 'Lagre',
+    fjernSykkel: 'Fjern sykkel (solgt / ikke i bruk)', fjernHint: 'Tidligere kontroller blir liggende i arket.', fjernSporsmal: 'Fjerne sykkelen fra lista?',
+    sykkelLagret: 'Sykkel lagret', sykkelFjernet: 'Sykkel fjernet',
+    medlemmer: 'Medlemmer', leggTilMedlem: '+ Legg til medlem', ingenMedlemmer: 'Ingen medlemmer.', b_deaktivert: 'DEAKTIVERT', b_venter: 'VENTER', b_midl: 'IKKE LOGGET INN',
+    sykkel1: '1 sykkel', syklerN: '{0} sykler', kode: 'kode {0}', nyttMedlem: 'Nytt medlem', aktivering: 'Aktivering',
+    ikkeLagetPassord: '{0} har ikke laget passord ennå. Gi denne koden:', gjelderTil: 'gjelder til {0}', sendSms: 'Send kode på SMS',
+    brukernavn: ' (brukernavn)', rolle: 'Rolle', rolleAdminHint: ' (tilgang til alt)', rolleRcHint: ' (egen avdeling)', aktivCb: 'Aktiv (kan logge inn)',
+    lagreEndringer: 'Lagre endringer', leggTilKode: 'Legg til og lag kode',
+    barAdminEndre: 'Bare administrator kan endre Road Captains og administratorer.', sykler: 'Sykler', ingenSyklerKort: 'Ingen sykler.',
+    passordTittel: 'Passord', glemtKode: 'Glemt passord – lag ny kode', lagNyKode: 'Lag ny kode',
+    glemtHint: 'Gammelt passord slutter å virke, og medlemmet logges ut.', nyKodeSporsmal: 'Lage ny kode? Medlemmet må lage nytt passord.',
+    nyKodeLaget: 'Ny kode laget', medlemLagtTil: 'Medlem lagt til', lagretToast: 'Lagret',
+    smsTekst: 'Hei {0}! Du er lagt inn i appen for teknisk kontroll: {1}\nVelg «Første gang», skriv telefonnummeret ditt og koden {2}, og lag ditt eget passord. Koden gjelder i 14 dager.',
+    konto: 'Konto', telefonKort: 'Telefon', byttPassord: 'Bytt passord', navaerende: 'Nåværende passord', nyttPassord: 'Nytt passord (minst 6 tegn)',
+    gjentaNytt: 'Gjenta nytt passord', nyeUlike: 'De nye passordene er ikke like', passordByttet: 'Passord byttet',
+    hentPaNytt: 'Hent data på nytt', oppdatert: 'Oppdatert', sprak: 'Språk',
+    bt_km: 'Kilometerstand', bt_avis: 'Bilde m/avis', bt_annet: 'Bilde', bk_km: 'Km-stand', bk_avis: 'Bilde m/avis', bk_annet: 'Andre bilder',
+    fjernBilde: 'Fjern bilde', kunneIkkeLese: 'Kunne ikke lese bildet «{0}»', kunneIkkeLaste: 'Kunne ikke laste bildet', ingenBilder: 'Ingen bilder.',
+    lasterOppAv: 'Laster opp bilde {0} av {1}…', lasterOppFlere: 'Laster opp {0} bilder…', lasterOpp1: 'Laster opp bilde…',
+    bildeFeil: '{0} av {1} bilder ble ikke lagret: {2}', bildeLagret: 'Bilde lagret', lastetOppAv: 'Lastet opp av {0} {1}',
+    slettBilde: 'Slett bilde', slettBildeSp: 'Slette bildet?', bildeSlettet: 'Bilde slettet',
+    utkastBilder: 'Bildene er med, men tåler ikke omstart av appen før du lagrer',
+    slettKontrollSp: 'Slette denne kontrollen for godt?', kontrollSlettet: 'Kontroll slettet'
+  },
+  en: {
+    app: 'Technical inspection', undertittel: 'Monthly motorcycle inspection', laster: 'Loading…', vent: 'Please wait…', tilbake: '‹ Back',
+    loggInn: 'Log in', forsteGang: 'First time', telefon: 'Phone number', passord: 'Password',
+    kodeFraRc: 'Activation code from your Road Captain', velgPassord: 'Choose a password (at least 6 characters)', gjentaPassord: 'Repeat password',
+    lagPassordLogg: 'Create password and log in',
+    hintAktiver: "Your chapter's Road Captain gives you the code. It is valid for 14 days.",
+    hintLogin: 'If you were given a temporary password, log in with it here. Forgot your password? Ask your Road Captain for a new code and choose "First time".',
+    byttTittel: 'Choose your own password', byttHint: 'You are logged in with a temporary password. Create your own before you continue.',
+    midlertidig: 'Temporary password', lagreGaVidere: 'Save and continue',
+    passordUlike: "The passwords don't match", loggInnPaNytt: 'Please log in again',
+    ingenKontakt: "Can't reach the server. Check your connection.", uventet: 'Unexpected response from the server ({0})', ukjentFeil: 'Unknown error',
+    apiMangler: 'API_URL is not set in index.html.', provIgjen: 'Try again', loggUt: 'Log out',
+    r_admin: 'Administrator', r_rc: 'Road Captain', r_medlem: 'Member',
+    f_oversikt: 'Overview', f_kontroll: 'Inspect', f_mine: 'Mine', f_medlemmer: 'Members', f_konto: 'Account',
+    avdeling: 'Chapter', alleAvd: 'All chapters',
+    s0: 'OK', s1: 'Fix soon', s2: 'Do not ride', s0k: 'OK', s1k: 'Fix<br>soon', s2k: 'Do not<br>ride', forbudMerke: 'DO NOT RIDE',
+    g_lys: 'Lights', g_dekk: 'Tyres', g_bremser: 'Brakes', g_ramme: 'Frame', g_motor: 'Engine', g_allmenn: 'General condition',
+    sk_egen: 'Self-declaration', sk_stor: 'Full inspection', sk_enkel: 'Quick inspection',
+    oversikt: 'Overview', st_sykler: 'bikes', st_mangler: 'missing {0}', st_avvik: 'with issues', st_forbud: 'do not ride', st_utenfor: 'off season',
+    ingenUtvalg: 'No bikes match this filter.', ingenSykler: 'No bikes registered yet. Add them under Members.',
+    kontrollert: 'Inspected {0}', aldri: 'Never inspected', manglerMnd: '{0} missing', frist: 'deadline {0}', passert: ' – overdue',
+    egenOk: 'self-declaration ✓', egenMangler: 'self-declaration missing', hkUtlopt: 'health card expired', hkUtloper: 'health card expires {0}',
+    sesong: 'Season {0}',
+    nyKontrollDenne: 'New inspection of this bike', redigerSykkel: 'Edit bike', kontroller: 'Inspections ({0})',
+    ingenKontroller: 'No inspections registered.', egenerkl: 'Self-declarations ({0})', ingenEgen: 'No self-declaration for this bike.',
+    altOk: 'All OK', ikkeOkAnt: '{0} NOT OK', bilde1: ' · 1 photo', bilderN: ' · {0} photos',
+    kontrollTittel: 'Inspection {0}', forbudFrist: 'Do not ride – must be fixed by {0}', forbudUten: 'Do not ride', borFrist: 'Fix by {0}', bor: 'Fix soon',
+    eier: 'Owner', sykkel: 'Bike', km: 'Odometer', bildeAvis: 'Photo w/ newspaper', kontrollor: 'Inspector', registrert: 'Registered',
+    maaned: 'Month', skjema: 'Form', oljeTittel: 'Oil and fluids', batteri: 'Battery', merknad: 'Notes', slettKontroll: 'Delete inspection',
+    ja: 'Yes', nei: 'No', ok: 'OK', ikkeOk: 'Not OK',
+    sek_dekk: 'Tyres', sek_bremser: 'Brakes', sek_hjullager: 'Wheel bearings', sek_foring: 'Swingarm bushing & steering head', sek_dempere: 'Suspension', sek_lys: 'Lights', sek_drivverk: 'Drivetrain',
+    p_foran: 'Front', p_bak: 'Rear', p_foring: 'Swingarm bushing', p_styre: 'Steering head bearing', p_naer: 'Low beam', p_fjern: 'High beam', p_brems: 'Brake light',
+    p_blinkf: 'Front indicators', p_blinkb: 'Rear indicators', p_belt: 'Belt / chain', p_blinklys: 'Indicators', p_olje: 'Oil changed',
+    x_monster: 'Tread mm', x_dekkdato: 'Tyre date / year', x_belegg: 'Pads (mm / ok)',
+    o_primaer: 'Primary', o_clutch: 'Clutch', o_hydr: 'Hydr. clutch', o_motor: 'Engine oil', o_kjole: 'Coolant', aarDato: 'Year/date', datoNytt: 'Date/new',
+    nyKontroll: 'New inspection', velgSykkel: 'Choose bike…', forrigeKontroll: 'Previous inspection {0}', dato: 'Date', sist: 'Last {0}',
+    bildeAvisLevert: 'Photo with newspaper delivered', levert: 'Delivered', ikkeLevert: 'Not delivered',
+    bilderTittel: 'Photos', bilderHint: 'Odometer, photo with newspaper, damage, worn tyres …',
+    alleOk: 'Set all items to "OK"', alleOkToast: 'All unrated items set to OK', oljeByttet: 'Oil and fluids – changed',
+    status: 'Status', fiksesInnen: 'Fix by', merknadPh: 'E.g. what needs to be done', lagreKontroll: 'Save inspection', tomSkjema: 'Clear form',
+    autoLagret: 'The form is saved on your phone as you go. It is signed with your name.',
+    stForbud: 'Do not ride – at least one item is rated "do not ride". Set a deadline and describe what needs fixing.',
+    stForbudManuelt: 'Do not ride. Set a deadline and describe what needs fixing.', stBor: 'Fix soon – consider setting a deadline.',
+    stOk: 'All good so far.', stIngen: 'No items rated yet.', stGjen1: ' 1 item left.', stGjenN: ' {0} items left.',
+    velgSykkelToast: 'Choose a bike', ikkeVurdert1: '1 item is not rated', ikkeVurdertN: '{0} items are not rated', ikkeVurdertLbl: 'Not rated',
+    ingenFrist: 'No deadline set. Save anyway?', annenSykkelUtkast: 'You have an unfinished form for another bike. Discard it?',
+    tommeSkjema: 'Clear the form?', lagret: 'Inspection saved', provHer: ' Try again from here.',
+    skjemaFor: '{0} – {1}', brukStor: 'Use full inspection instead', brukEnkel: 'Use quick inspection instead',
+    finnesAllerede: 'There is already an inspection for {0} ({1}). The new one becomes the current status.',
+    enkelHint: 'Rate each area as a whole.', aprilEgen: 'April is the self-declaration. Members fill it in themselves under "Mine", or you can register it for the member here.',
+    fyllEgenFor: 'Fill in self-declaration for {0}', velgSykkelForst: 'Choose a bike first.', egenAllerede: '{0} has already submitted a self-declaration for {1} ({2}).',
+    regAv: 'Registered by {0} on behalf of the member',
+    forhandsutfylt: 'Oil, battery and tyre dates are carried over from earlier inspections. Only change what is new.',
+    forrigeMerknad: 'Note from {0}: {1}', sistKort: 'last: {0}', paVegneAv: 'You are registering the self-declaration on behalf of {0}.',
+    mineSykler: 'My bikes', ingenMine: "You don't have any bikes registered.", leggTilSykkel: '+ Add bike',
+    egenTittel: 'Self-declaration (April)', egenLevert: 'Submitted for {0} ({1}).', egenIkke: 'Not submitted for {0}.', fyllEgen: 'Fill in self-declaration',
+    egenerklaering: 'Self-declaration', omDeg: 'About you', navn: 'Name', reiseforsikring: 'Travel insurance', selskap: 'Company',
+    forerkort: 'Licence class', hvisIkkeA: 'If not A – when?', helsekort: 'European Health Insurance Card', utlopsdato: 'Expiry date',
+    forsikring: 'Insurance company', settAlleOk: 'Set all to OK', bekreftTekst: 'I confirm that the information is correct',
+    sendEgen: 'Submit self-declaration', egenSendt: 'Self-declaration submitted', egenBekreftToast: 'Tick the box to confirm the information',
+    egenDetalj: 'Self-declaration {0}', forerkortKort: 'Licence', helsekortKort: 'Health card', tilDato: ' – until {0}', aarsmodell: 'Model year',
+    forsikringKort: 'Insurance', bekreftetAv: 'Confirmed by {0} {1}',
+    nySykkel: 'New bike', eierLabel: 'Owner:', regnr: 'Registration number', modell: 'Model / type', lagre: 'Save',
+    fjernSykkel: 'Remove bike (sold / not in use)', fjernHint: 'Earlier inspections stay in the sheet.', fjernSporsmal: 'Remove the bike from the list?',
+    sykkelLagret: 'Bike saved', sykkelFjernet: 'Bike removed',
+    medlemmer: 'Members', leggTilMedlem: '+ Add member', ingenMedlemmer: 'No members.', b_deaktivert: 'DEACTIVATED', b_venter: 'PENDING', b_midl: 'NOT LOGGED IN',
+    sykkel1: '1 bike', syklerN: '{0} bikes', kode: 'code {0}', nyttMedlem: 'New member', aktivering: 'Activation',
+    ikkeLagetPassord: "{0} hasn't created a password yet. Give them this code:", gjelderTil: 'valid until {0}', sendSms: 'Send code by SMS',
+    brukernavn: ' (username)', rolle: 'Role', rolleAdminHint: ' (full access)', rolleRcHint: ' (own chapter)', aktivCb: 'Active (can log in)',
+    lagreEndringer: 'Save changes', leggTilKode: 'Add and create code',
+    barAdminEndre: 'Only administrators can edit Road Captains and administrators.', sykler: 'Bikes', ingenSyklerKort: 'No bikes.',
+    passordTittel: 'Password', glemtKode: 'Forgot password – create new code', lagNyKode: 'Create new code',
+    glemtHint: 'The old password stops working and the member is logged out.', nyKodeSporsmal: 'Create a new code? The member will have to choose a new password.',
+    nyKodeLaget: 'New code created', medlemLagtTil: 'Member added', lagretToast: 'Saved',
+    smsTekst: 'Hi {0}! You have been added to the technical inspection app: {1}\nChoose "First time", enter your phone number and the code {2}, and create your own password. The code is valid for 14 days.',
+    konto: 'Account', telefonKort: 'Phone', byttPassord: 'Change password', navaerende: 'Current password', nyttPassord: 'New password (at least 6 characters)',
+    gjentaNytt: 'Repeat new password', nyeUlike: "The new passwords don't match", passordByttet: 'Password changed',
+    hentPaNytt: 'Reload data', oppdatert: 'Updated', sprak: 'Language',
+    bt_km: 'Odometer', bt_avis: 'Photo w/ newspaper', bt_annet: 'Photo', bk_km: 'Odometer', bk_avis: 'Newspaper', bk_annet: 'Other photos',
+    fjernBilde: 'Remove photo', kunneIkkeLese: 'Could not read the image "{0}"', kunneIkkeLaste: 'Could not load the photo', ingenBilder: 'No photos.',
+    lasterOppAv: 'Uploading photo {0} of {1}…', lasterOppFlere: 'Uploading {0} photos…', lasterOpp1: 'Uploading photo…',
+    bildeFeil: '{0} of {1} photos were not saved: {2}', bildeLagret: 'Photo saved', lastetOppAv: 'Uploaded by {0} {1}',
+    slettBilde: 'Delete photo', slettBildeSp: 'Delete the photo?', bildeSlettet: 'Photo deleted',
+    utkastBilder: "Photos are kept, but won't survive an app restart until you save",
+    slettKontrollSp: 'Delete this inspection permanently?', kontrollSlettet: 'Inspection deleted'
+  }
+};
+const MND_NAVN = {
+  no: ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember'],
+  en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+};
+
+// ─── Definitions (must match Code.gs) ───────────────────────
+const SESONG = [4, 5, 6, 7, 8, 9, 10];                     // April–October
+const skjemaForMnd = m => (m === 4 ? 'egen' : m === 5 ? 'stor' : 'enkel');
+const SEKSJONER = [
+  { t: 'sek_dekk', r: [
+    { id: 'dekk_f', n: 'p_foran', x: [['dekk_f_mm', 'x_monster', 'decimal'], ['dekk_f_dato', 'x_dekkdato', 'text']] },
+    { id: 'dekk_b', n: 'p_bak', x: [['dekk_b_mm', 'x_monster', 'decimal'], ['dekk_b_dato', 'x_dekkdato', 'text']] }] },
+  { t: 'sek_bremser', r: [
+    { id: 'brems_f', n: 'p_foran', x: [['brems_f_belegg', 'x_belegg', 'text']] },
+    { id: 'brems_b', n: 'p_bak', x: [['brems_b_belegg', 'x_belegg', 'text']] }] },
+  { t: 'sek_hjullager', r: [{ id: 'hjullager_f', n: 'p_foran' }, { id: 'hjullager_b', n: 'p_bak' }] },
+  { t: 'sek_foring', r: [{ id: 'foring_baksving', n: 'p_foring' }, { id: 'styrelager', n: 'p_styre' }] },
+  { t: 'sek_dempere', r: [{ id: 'demper_f', n: 'p_foran' }, { id: 'demper_b', n: 'p_bak' }] },
+  { t: 'sek_lys', r: [{ id: 'lys_naer', n: 'p_naer' }, { id: 'lys_fjern', n: 'p_fjern' }, { id: 'lys_brems', n: 'p_brems' },
+                      { id: 'blink_f', n: 'p_blinkf' }, { id: 'blink_b', n: 'p_blinkb' }] },
+  { t: 'sek_drivverk', r: [{ id: 'belt_kjede', n: 'p_belt' }] }
+];
+const PUNKTER = SEKSJONER.flatMap(s => s.r.map(r => r.id));
+const ENKEL = [['sum_lys', 'g_lys'], ['sum_dekk', 'g_dekk'], ['sum_bremser', 'g_bremser'], ['sum_ramme', 'g_ramme'], ['sum_motor', 'g_motor'], ['allmenn_tilstand', 'g_allmenn']];
+const OLJER = [['olje_primaer', 'o_primaer'], ['olje_clutch', 'o_clutch'], ['olje_hydr', 'o_hydr'], ['olje_motor', 'o_motor'], ['kjolevaeske', 'o_kjole']];
+const GRUPPER = [['sum_lys', 'g_lys'], ['sum_dekk', 'g_dekk'], ['sum_bremser', 'g_bremser'], ['sum_ramme', 'g_ramme'], ['sum_motor', 'g_motor']];
+const EGEN_SJEKK = [
+  ['sek_bremser', [['brems_f', 'p_foran'], ['brems_b', 'p_bak']]],
+  ['sek_dekk', [['dekk_f', 'p_foran'], ['dekk_b', 'p_bak']]],
+  ['sek_lys', [['lys_naer', 'p_naer'], ['lys_fjern', 'p_fjern'], ['lys_brems', 'p_brems'], ['blinklys', 'p_blinklys']]],
+  ['sek_dempere', [['demper_f', 'p_foran'], ['demper_b', 'p_bak']]],
+  ['oljeTittel', [['olje_byttet', 'p_olje']]]
+];
+
+// ─── Utils ──────────────────────────────────────────────────
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+const isoDato = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const idag = () => isoDato(new Date());
+const omDager = n => isoDato(new Date(Date.now() + n * 864e5));
+const fmtDato = s => { if (!s) return ''; const [y, m, d] = String(s).slice(0, 10).split('-'); return d ? `${+d}.${+m}.${y}` : String(s); };
+const hent = k => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } };
+const lagre = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) { /* private mode */ } };
+
+let LANG = hent('tk_lang') === 'en' ? 'en' : 'no';
+function t(k, ...a) {
+  let s = (TXT[LANG] && TXT[LANG][k] !== undefined) ? TXT[LANG][k] : (TXT.no[k] !== undefined ? TXT.no[k] : k);
+  a.forEach((v, i) => { s = s.split('{' + i + '}').join(String(v)); });
+  return s;
+}
+const mndNavn = m => MND_NAVN[LANG][m - 1];
+const Mnd = m => { const s = mndNavn(m); return s.charAt(0).toUpperCase() + s.slice(1); };
+const naaMnd = () => new Date().getMonth() + 1;
+const aar = () => new Date().getFullYear();
+const aktivMnd = () => (SESONG.includes(naaMnd()) ? naaMnd() : null);
+const mndKey = (y, m) => y + '-' + pad(m);
+const kMnd = k => String(k.maaned || k.dato).slice(0, 7);
+const kSkjema = k => (k.skjema === 'enkel' ? 'enkel' : 'stor');
+const skalaNavn = v => [t('s0'), t('s1'), t('s2')][Number(v)] || '–';
+const fmtKm = v => v === '' || v == null ? '' : Number(v).toLocaleString(LANG === 'en' ? 'en-GB' : 'nb-NO') + ' km';
+
+const IKON = {
+  liste: '<path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01" stroke-width="3"/>',
+  skjema: '<path d="M9 3.5h6v3H9z"/><path d="M15 5h3.5v16h-13V5H9"/><path d="m9 13.5 2 2 4-4.5"/>',
+  sykkel: '<circle cx="5.5" cy="16" r="3.5"/><circle cx="18.5" cy="16" r="3.5"/><path d="M5.5 16 9.5 9h4.5l4.5 7"/><path d="M14 9l-1.6-3.5H15.5M9.5 9 8 6.5H5.5"/>',
+  folk: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c1.8.7 3 2.4 3.5 5.2"/>',
+  person: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.2 4-6.5 8-6.5s7 2.3 8 6.5"/>',
+  kamera: '<path d="M3.5 8.5h3.5l2-2.8h6l2 2.8h3.5v10.8h-17z"/><circle cx="12" cy="13.6" r="3.6"/>'
+};
+const svg = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+
+let toastTimer;
+function toast(msg, erFeil) {
+  const el = $('#toast');
+  el.textContent = msg; el.className = 'vis' + (erFeil ? ' feil' : '');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.className = erFeil ? 'feil' : ''; }, erFeil ? 4500 : 2500);
+}
+
+// ─── State & API ────────────────────────────────────────────
+const S = { token: hent('tk_token'), d: null, fane: '', avd: hent('tk_avd') || 'Alle', filter: 'alle' };
+let F = null;   // inspection draft
+let G = null;   // self-declaration draft
+let B = null;   // member / bike form scratch
+const SKJEMA = { K: () => F, G: () => G, B: () => B };
+
+async function api(action, data) {
+  let res;
+  try {
+    res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(Object.assign({ action, token: S.token, lang: LANG }, data || {})) });
+  } catch (e) { throw new Error(t('ingenKontakt')); }
+  let j;
+  try { j = await res.json(); } catch (e) { throw new Error(t('uventet', res.status)); }
+  if (!j.ok) {
+    if (j.kode === 'AUTH' && action !== 'login' && action !== 'aktiver') loggUt(j.feil);
+    if (j.kode === 'BYTT') visTvungen();
+    const e = new Error(j.feil || t('ukjentFeil')); e.kode = j.kode; throw e;
+  }
+  return j.data;
+}
+
+async function medKnapp(btn, fn) {
+  if (btn) { btn.disabled = true; btn.dataset.tekst = btn.innerHTML; btn.innerHTML = t('vent'); }
+  try { return await fn(); }
+  catch (e) { toast(e.message, true); }
+  finally { if (btn && btn.isConnected) { btn.disabled = false; btn.innerHTML = btn.dataset.tekst; } }
+}
+
+async function lastData() {
+  S.d = await api('hentData');
+  const r = rolle();
+  if (r !== 'admin') S.avd = S.d.bruker.avdeling;
+  else if (S.avd !== 'Alle' && !S.d.avdelinger.includes(S.avd)) S.avd = 'Alle';
+  if (!S.fane) S.fane = r === 'medlem' ? 'mine' : 'oversikt';
+}
+
+async function oppdaterAlt() {
+  await lastData();
+  if (LAG.length) LAG[LAG.length - 1]();
+  render();
+}
+
+function loggUt(melding) {
+  S.token = ''; S.d = null; S.fane = ''; S.filter = 'alle'; S.midlPw = ''; S.avd = hent('tk_avd') || 'Alle';
+  F = G = B = null; lagre('tk_token', null); lagre('tk_utkast', null);
+  lukkAlle(); visLogin('login');
+  if (melding) toast(typeof melding === 'string' ? melding : t('loggInnPaNytt'), true);
+}
+
+function settSprak(l) {
+  LANG = l === 'en' ? 'en' : 'no';
+  lagre('tk_lang', LANG);
+  document.documentElement.lang = LANG === 'en' ? 'en' : 'no';
+  document.title = t('app');
+  if ($('#tvungenSkjema')) return visTvungen();
+  if (!S.d) return visLogin($('#loginSkjema [name=kode]') ? 'aktiver' : 'login');
+  render();
+  if (LAG.length) LAG[LAG.length - 1]();
+}
+const sprakKnapper = () => `<div class="sprak">${[['no', 'Norsk'], ['en', 'English']].map(([k, n]) =>
+  `<button type="button" data-sprak="${k}" class="${LANG === k ? 'aktiv' : ''}" lang="${k === 'en' ? 'en' : 'no'}">${n}</button>`).join('')}</div>`;
+
+// ─── Data helpers ───────────────────────────────────────────
+const meg = () => S.d.bruker;
+const rolle = () => S.d.bruker.rolle;
+const erLeder = () => rolle() !== 'medlem';
+const finnSykkel = id => S.d.sykler.find(s => s.id === id);
+const kontrollerFor = id => S.d.kontroller.filter(k => k.sykkel_id === id);
+const sisteKontroll = id => S.d.kontroller.find(k => k.sykkel_id === id);
+const egenFor = tlf => S.d.egenerklaeringer.filter(e => e.telefon === tlf);
+const iAvd = x => S.avd === 'Alle' || x.avdeling === S.avd;
+const fristPassert = k => k && k.frist && k.frist < idag() && Number(k.sum_allmenn) >= 1;
+const egenAvvik = e => EGEN_SJEKK.flatMap(([, r]) => r).filter(([id]) => e[id] === 'Ikke OK').length;
+
+/** Status of one bike for one season month: { v: 0|1|2 } or null if nothing registered. */
+function mndStatus(s, m, y) {
+  if (m === 4) {
+    const egne = egenFor(s.telefon).filter(e => String(e.dato).startsWith(String(y)));
+    const e = egne.find(x => x.sykkel_id === s.id) || egne[0];
+    return e ? { v: egenAvvik(e) ? 1 : 0, e } : null;
+  }
+  const k = S.d.kontroller.find(x => x.sykkel_id === s.id && kMnd(x) === mndKey(y, m));
+  return k ? { v: Number(k.sum_allmenn) || 0, k } : null;
+}
+
+function sesongStripe(s) {
+  const y = aar(), nm = naaMnd();
+  return `<div class="sesong" aria-label="${esc(t('sesong', y))}">${SESONG.map(m => {
+    const st = mndStatus(s, m, y);
+    let kl = st ? 'v' + st.v : (m < nm ? 'mangler' : m > nm ? 'fremtid' : '');
+    if (m === nm) kl += ' na';
+    const tittel = Mnd(m) + ' – ' + t('sk_' + skjemaForMnd(m)) + ': ' + (st ? (m === 4 ? (st.v ? t('ikkeOkAnt', egenAvvik(st.e)) : t('altOk')) : skalaNavn(st.v)) : '–');
+    return `<span class="${kl}" title="${esc(tittel)}">${esc(mndNavn(m).charAt(0).toUpperCase())}</span>`;
+  }).join('')}</div>`;
+}
+
+function chip(v, tekst) {
+  const n = v === '' || v == null ? null : Number(v);
+  return `<span class="chip ${n == null ? '' : 'v' + n}">${esc(tekst)}</span>`;
+}
+const chips = k => `<div class="chips">${GRUPPER.map(([g, n]) => chip(k[g], t(n))).join('')}</div>`;
+
+function avdVelger() {
+  if (rolle() !== 'admin') return '';
+  return `<label class="felt"><span>${t('avdeling')}</span><select data-avd>
+    <option value="Alle"${S.avd === 'Alle' ? ' selected' : ''}>${t('alleAvd')}</option>
+    ${S.d.avdelinger.map(a => `<option value="${esc(a)}"${a === S.avd ? ' selected' : ''}>${esc(a)}</option>`).join('')}</select></label>`;
+}
+
+// ─── Photos ─────────────────────────────────────────────────
+const BILDECACHE = {};
+const bilderFor = (refType, refId) => (S.d.bilder || []).filter(b => b.ref_type === refType && b.ref_id === refId);
+const alderTimer = ts => (Date.now() - new Date(String(ts).replace(' ', 'T')).getTime()) / 3600e3;
+const antBilder = (ty, id) => { const n = bilderFor(ty, id).length; return n ? (n === 1 ? t('bilde1') : t('bilderN', n)) : ''; };
+
+/** Scale down on the phone before upload: max 1600 px, JPEG 80 %, typically 200–400 kB. */
+function lesBilde(fil) {
+  return new Promise((ok, avvis) => {
+    const url = URL.createObjectURL(fil);
+    const img = new Image();
+    img.onload = () => {
+      const f = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.naturalWidth * f); c.height = Math.round(img.naturalHeight * f);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      ok(c.toDataURL('image/jpeg', 0.8));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); avvis(new Error(t('kunneIkkeLese', fil.name))); };
+    img.src = url;
+  });
+}
+
+function bildeKnapper(typer, attr) {
+  return `<div class="bildeknapper">${typer.map(ty => `<label class="knapp">${svg(IKON.kamera)}<span>${t('bk_' + ty)}</span>
+    <input type="file" accept="image/*" ${ty === 'annet' ? 'multiple' : ''} data-bilde="${ty}" ${attr || ''} hidden></label>`).join('')}</div>`;
+}
+function ventendeBilder(liste) {
+  if (!liste || !liste.length) return '';
+  return `<div class="bilderad">${liste.map((b, i) => `<div class="tommel"><img src="${b.data}" alt="${esc(t('bt_' + b.type))}"><span>${esc(t('bt_' + b.type))}</span>
+    <button type="button" class="fjern" data-fjern-bilde="${i}" aria-label="${esc(t('fjernBilde'))}">×</button></div>`).join('')}</div>`;
+}
+function bildeGalleri(refType, refId) {
+  const liste = bilderFor(refType, refId);
+  if (!liste.length) return '';
+  return `<div class="bilderad">${liste.map(b => `<button type="button" class="tommel" data-vis-bilde="${esc(b.id)}">
+    <img data-bilde-id="${esc(b.id)}" alt="${esc(t('bt_' + b.type))}"><span>${esc(t('bt_' + b.type))}</span></button>`).join('')}</div>`;
+}
+function fyllBilder(rot) {
+  $$('img[data-bilde-id]', rot).forEach(async img => {
+    const id = img.dataset.bildeId;
+    try {
+      if (!BILDECACHE[id]) BILDECACHE[id] = api('hentBilde', { id }).then(r => r.data);
+      const src = await BILDECACHE[id];
+      if (img.isConnected) img.src = src;
+    } catch (e) { delete BILDECACHE[id]; img.alt = t('kunneIkkeLaste'); }
+  });
+}
+function kanLeggeTilBilde(refType, ref) {
+  if (rolle() === 'admin') return true;
+  const tilgang = (rolle() === 'rc' && ref.avdeling === meg().avdeling) || (refType === 'egen' && ref.telefon === meg().telefon);
+  return tilgang && alderTimer(ref.tidspunkt) < S.d.innstillinger.bildeDager * 24;
+}
+const kanSletteBilde = b => rolle() === 'admin' || (b.lastet_opp_av_tlf === meg().telefon && alderTimer(b.tidspunkt) < S.d.innstillinger.bildeDager * 24);
+function bildeKort(refType, ref, typer) {
+  const galleri = bildeGalleri(refType, ref.id);
+  const kan = kanLeggeTilBilde(refType, ref);
+  if (!galleri && !kan) return '';
+  return `<div class="kort"><h3>${t('bilderTittel')}</h3>${galleri || `<p class="tom" style="margin:0">${t('ingenBilder')}</p>`}
+    ${kan ? bildeKnapper(typer, `data-direkte="${refType}:${esc(ref.id)}"`) : ''}</div>`;
+}
+async function lastOppBilder(liste, refType, refId, btn) {
+  let feil = 0, melding = '';
+  for (let i = 0; i < liste.length; i++) {
+    if (btn) btn.innerHTML = t('lasterOppAv', i + 1, liste.length);
+    try { await api('lastOppBilde', { ref_type: refType, ref_id: refId, type: liste[i].type, data: liste[i].data }); }
+    catch (e) { feil++; melding = e.message; }
+  }
+  return feil ? t('bildeFeil', feil, liste.length, melding) : '';
+}
+async function velgBilder(el) {
+  const filer = Array.from(el.files || []);
+  el.value = '';
+  if (!filer.length) return;
+  const type = el.dataset.bilde;
+  let data;
+  try { data = await Promise.all(filer.map(lesBilde)); } catch (e) { return toast(e.message, true); }
+  const nye = data.map(d => ({ type, data: d }));
+  if (el.dataset.direkte) {
+    const [refType, refId] = el.dataset.direkte.split(':');
+    toast(nye.length > 1 ? t('lasterOppFlere', nye.length) : t('lasterOpp1'));
+    const feil = await lastOppBilder(nye, refType, refId);
+    try { await lastData(); } catch (e) { /* toast below */ }
+    if (LAG.length) LAG[LAG.length - 1]();
+    return toast(feil || t('bildeLagret'), !!feil);
+  }
+  const sk = skjemaFor(el);
+  if (!sk || !sk.obj) return;
+  sk.obj.bilder = (sk.obj.bilder || []).concat(nye);
+  if (sk.navn === 'K') { if (type === 'avis') F.bilde_avis = 'Ja'; lagreUtkast(); render(); }
+  else visEgenSkjema();
+}
+function visBilde(id) {
+  const b = (S.d.bilder || []).find(x => x.id === id);
+  if (!b) return tilbake();
+  tegnLag(t('bt_' + b.type), `<img class="stor" data-bilde-id="${esc(b.id)}" alt="${esc(t('bt_' + b.type))}">
+    <p class="dempet" style="margin-top:10px">${esc(t('lastetOppAv', b.lastet_opp_av, b.tidspunkt))}</p>
+    ${kanSletteBilde(b) ? `<button class="fare bred" data-slett-bilde="${esc(b.id)}">${t('slettBilde')}</button>` : ''}`);
+}
+
+// ─── Login ──────────────────────────────────────────────────
+function visLogin(modus) {
+  document.body.classList.add('uten-nav');
+  $('#app').innerHTML = `<main class="login">
+    <div class="logo">${svg(IKON.skjema)}</div>
+    <h1>${t('app')}</h1>
+    <div class="under">${t('undertittel')}</div>
+    <div class="faner2"><button type="button" data-modus="login" class="${modus === 'login' ? 'aktiv' : ''}">${t('loggInn')}</button>
+      <button type="button" data-modus="aktiver" class="${modus === 'aktiver' ? 'aktiv' : ''}">${t('forsteGang')}</button></div>
+    <form id="loginSkjema" class="kort" autocomplete="on">
+      <label class="felt"><span>${t('telefon')}</span><input name="telefon" type="tel" inputmode="tel" autocomplete="username" required value="${esc(hent('tk_tlf'))}"></label>
+      ${modus === 'aktiver' ? `
+      <label class="felt"><span>${t('kodeFraRc')}</span><input name="kode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></label>
+      <label class="felt"><span>${t('velgPassord')}</span><input name="passord" type="password" autocomplete="new-password" minlength="6" required></label>
+      <label class="felt"><span>${t('gjentaPassord')}</span><input name="passord2" type="password" autocomplete="new-password" minlength="6" required></label>`
+      : `<label class="felt"><span>${t('passord')}</span><input name="passord" type="password" autocomplete="current-password" required></label>`}
+      <button class="primar bred" style="margin:4px 0 0">${modus === 'aktiver' ? t('lagPassordLogg') : t('loggInn')}</button>
+    </form>
+    <p class="hint">${modus === 'aktiver' ? t('hintAktiver') : t('hintLogin')}</p>
+    ${sprakKnapper()}
+  </main>`;
+  $('#loginSkjema').onsubmit = async ev => {
+    ev.preventDefault();
+    const f = Object.fromEntries(new FormData(ev.target));
+    if (modus === 'aktiver' && f.passord !== f.passord2) return toast(t('passordUlike'), true);
+    await medKnapp($('button.primar', ev.target), async () => {
+      const r = await api(modus, f);
+      S.token = r.token; lagre('tk_token', r.token); lagre('tk_tlf', f.telefon);
+      if (r.maaBytte) { S.midlPw = f.passord; return visTvungen(); }
+      await lastData(); render();
+    });
+  };
+}
+
+/** Shown after logging in with the temporary password: the user must pick their own before anything else. */
+function visTvungen() {
+  document.body.classList.add('uten-nav');
+  lukkAlle();
+  $('#app').innerHTML = `<main class="login">
+    <div class="logo">${svg(IKON.person)}</div>
+    <h1>${t('byttTittel')}</h1>
+    <div class="under">${t('byttHint')}</div>
+    <form id="tvungenSkjema" class="kort">
+      <input type="text" name="u" autocomplete="username" value="${esc(hent('tk_tlf'))}" hidden>
+      ${S.midlPw ? '' : `<label class="felt"><span>${t('midlertidig')}</span><input name="gammelt" type="password" autocomplete="current-password" required></label>`}
+      <label class="felt"><span>${t('nyttPassord')}</span><input name="nytt" type="password" autocomplete="new-password" minlength="6" required></label>
+      <label class="felt"><span>${t('gjentaNytt')}</span><input name="nytt2" type="password" autocomplete="new-password" minlength="6" required></label>
+      <button class="primar bred" style="margin:4px 0 0">${t('lagreGaVidere')}</button>
+    </form>
+    <button class="bred" data-a="loggUt">${t('loggUt')}</button>
+    ${sprakKnapper()}
+  </main>`;
+  $('#tvungenSkjema').onsubmit = async ev => {
+    ev.preventDefault();
+    const f = Object.fromEntries(new FormData(ev.target));
+    if (f.nytt !== f.nytt2) return toast(t('nyeUlike'), true);
+    await medKnapp($('button.primar', ev.target), async () => {
+      const r = await api('byttPassord', { gammelt: S.midlPw || f.gammelt, nytt: f.nytt });
+      S.midlPw = ''; S.token = r.token; lagre('tk_token', r.token);
+      await lastData(); render(); toast(t('passordByttet'));
+    });
+  };
+}
+
+// ─── Shell ──────────────────────────────────────────────────
+function faner() {
+  const f = [];
+  if (erLeder()) f.push(['oversikt', IKON.liste], ['kontroll', IKON.skjema]);
+  f.push(['mine', IKON.sykkel]);
+  if (erLeder()) f.push(['medlemmer', IKON.folk]);
+  f.push(['konto', IKON.person]);
+  return f;
+}
+
+function render() {
+  if (!S.d) return;
+  document.body.classList.remove('uten-nav');
+  document.title = t('app');
+  const b = meg();
+  const innhold = { oversikt: visOversikt, kontroll: visKontrollSkjema, mine: visMine, medlemmer: visMedlemmer, konto: visKonto }[S.fane] || visMine;
+  $('#app').innerHTML = `
+    <header class="topp"><h1>${t('app')}</h1>
+      <div class="hvem">${esc(b.navn)}<br>${esc(t('r_' + b.rolle))} · ${esc(b.avdeling)}</div></header>
+    <main>${innhold()}</main>
+    <nav class="bunn">${faner().map(([id, ik]) => `<button data-fane="${id}" class="${S.fane === id ? 'aktiv' : ''}">${svg(ik)}${t('f_' + id)}</button>`).join('')}</nav>`;
+  if (S.fane === 'kontroll') oppdaterStatus();
+}
+
+// overlay stack
+const LAG = [];
+function apne(fn) { LAG.push(fn); fn(); }
+function tilbake() { LAG.pop(); if (LAG.length) LAG[LAG.length - 1](); else lukkAlle(); }
+function lukkAlle() { LAG.length = 0; const l = $('#lag'); l.hidden = true; l.innerHTML = ''; document.body.style.overflow = ''; }
+function tegnLag(tittel, html) {
+  const l = $('#lag');
+  const nytt = l.hidden || l.dataset.tittel !== tittel;
+  l.hidden = false; l.dataset.tittel = tittel; document.body.style.overflow = 'hidden';
+  const pos = l.scrollTop;
+  l.innerHTML = `<header class="topp"><button class="tilbake" data-tilbake>${t('tilbake')}</button><h1>${esc(tittel)}</h1></header><main>${html}</main>`;
+  l.scrollTop = nytt ? 0 : pos;
+  fyllBilder(l);
+}
+
+// ─── Overview ───────────────────────────────────────────────
+function sykkelInfo(s) {
+  const k = sisteKontroll(s.id);
+  const am = aktivMnd();
+  const y = String(aar());
+  const e = egenFor(s.telefon).find(x => String(x.dato).startsWith(y));
+  return { s, k, e, manglerNa: am ? !mndStatus(s, am, aar()) : false, forbud: !!(k && k.kjoreforbud === 'Ja'), frist: fristPassert(k) };
+}
+
+function sykkelKort(i, visAvd) {
+  const { s, k, e } = i;
+  const deler = [];
+  deler.push(k ? t('kontrollert', fmtDato(k.dato)) : `<span class="oransje">${t('aldri')}</span>`);
+  if (i.manglerNa) deler.push(`<span class="oransje">${t('manglerMnd', mndNavn(aktivMnd()))}</span>`);
+  if (k && k.frist && Number(k.sum_allmenn) >= 1) deler.push(`<span class="${i.frist ? 'rodt' : ''}">${t('frist', fmtDato(k.frist))}${i.frist ? t('passert') : ''}</span>`);
+  const hk = e && e.helsetrygdekort_utloper;
+  const egen = e ? (hk && hk < omDager(60) ? `<span class="oransje">${hk < idag() ? t('hkUtlopt') : t('hkUtloper', fmtDato(hk))}</span>` : t('egenOk'))
+                 : `<span class="dempet">${t('egenMangler')}</span>`;
+  return `<button class="kort" data-sykkel="${esc(s.id)}">
+    <div class="linje1"><b>${esc(s.eier)}</b>${i.forbud ? `<span class="merke">${t('forbudMerke')}</span>` : ''}</div>
+    <div class="dempet">${esc(s.regnr)}${s.modell ? ' · ' + esc(s.modell) : ''}${visAvd ? ' · ' + esc(s.avdeling) : ''}</div>
+    ${sesongStripe(s)}
+    ${k ? chips(k) : ''}
+    <div class="status">${deler.join(' · ')}<br>${egen}</div></button>`;
+}
+
+function visOversikt() {
+  const alle = S.d.sykler.filter(iAvd).map(sykkelInfo);
+  const am = aktivMnd();
+  const ant = { alle: alle.length, mangler: alle.filter(i => i.manglerNa).length, avvik: alle.filter(i => i.k && Number(i.k.sum_allmenn) >= 1).length, forbud: alle.filter(i => i.forbud).length };
+  const filtre = { alle: () => true, mangler: i => i.manglerNa, avvik: i => i.k && Number(i.k.sum_allmenn) >= 1, forbud: i => i.forbud };
+  const vekt = i => (i.forbud ? 0 : i.frist ? 1 : i.manglerNa ? 2 : 3);
+  const liste = alle.filter(filtre[S.filter] || filtre.alle).sort((a, b) => vekt(a) - vekt(b) || a.s.eier.localeCompare(b.s.eier, 'nb'));
+  const statKnapp = (id, tall, tekst) => `<button data-filter="${id}" class="${S.filter === id ? 'aktiv' : ''}"><b>${tall}</b><span>${tekst}</span></button>`;
+  return `<h2>${t('oversikt')}${S.avd !== 'Alle' ? ' – ' + esc(S.avd) : ''}</h2>
+    ${avdVelger()}
+    <div class="stat">${statKnapp('alle', ant.alle, t('st_sykler'))}${am ? statKnapp('mangler', ant.mangler, t('st_mangler', mndNavn(am))) : statKnapp('alle', '–', t('st_utenfor'))}${statKnapp('avvik', ant.avvik, t('st_avvik'))}${statKnapp('forbud', ant.forbud, t('st_forbud'))}</div>
+    <div class="forklaring"><span><i style="background:var(--s0)"></i>${t('s0')}</span><span><i style="background:var(--s1)"></i>${t('s1')}</span><span><i style="background:var(--s2)"></i>${t('s2')}</span><span>${esc(t('sesong', aar()))}: ${SESONG.map(m => mndNavn(m).charAt(0).toUpperCase()).join(' ')}</span></div>
+    ${liste.length ? liste.map(i => sykkelKort(i, S.avd === 'Alle')).join('') :
+      `<p class="tom">${alle.length ? t('ingenUtvalg') : t('ingenSykler')}</p>`}`;
+}
+
+// ─── Bike detail ────────────────────────────────────────────
+function visSykkel(id) {
+  const s = finnSykkel(id);
+  if (!s) return tilbake();
+  const ks = kontrollerFor(id);
+  const es = egenFor(s.telefon).filter(e => e.sykkel_id === id);
+  tegnLag(s.regnr, `
+    <div class="kort"><div class="linje1"><h2 style="margin:0">${esc(s.eier)}</h2>${ks[0] && ks[0].kjoreforbud === 'Ja' ? `<span class="merke">${t('forbudMerke')}</span>` : ''}</div>
+      <div class="dempet" style="margin-top:4px">${esc(s.regnr)}${s.modell ? ' · ' + esc(s.modell) : ''}${s.aarsmodell ? ' · ' + esc(s.aarsmodell) : ''} · ${esc(s.avdeling)}</div>
+      ${sesongStripe(s)}${ks[0] ? chips(ks[0]) : ''}</div>
+    ${erLeder() ? `<button class="primar bred" data-ny-kontroll="${esc(id)}">${t('nyKontrollDenne')}</button>` : ''}
+    ${erLeder() || s.telefon === meg().telefon ? `<button class="bred" data-egen-ny="${esc(id)}">${t('fyllEgen')}</button>` : ''}
+    <button class="bred" data-sykkel-skjema="${esc(id)}">${t('redigerSykkel')}</button>
+    <h3>${t('kontroller', ks.length)}</h3>
+    ${ks.length ? ks.map(k => `<button class="kort" data-kontroll="${esc(k.id)}">
+        <div class="linje1"><b>${esc(Mnd(Number(kMnd(k).slice(5))))} · ${t('sk_' + kSkjema(k))}</b>${k.kjoreforbud === 'Ja' ? `<span class="merke">${t('forbudMerke')}</span>` : chip(k.sum_allmenn, skalaNavn(k.sum_allmenn))}</div>
+        <div class="dempet">${fmtDato(k.dato)} · ${esc(k.kontrollor)}${k.km !== '' ? ' · ' + fmtKm(k.km) : ''}${antBilder('kontroll', k.id)}</div>${chips(k)}</button>`).join('')
+      : `<p class="tom">${t('ingenKontroller')}</p>`}
+    <h3>${t('egenerkl', es.length)}</h3>
+    ${es.length ? es.map(e => `<button class="kort" data-egen="${esc(e.id)}"><div class="linje1"><b>${fmtDato(e.dato)}</b>${egenAvvik(e) ? `<span class="merke gul">${t('ikkeOkAnt', egenAvvik(e))}</span>` : `<span class="chip v0">${t('altOk')}</span>`}</div>
+        <div class="dempet">${e.km !== '' ? fmtKm(e.km) : ''}${antBilder('egen', e.id)}</div></button>`).join('')
+      : `<p class="tom">${t('ingenEgen')}</p>`}`);
+}
+
+function kanSlette(k) {
+  if (rolle() === 'admin') return true;
+  if (rolle() !== 'rc' || k.kontrollor_tlf !== meg().telefon) return false;
+  return alderTimer(k.tidspunkt) < S.d.innstillinger.rcSlettTimer;
+}
+const okChip = v => v === 'OK' ? `<span class="chip v0">${t('ok')}</span>` : v === 'Ikke OK' ? `<span class="chip v2">${t('ikkeOk')}</span>` : '<span class="chip">–</span>';
+const jaNei = v => v === 'Ja' ? t('ja') : v === 'Nei' ? t('nei') : '–';
+
+function visKontroll(id) {
+  const k = S.d.kontroller.find(x => x.id === id);
+  if (!k) return tilbake();
+  const sk = kSkjema(k);
+  const seksjon = s => `<div class="kort"><h3>${t(s.t)}</h3><dl class="info">${s.r.map(p =>
+    `<dt>${t(p.n)}${(p.x || []).map(([xid, xn]) => k[xid] !== '' && k[xid] != null ? `<br><small>${t(xn)}: ${esc(k[xid])}</small>` : '').join('')}</dt><dd>${chip(k[p.id], skalaNavn(k[p.id]))}</dd>`).join('')}</dl></div>`;
+  const sum = Number(k.sum_allmenn);
+  tegnLag(t('kontrollTittel', fmtDato(k.dato)), `
+    ${k.kjoreforbud === 'Ja' ? `<div class="banner v2">${k.frist ? t('forbudFrist', fmtDato(k.frist)) : t('forbudUten')}</div>` :
+      sum >= 1 ? `<div class="banner v1">${k.frist ? t('borFrist', fmtDato(k.frist)) : t('bor')}</div>` : ''}
+    <div class="kort"><dl class="info">
+      <dt>${t('eier')}</dt><dd>${esc(k.navn)}</dd><dt>${t('sykkel')}</dt><dd>${esc(k.regnr)} ${esc(k.modell)}</dd>
+      <dt>${t('avdeling')}</dt><dd>${esc(k.avdeling)}</dd>
+      <dt>${t('maaned')}</dt><dd>${esc(Mnd(Number(kMnd(k).slice(5))))} ${esc(kMnd(k).slice(0, 4))}</dd><dt>${t('skjema')}</dt><dd>${t('sk_' + sk)}</dd>
+      <dt>${t('km')}</dt><dd>${k.km !== '' ? fmtKm(k.km) : '–'}</dd>
+      ${sk === 'stor' ? `<dt>${t('bildeAvis')}</dt><dd>${jaNei(k.bilde_avis)}</dd>` : ''}
+      <dt>${t('kontrollor')}</dt><dd>${esc(k.kontrollor)}</dd><dt>${t('registrert')}</dt><dd>${esc(k.tidspunkt)}</dd></dl>${sk === 'stor' ? chips(k) : ''}</div>
+    ${bildeKort('kontroll', k, ['km', 'avis', 'annet'])}
+    ${sk === 'enkel'
+      ? `<div class="kort"><h3>${t('sk_enkel')}</h3><dl class="info">${ENKEL.map(([id, n]) => `<dt>${t(n)}</dt><dd>${chip(k[id], skalaNavn(k[id]))}</dd>`).join('')}</dl></div>`
+      : SEKSJONER.map(seksjon).join('') +
+        `<div class="kort"><h3>${t('oljeTittel')}</h3><dl class="info">${OLJER.map(([o, n]) => `<dt>${t(n)}${k[o] !== '' && k[o] != null ? ` <small>(${esc(k[o])})</small>` : ''}</dt><dd>${okChip(k[o + '_ok'])}</dd>`).join('')}
+          <dt>${t('batteri')}${k.batteri_dato !== '' && k.batteri_dato != null ? ` <small>(${esc(k.batteri_dato)})</small>` : ''}</dt><dd>${okChip(k.batteri_ok)}</dd></dl></div>`}
+    ${k.merknad ? `<div class="kort"><h3>${t('merknad')}</h3><p style="white-space:pre-wrap;margin:0">${esc(k.merknad)}</p></div>` : ''}
+    ${kanSlette(k) ? `<button class="fare bred" data-slett-kontroll="${esc(k.id)}">${t('slettKontroll')}</button>` : ''}`);
+}
+
+// ─── New inspection ─────────────────────────────────────────
+// Fields that stay the same until something is changed: copied into a new inspection of the same bike.
+const VIDEREFOR = ['dekk_f_dato', 'dekk_b_dato', 'olje_primaer', 'olje_primaer_ok', 'olje_clutch', 'olje_clutch_ok', 'olje_hydr', 'olje_hydr_ok',
+                   'olje_motor', 'olje_motor_ok', 'kjolevaeske', 'kjolevaeske_ok', 'batteri_dato', 'batteri_ok'];
+// Fields that change every time: shown as "last: …" hints only.
+const HINT = ['dekk_f_mm', 'dekk_b_mm', 'brems_f_belegg', 'brems_b_belegg', 'km'];
+const tom = v => v === undefined || v === null || v === '';
+/** Most recent non-empty value per field across all earlier inspections of the bike. */
+function forrigeVerdier(sykkelId) {
+  const ut = {};
+  kontrollerFor(sykkelId).forEach(k => [...VIDEREFOR, ...HINT].forEach(f => { if (tom(ut[f]) && !tom(k[f])) ut[f] = String(k[f]); }));
+  return ut;
+}
+/** Fill carried-over fields that are still empty; remembers which ones so a bike change can undo them. */
+function forhandsutfyll() {
+  if (!F) return;
+  (F._forhand || []).forEach(f => { if (F[f] === F._forhandVerdi[f]) delete F[f]; });
+  F._forhand = []; F._forhandVerdi = {};
+  if (!F.sykkel_id) return;
+  const fv = forrigeVerdier(F.sykkel_id);
+  VIDEREFOR.forEach(f => { if (tom(F[f]) && !tom(fv[f])) { F[f] = fv[f]; F._forhand.push(f); F._forhandVerdi[f] = fv[f]; } });
+}
+
+function standardMnd() {
+  const nm = naaMnd();
+  const m = nm < 4 ? 4 : nm > 10 ? 10 : nm;
+  return mndKey(aar(), m);
+}
+function nyttSkjema(sykkelId) {
+  const maaned = standardMnd();
+  return { sykkel_id: sykkelId || '', maaned, skjema: skjemaForMnd(Number(maaned.slice(5))), dato: idag(), km: '', bilde_avis: '', kjoreforbud: false, frist: '', merknad: '' };
+}
+const punktIder = () => (!F || F.skjema === 'egen' ? [] : F.skjema === 'enkel' ? ENKEL.map(([id]) => id) : PUNKTER);
+let utkastAdvart = false;
+function lagreUtkast() {
+  if (!F) return;
+  try { localStorage.setItem('tk_utkast', JSON.stringify(F)); }
+  catch (e) {
+    try { localStorage.setItem('tk_utkast', JSON.stringify(Object.assign({}, F, { bilder: [] }))); } catch (x) { /* ignore */ }
+    if (F.bilder && F.bilder.length && !utkastAdvart) { utkastAdvart = true; toast(t('utkastBilder'), true); }
+  }
+}
+function hentUtkast() {
+  try {
+    const u = JSON.parse(hent('tk_utkast') || 'null');
+    if (u && !u.maaned) { u.maaned = standardMnd(); u.skjema = skjemaForMnd(Number(u.maaned.slice(5))); }
+    return u;
+  } catch (e) { return null; }
+}
+const harInnhold = f => f && [...PUNKTER, ...ENKEL.map(([id]) => id)].some(p => f[p] !== undefined && f[p] !== '');
+
+function startKontroll(id) {
+  if (!F) F = hentUtkast();
+  if (harInnhold(F) && F.sykkel_id && F.sykkel_id !== id && !confirm(t('annenSykkelUtkast'))) return;
+  if (!F || F.sykkel_id !== id) { F = nyttSkjema(id); forhandsutfyll(); }
+  lagreUtkast(); lukkAlle(); S.fane = 'kontroll'; render(); scrollTo(0, 0);
+}
+
+function knapp2(key, valg, verdi, klasse) {
+  return `<div class="valg2 ${klasse || ''}">${valg.map(([v, tekst, neg]) => `<button type="button" data-sett="${key}" data-v="${esc(v)}" data-toggle class="${verdi === v ? 'valgt' : ''} ${neg ? 'neg' : ''}">${tekst}</button>`).join('')}</div>`;
+}
+const OK_VALG = () => [['OK', t('ok')], ['Ikke OK', t('ikkeOk'), true]];
+
+function punktRad(id, navn, ekstra) {
+  const satt = F[id] !== undefined && F[id] !== '';
+  return `<div class="punkt" data-punkt="${id}">
+    <div class="pnavn" data-mangler="${esc(t('ikkeVurdertLbl'))}">${navn}</div>
+    <div class="skala">${[0, 1, 2].map(v => `<button type="button" data-sett="${id}" data-v="${v}" data-num class="${satt && F[id] === v ? 'valgt' : ''}">${t('s' + v + 'k')}</button>`).join('')}</div>
+    ${ekstra && ekstra.length ? `<div class="ekstra">${ekstra.map(([xid, ph, mode]) => `<input data-f="${xid}" placeholder="${esc(t(ph) + (FORRIGE[xid] && HINT.includes(xid) ? ' – ' + t('sistKort', FORRIGE[xid]) : ''))}" aria-label="${esc(t(ph))}" inputmode="${mode}" value="${esc(F[xid] || '')}">`).join('')}</div>` : ''}</div>`;
+}
+
+let FORRIGE = {};
+function visKontrollSkjema() {
+  if (!F) F = hentUtkast() || nyttSkjema();
+  FORRIGE = F.sykkel_id ? forrigeVerdier(F.sykkel_id) : {};
+  const sykler = S.d.sykler.filter(iAvd).sort((a, b) => a.avdeling.localeCompare(b.avdeling) || a.eier.localeCompare(b.eier, 'nb'));
+  if (F.sykkel_id && !finnSykkel(F.sykkel_id)) F.sykkel_id = '';
+  const grupper = {};
+  sykler.forEach(s => (grupper[s.avdeling] = grupper[s.avdeling] || []).push(s));
+  const opt = s => `<option value="${esc(s.id)}"${s.id === F.sykkel_id ? ' selected' : ''}>${esc(s.eier)} – ${esc(s.regnr)}${s.modell ? ' ' + esc(s.modell) : ''}</option>`;
+  const forrige = F.sykkel_id ? sisteKontroll(F.sykkel_id) : null;
+  const fm = Number(F.maaned.slice(5));
+  const sammeMnd = F.sykkel_id && F.skjema !== 'egen' ? S.d.kontroller.find(k => k.sykkel_id === F.sykkel_id && kMnd(k) === F.maaned) : null;
+  const stor = F.skjema === 'stor';
+  const y = Number(F.maaned.slice(0, 4));
+  if (F.skjema === 'egen') return aprilSkjema(sykler, grupper, opt, y);
+
+  return `<div data-skjema="K">
+    <h2>${t('nyKontroll')}</h2>
+    ${avdVelger()}
+    <div class="kort">
+      <label class="felt"><span>${t('sykkel')}</span><select data-f="sykkel_id"><option value="">${t('velgSykkel')}</option>
+        ${Object.keys(grupper).length > 1 ? Object.entries(grupper).map(([a, l]) => `<optgroup label="${esc(a)}">${l.map(opt).join('')}</optgroup>`).join('') : sykler.map(opt).join('')}
+      </select></label>
+      ${forrige ? `<p class="dempet">${t('forrigeKontroll', fmtDato(forrige.dato))}${forrige.km !== '' ? ', ' + fmtKm(forrige.km) : ''}${forrige.kjoreforbud === 'Ja' ? ` – <span class="rodt">${t('forbudUten').toLowerCase()}</span>` : ''}</p>` : ''}
+      ${forrige && forrige.merknad ? `<div class="banner ${Number(forrige.sum_allmenn) >= 1 ? 'v1' : 'info'}" style="font-weight:550">${esc(t('forrigeMerknad', fmtDato(forrige.dato), forrige.merknad))}</div>` : ''}
+      <label class="felt"><span>${t('maaned')}</span><select data-f="maaned">
+        ${SESONG.map(m => `<option value="${mndKey(y, m)}"${mndKey(y, m) === F.maaned ? ' selected' : ''}>${Mnd(m)} – ${t('sk_' + skjemaForMnd(m))}</option>`).join('')}
+      </select></label>
+      ${F.skjema !== 'egen' ? `<div class="skjemavalg"><span class="dempet">${t('skjemaFor', t('sk_' + F.skjema), Mnd(fm))}</span>
+        <button type="button" class="lenkeknapp" data-a="byttSkjema">${stor ? t('brukEnkel') : t('brukStor')}</button></div>` : ''}
+      ${sammeMnd ? `<div class="banner info" style="margin-top:10px">${t('finnesAllerede', mndNavn(fm), fmtDato(sammeMnd.dato))}</div>` : ''}
+      <div class="rad2" style="margin-top:10px"><label class="felt"><span>${t('dato')}</span><input type="date" data-f="dato" value="${esc(F.dato)}"></label>
+        <label class="felt"><span>${t('km')}</span><input data-f="km" inputmode="numeric" value="${esc(F.km)}" placeholder="${FORRIGE.km ? esc(t('sist', FORRIGE.km)) : ''}"></label></div>
+      ${stor ? `<span class="felt-tittel">${t('bildeAvisLevert')}</span>${knapp2('bilde_avis', [['Ja', t('levert')], ['Nei', t('ikkeLevert'), true]], F.bilde_avis)}` : ''}
+    </div>
+    <div class="kort"><h3>${t('bilderTittel')}</h3>
+      <p class="dempet" style="margin:0">${t('bilderHint')}</p>
+      ${ventendeBilder(F.bilder)}${bildeKnapper(stor ? ['km', 'avis', 'annet'] : ['km', 'annet'])}</div>
+    <button type="button" class="bred" data-a="alleBra">${t('alleOk')}</button>
+    ${stor
+      ? SEKSJONER.map(s => `<div class="kort"><h3>${t(s.t)}</h3>${s.r.map(p => punktRad(p.id, t(p.n), p.x)).join('')}</div>`).join('') + `
+    <div class="kort"><h3>${t('oljeByttet')}</h3>
+      ${(F._forhand || []).length ? `<p class="dempet" style="margin:0 0 6px">${t('forhandsutfylt')}</p>` : ''}
+      ${OLJER.map(([o, n]) => `<div class="oljerad"><b>${t(n)}</b><input data-f="${o}" placeholder="${t('aarDato')}" aria-label="${esc(t(n))}" value="${esc(F[o] || '')}">${knapp2(o + '_ok', OK_VALG(), F[o + '_ok'] || '')}</div>`).join('')}
+      <div class="oljerad"><b>${t('batteri')}</b><input data-f="batteri_dato" placeholder="${t('datoNytt')}" aria-label="${esc(t('batteri'))}" value="${esc(F.batteri_dato || '')}">${knapp2('batteri_ok', OK_VALG(), F.batteri_ok || '')}</div>
+    </div>`
+      : `<div class="kort"><h3>${t('sk_enkel')}</h3><p class="dempet" style="margin:0 0 4px">${t('enkelHint')}</p>${ENKEL.map(([id, n]) => punktRad(id, t(n))).join('')}</div>`}
+    <div class="kort"><h3>${t('status')}</h3>
+      <div id="statusBanner" class="banner"></div>
+      <label class="sjekk"><input type="checkbox" data-f="kjoreforbud" ${F.kjoreforbud ? 'checked' : ''}> ${t('s2')}</label>
+      <label class="felt"><span>${t('fiksesInnen')}</span><input type="date" data-f="frist" value="${esc(F.frist)}"></label>
+      <label class="felt"><span>${t('merknad')}</span><textarea data-f="merknad" placeholder="${esc(t('merknadPh'))}">${esc(F.merknad)}</textarea></label>
+    </div>
+    <button type="button" class="primar bred" data-a="lagreKontroll">${t('lagreKontroll')}</button>
+    <button type="button" class="bred fare" data-a="forkastKontroll">${t('tomSkjema')}</button>
+    <p class="dempet" style="text-align:center">${t('autoLagret')}</p>
+  </div>`;
+}
+
+function aprilSkjema(sykler, grupper, opt, y) {
+  const s = F.sykkel_id ? finnSykkel(F.sykkel_id) : null;
+  const levert = s ? egenFor(s.telefon).find(e => String(e.dato).startsWith(String(y))) : null;
+  return `<div data-skjema="K">
+    <h2>${t('nyKontroll')}</h2>
+    ${avdVelger()}
+    <div class="kort">
+      <label class="felt"><span>${t('sykkel')}</span><select data-f="sykkel_id"><option value="">${t('velgSykkel')}</option>
+        ${Object.keys(grupper).length > 1 ? Object.entries(grupper).map(([a, l]) => `<optgroup label="${esc(a)}">${l.map(opt).join('')}</optgroup>`).join('') : sykler.map(opt).join('')}
+      </select></label>
+      <label class="felt"><span>${t('maaned')}</span><select data-f="maaned">
+        ${SESONG.map(m => `<option value="${mndKey(y, m)}"${mndKey(y, m) === F.maaned ? ' selected' : ''}>${Mnd(m)} – ${t('sk_' + skjemaForMnd(m))}</option>`).join('')}
+      </select></label>
+      <div class="banner info">${t('aprilEgen')}</div>
+      ${levert ? `<p class="dempet">${esc(t('egenAllerede', s.eier, y, fmtDato(levert.dato)))}</p>` : ''}
+      ${s ? `<button type="button" class="primar bred" data-egen-ny="${esc(s.id)}">${esc(t('fyllEgenFor', s.eier))}</button>`
+          : `<p class="dempet" style="margin:0">${t('velgSykkelForst')}</p>`}
+    </div></div>`;
+}
+
+function oppdaterStatus() {
+  const el = $('#statusBanner');
+  if (!el || !F) return;
+  const ider = punktIder();
+  const satt = ider.filter(p => F[p] !== undefined && F[p] !== '');
+  const maks = satt.length ? Math.max(...satt.map(p => Number(F[p]))) : -1;
+  const mangler = ider.length - satt.length;
+  const cb = $('[data-f="kjoreforbud"]');
+  if (cb) { cb.disabled = maks === 2; cb.checked = maks === 2 || !!F.kjoreforbud; }
+  let tekst, kl;
+  if (maks === 2) { tekst = t('stForbud'); kl = 'v2'; }
+  else if (F.kjoreforbud) { tekst = t('stForbudManuelt'); kl = 'v2'; }
+  else if (maks === 1) { tekst = t('stBor'); kl = 'v1'; }
+  else if (maks === 0) { tekst = t('stOk'); kl = 'v0'; }
+  else { tekst = t('stIngen'); kl = ''; }
+  if (mangler && satt.length) tekst += mangler === 1 ? t('stGjen1') : t('stGjenN', mangler);
+  el.className = 'banner ' + kl; el.textContent = tekst;
+}
+
+// ─── Mine ───────────────────────────────────────────────────
+function visMine() {
+  const b = meg();
+  const mine = S.d.sykler.filter(s => s.telefon === b.telefon).map(sykkelInfo);
+  const egne = egenFor(b.telefon);
+  const y = String(aar());
+  const iAar = egne.find(e => String(e.dato).startsWith(y));
+  return `<h2>${t('mineSykler')}</h2>
+    ${mine.length ? mine.map(i => sykkelKort(i, false)).join('') : `<p class="tom">${t('ingenMine')}</p>`}
+    <button class="bred" data-sykkel-skjema="" data-eier="${esc(b.telefon)}">${t('leggTilSykkel')}</button>
+    <h3>${t('egenTittel')}</h3>
+    <div class="kort">${iAar ? t('egenLevert', y, fmtDato(iAar.dato)) : `<span class="oransje">${t('egenIkke', y)}</span>`}</div>
+    <button class="${iAar ? '' : 'primar'} bred" data-egen-ny ${mine.length ? '' : 'disabled'}>${t('fyllEgen')}</button>
+    ${egne.map(e => `<button class="kort" data-egen="${esc(e.id)}"><div class="linje1"><b>${fmtDato(e.dato)} · ${esc(e.regnr)}</b>${egenAvvik(e) ? `<span class="merke gul">${t('ikkeOkAnt', egenAvvik(e))}</span>` : `<span class="chip v0">${t('altOk')}</span>`}</div></button>`).join('')}`;
+}
+
+// ─── Self-declaration ───────────────────────────────────────
+function startEgen(sykkelId) {
+  const s0 = sykkelId ? finnSykkel(sykkelId) : null;
+  const eierTlf = s0 ? s0.telefon : meg().telefon;
+  const mine = S.d.sykler.filter(s => s.telefon === eierTlf);
+  const egne = egenFor(eierTlf);
+  const forrige = (s0 && egne.find(e => e.sykkel_id === s0.id)) || egne[0] || {};
+  G = { eier: eierTlf, sykkel_id: s0 ? s0.id : (mine.length === 1 ? mine[0].id : ''), km: '', merknad: '', bekreftet: false };
+  ['reiseforsikring', 'reiseforsikring_selskap', 'forerkort_klasse', 'forerkort_merknad', 'helsetrygdekort', 'helsetrygdekort_utloper', 'mc_forsikring_selskap']
+    .forEach(k => { G[k] = forrige[k] != null ? String(forrige[k]) : ''; });
+  apne(visEgenSkjema);
+}
+
+function visEgenSkjema() {
+  const eierTlf = G.eier || meg().telefon;
+  const b = S.d.brukere.find(u => u.telefon === eierTlf) || meg();
+  const paVegne = eierTlf !== meg().telefon;
+  const mine = S.d.sykler.filter(s => s.telefon === eierTlf);
+  const JN = [['Ja', t('ja')], ['Nei', t('nei'), true]];
+  tegnLag(t('egenerklaering'), `<div data-skjema="G">
+    ${paVegne ? `<div class="banner info">${esc(t('paVegneAv', b.navn))}</div>` : ''}
+    <div class="kort"><h3>${paVegne ? esc(b.navn) : t('omDeg')}</h3>
+      <dl class="info" style="margin-bottom:12px"><dt>${t('navn')}</dt><dd>${esc(b.navn)}</dd><dt>${t('avdeling')}</dt><dd>${esc(b.avdeling)}</dd></dl>
+      <span class="felt-tittel">${t('reiseforsikring')}</span>${knapp2('reiseforsikring', JN, G.reiseforsikring, 'noy')}
+      <label class="felt" style="margin-top:10px"><span>${t('selskap')}</span><input data-f="reiseforsikring_selskap" value="${esc(G.reiseforsikring_selskap)}"></label>
+      <div class="rad2"><label class="felt"><span>${t('forerkort')}</span><input data-f="forerkort_klasse" placeholder="A, B …" value="${esc(G.forerkort_klasse)}"></label>
+        <label class="felt"><span>${t('hvisIkkeA')}</span><input data-f="forerkort_merknad" value="${esc(G.forerkort_merknad)}"></label></div>
+      <span class="felt-tittel">${t('helsekort')}</span>${knapp2('helsetrygdekort', JN, G.helsetrygdekort, 'noy')}
+      <label class="felt" style="margin-top:10px"><span>${t('utlopsdato')}</span><input type="date" data-f="helsetrygdekort_utloper" value="${esc(G.helsetrygdekort_utloper)}"></label>
+    </div>
+    <div class="kort"><h3>${t('sykkel')}</h3>
+      <label class="felt"><span>${t('sykkel')}</span><select data-f="sykkel_id"><option value="">${t('velgSykkel')}</option>${mine.map(s => `<option value="${esc(s.id)}"${s.id === G.sykkel_id ? ' selected' : ''}>${esc(s.regnr)} ${esc(s.modell)}</option>`).join('')}</select></label>
+      <div class="rad2"><label class="felt"><span>${t('forsikring')}</span><input data-f="mc_forsikring_selskap" value="${esc(G.mc_forsikring_selskap)}"></label>
+        <label class="felt"><span>${t('km')}</span><input data-f="km" inputmode="numeric" value="${esc(G.km)}" placeholder="${esc(sistKmEgen(G.sykkel_id))}"></label></div>
+      <span class="felt-tittel">${t('bilderTittel')}</span>
+      ${ventendeBilder(G.bilder)}${bildeKnapper(['km', 'annet'])}
+    </div>
+    <button type="button" class="bred" data-a="alleOk">${t('settAlleOk')}</button>
+    ${EGEN_SJEKK.map(([tt, rader]) => `<div class="kort"><h3>${t(tt)}</h3>${rader.map(([id, n]) => `<div class="oljerad" style="grid-template-columns:1fr 1.6fr"><b>${t(n)}</b>${knapp2(id, OK_VALG(), G[id] || '')}</div>`).join('')}</div>`).join('')}
+    <div class="kort"><label class="felt"><span>${t('merknad')}</span><textarea data-f="merknad">${esc(G.merknad)}</textarea></label>
+      <label class="sjekk"><input type="checkbox" data-f="bekreftet" ${G.bekreftet ? 'checked' : ''}> ${t('bekreftTekst')}</label></div>
+    <button type="button" class="primar bred" data-a="lagreEgen">${t('sendEgen')}</button></div>`);
+}
+
+function sistKmEgen(sykkelId) {
+  if (!sykkelId) return '';
+  const k = kontrollerFor(sykkelId).find(x => !tom(x.km));
+  const e = S.d.egenerklaeringer.find(x => x.sykkel_id === sykkelId && !tom(x.km));
+  const v = [k, e].filter(Boolean).sort((a, b) => String(b.dato).localeCompare(String(a.dato)))[0];
+  return v ? t('sist', v.km) : '';
+}
+
+function visEgen(id) {
+  const e = S.d.egenerklaeringer.find(x => x.id === id);
+  if (!e) return tilbake();
+  tegnLag(t('egenDetalj', fmtDato(e.dato)), `
+    <div class="kort"><dl class="info">
+      <dt>${t('navn')}</dt><dd>${esc(e.navn)}</dd><dt>${t('avdeling')}</dt><dd>${esc(e.avdeling)}</dd>
+      <dt>${t('reiseforsikring')}</dt><dd>${jaNei(e.reiseforsikring)}${e.reiseforsikring_selskap ? ' – ' + esc(e.reiseforsikring_selskap) : ''}</dd>
+      <dt>${t('forerkortKort')}</dt><dd>${esc(e.forerkort_klasse) || '–'}${e.forerkort_merknad ? ' (' + esc(e.forerkort_merknad) + ')' : ''}</dd>
+      <dt>${t('helsekortKort')}</dt><dd>${jaNei(e.helsetrygdekort)}${e.helsetrygdekort_utloper ? t('tilDato', fmtDato(e.helsetrygdekort_utloper)) : ''}</dd>
+      <dt>${t('sykkel')}</dt><dd>${esc(e.regnr)} ${esc(e.modell)}</dd><dt>${t('aarsmodell')}</dt><dd>${esc(e.aarsmodell) || '–'}</dd>
+      <dt>${t('forsikringKort')}</dt><dd>${esc(e.mc_forsikring_selskap) || '–'}</dd><dt>${t('km')}</dt><dd>${e.km !== '' ? fmtKm(e.km) : '–'}</dd>
+    </dl></div>
+    ${bildeKort('egen', e, ['km', 'annet'])}
+    <div class="kort"><dl class="info">${EGEN_SJEKK.map(([tt, r]) => r.map(([id, n]) => `<dt>${t(tt)}${r.length > 1 ? ' – ' + t(n).toLowerCase() : ''}</dt><dd>${okChip(e[id])}</dd>`).join('')).join('')}</dl></div>
+    ${e.merknad ? `<div class="kort"><h3>${t('merknad')}</h3><p style="white-space:pre-wrap;margin:0">${esc(e.merknad)}</p></div>` : ''}
+    <p class="dempet">${esc(t('bekreftetAv', e.navn, e.tidspunkt))}${e.registrert_av ? '<br>' + esc(t('regAv', e.registrert_av)) : ''}</p>`);
+}
+
+// ─── Bike form ──────────────────────────────────────────────
+function visSykkelSkjema(id, eierTlf) {
+  const s = id ? finnSykkel(id) : null;
+  if (!B || B._for !== (id || 'ny:' + eierTlf)) B = { _for: id || 'ny:' + eierTlf, id: id || '', telefon: s ? s.telefon : eierTlf, regnr: s ? s.regnr : '', modell: s ? s.modell : '', aarsmodell: s ? String(s.aarsmodell || '') : '' };
+  const eier = S.d.brukere.find(u => u.telefon === B.telefon);
+  tegnLag(s ? t('redigerSykkel') : t('nySykkel'), `<div data-skjema="B"><div class="kort">
+      <p class="dempet">${t('eierLabel')} <b>${esc(eier ? eier.navn : B.telefon)}</b></p>
+      <label class="felt"><span>${t('regnr')}</span><input data-f="regnr" autocapitalize="characters" value="${esc(B.regnr)}" placeholder="EW9807"></label>
+      <label class="felt"><span>${t('modell')}</span><input data-f="modell" value="${esc(B.modell)}" placeholder="Street Glide Special"></label>
+      <label class="felt"><span>${t('aarsmodell')}</span><input data-f="aarsmodell" inputmode="numeric" value="${esc(B.aarsmodell)}"></label>
+    </div>
+    <button type="button" class="primar bred" data-a="lagreSykkel">${t('lagre')}</button>
+    ${s ? `<button type="button" class="fare bred" data-a="fjernSykkel">${t('fjernSykkel')}</button><p class="dempet">${t('fjernHint')}</p>` : ''}</div>`);
+}
+
+// ─── Members ────────────────────────────────────────────────
+const rolleRekke = { admin: 0, rc: 1, medlem: 2 };
+function brukerStatus(u) {
+  if (!u.aktiv) return `<span class="merke gra">${t('b_deaktivert')}</span>`;
+  if (!u.harPassord) return `<span class="merke gul">${t('b_venter')}</span>`;
+  if (u.midlertidig) return `<span class="merke gra">${t('b_midl')}</span>`;
+  return u.rolle !== 'medlem' ? `<span class="merke bla">${esc(t('r_' + u.rolle).toUpperCase())}</span>` : '';
+}
+function visMedlemmer() {
+  const liste = S.d.brukere.filter(iAvd).sort((a, b) => (a.aktiv === b.aktiv ? 0 : a.aktiv ? -1 : 1) || rolleRekke[a.rolle] - rolleRekke[b.rolle] || a.navn.localeCompare(b.navn, 'nb'));
+  const antSykler = tlf => { const n = S.d.sykler.filter(s => s.telefon === tlf).length; return n === 1 ? t('sykkel1') : t('syklerN', n); };
+  return `<h2>${t('medlemmer')}${S.avd !== 'Alle' ? ' – ' + esc(S.avd) : ''}</h2>
+    ${avdVelger()}
+    <button class="primar bred" data-bruker="">${t('leggTilMedlem')}</button>
+    ${liste.map(u => `<button class="kort" data-bruker="${esc(u.telefon)}">
+      <div class="linje1"><b>${esc(u.navn)}</b>${brukerStatus(u)}</div>
+      <div class="dempet">${esc(u.telefon)}${S.avd === 'Alle' ? ' · ' + esc(u.avdeling) : ''} · ${antSykler(u.telefon)}${!u.harPassord && u.kode ? ' · ' + t('kode', esc(u.kode)) : ''}</div></button>`).join('') || `<p class="tom">${t('ingenMedlemmer')}</p>`}`;
+}
+
+function smsLenke(u, kode) {
+  const nr = /^\d{8}$/.test(u.telefon) ? '+47' + u.telefon : u.telefon;
+  const url = location.origin + location.pathname;
+  return `sms:${nr}?&body=${encodeURIComponent(t('smsTekst', u.navn.split(' ')[0], url, kode))}`;
+}
+
+function visBruker(tlf) {
+  const u = tlf ? S.d.brukere.find(x => x.telefon === tlf) : null;
+  if (tlf && !u) return tilbake();
+  const nokkel = tlf || 'ny';
+  if (!B || B._for !== nokkel) B = { _for: nokkel, telefon: u ? u.telefon : '', navn: u ? u.navn : '', avdeling: u ? u.avdeling : (S.avd !== 'Alle' ? S.avd : meg().avdeling), rolle: u ? u.rolle : 'medlem', aktiv: u ? u.aktiv : true };
+  const admin = rolle() === 'admin';
+  const erMeg = u && u.telefon === meg().telefon;
+  const kanEndre = admin || (u ? u.rolle === 'medlem' : true);
+  const sykler = u ? S.d.sykler.filter(s => s.telefon === u.telefon) : [];
+  tegnLag(u ? u.navn : t('nyttMedlem'), `<div data-skjema="B">
+    ${u && !u.harPassord && u.kode ? `<div class="kort"><h3>${t('aktivering')}</h3><p>${esc(t('ikkeLagetPassord', u.navn.split(' ')[0]))}</p>
+      <div class="kodeboks"><b>${esc(u.kode)}</b><span class="dempet">${t('gjelderTil', fmtDato(u.kode_utloper))}</span></div>
+      <a class="knapp primar bred" href="${esc(smsLenke(u, u.kode))}">${t('sendSms')}</a></div>` : ''}
+    <div class="kort">
+      <label class="felt"><span>${t('navn')}</span><input data-f="navn" value="${esc(B.navn)}" ${kanEndre ? '' : 'readonly'} autocomplete="off"></label>
+      <label class="felt"><span>${t('telefon')}${u ? t('brukernavn') : ''}</span><input data-f="telefon" type="tel" inputmode="tel" value="${esc(B.telefon)}" ${u ? 'readonly' : ''} autocomplete="off"></label>
+      ${admin ? `<label class="felt"><span>${t('avdeling')}</span><select data-f="avdeling">${S.d.avdelinger.map(a => `<option value="${esc(a)}"${a === B.avdeling ? ' selected' : ''}>${esc(a)}</option>`).join('')}</select></label>
+        <label class="felt"><span>${t('rolle')}</span><select data-f="rolle" ${erMeg ? 'disabled' : ''}>${['medlem', 'rc', 'admin'].map(r => `<option value="${r}"${r === B.rolle ? ' selected' : ''}>${t('r_' + r)}${r === 'admin' ? t('rolleAdminHint') : r === 'rc' ? t('rolleRcHint') : ''}</option>`).join('')}</select></label>`
+      : `<p class="dempet">${t('avdeling')}: ${esc(B.avdeling)} · ${t('rolle')}: ${t('r_' + B.rolle)}</p>`}
+      ${u && !erMeg && kanEndre ? `<label class="sjekk"><input type="checkbox" data-f="aktiv" ${B.aktiv ? 'checked' : ''}> ${t('aktivCb')}</label>` : ''}
+    </div>
+    ${kanEndre ? `<button type="button" class="primar bred" data-a="lagreBruker">${u ? t('lagreEndringer') : t('leggTilKode')}</button>` : `<p class="dempet">${t('barAdminEndre')}</p>`}
+    ${u ? `<h3>${t('sykler')}</h3>
+      ${sykler.map(s => `<button class="kort" data-sykkel="${esc(s.id)}"><b>${esc(s.regnr)}</b> <span class="dempet">${esc(s.modell)}</span></button>`).join('') || `<p class="tom">${t('ingenSyklerKort')}</p>`}
+      ${kanEndre || erMeg ? `<button class="bred" data-sykkel-skjema="" data-eier="${esc(u.telefon)}">${t('leggTilSykkel')}</button>` : ''}
+      ${!erMeg && kanEndre && u.aktiv ? `<h3>${t('passordTittel')}</h3><button type="button" class="bred" data-a="nyKode">${u.harPassord ? t('glemtKode') : t('lagNyKode')}</button>
+        ${u.harPassord ? `<p class="dempet">${t('glemtHint')}</p>` : ''}` : ''}` : ''}
+  </div>`);
+}
+
+// ─── Account ────────────────────────────────────────────────
+function visKonto() {
+  const b = meg();
+  return `<h2>${t('konto')}</h2>
+    <div class="kort"><dl class="info"><dt>${t('navn')}</dt><dd>${esc(b.navn)}</dd><dt>${t('telefonKort')}</dt><dd>${esc(b.telefon)}</dd>
+      <dt>${t('avdeling')}</dt><dd>${esc(b.avdeling)}</dd><dt>${t('rolle')}</dt><dd>${t('r_' + b.rolle)}</dd></dl></div>
+    <h3>${t('sprak')}</h3>
+    <div class="kort" style="padding:10px">${sprakKnapper().replace('margin-top:18px', '')}</div>
+    <h3>${t('byttPassord')}</h3>
+    <form id="pwSkjema" class="kort">
+      <input type="text" name="u" autocomplete="username" value="${esc(b.telefon)}" hidden>
+      <label class="felt"><span>${t('navaerende')}</span><input name="gammelt" type="password" autocomplete="current-password" required></label>
+      <label class="felt"><span>${t('nyttPassord')}</span><input name="nytt" type="password" autocomplete="new-password" minlength="6" required></label>
+      <label class="felt"><span>${t('gjentaNytt')}</span><input name="nytt2" type="password" autocomplete="new-password" minlength="6" required></label>
+      <button class="bred" style="margin:0">${t('byttPassord')}</button></form>
+    <button class="fare bred" data-a="loggUt">${t('loggUt')}</button>
+    <button class="bred" data-a="oppdater">${t('hentPaNytt')}</button>`;
+}
+
+// ─── Actions ────────────────────────────────────────────────
+const A = {
+  alleBra() { punktIder().forEach(p => { if (F[p] === undefined || F[p] === '') F[p] = 0; }); lagreUtkast(); render(); toast(t('alleOkToast')); },
+  byttSkjema() { F.skjema = F.skjema === 'stor' ? 'enkel' : 'stor'; lagreUtkast(); render(); },
+  forkastKontroll() { if (!confirm(t('tommeSkjema'))) return; F = nyttSkjema(F && F.sykkel_id); forhandsutfyll(); lagreUtkast(); render(); },
+  async lagreKontroll(btn) {
+    if (!F.sykkel_id) { toast(t('velgSykkelToast'), true); return $('[data-f="sykkel_id"]').focus(); }
+    const ider = punktIder();
+    const mangler = ider.filter(p => F[p] === undefined || F[p] === '');
+    $$('.punkt').forEach(el => el.classList.toggle('mangler', mangler.includes(el.dataset.punkt)));
+    if (mangler.length) {
+      toast(mangler.length === 1 ? t('ikkeVurdert1') : t('ikkeVurdertN', mangler.length), true);
+      $(`[data-punkt="${mangler[0]}"]`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    const maks = Math.max(...ider.map(p => Number(F[p])));
+    if ((maks === 2 || F.kjoreforbud) && !F.frist && !confirm(t('ingenFrist'))) return;
+    await medKnapp(btn, async () => {
+      const id = F.sykkel_id;
+      const bilder = F.bilder || [];
+      const r = await api('lagreKontroll', { kontroll: Object.assign({}, F, { bilder: undefined, _forhand: undefined, _forhandVerdi: undefined }) });
+      F = null; lagre('tk_utkast', null);
+      const feil = await lastOppBilder(bilder, 'kontroll', r.id, btn);
+      await lastData(); S.fane = 'oversikt'; render(); scrollTo(0, 0);
+      apne(() => visSykkel(id));
+      if (feil) { apne(() => visKontroll(r.id)); toast(feil + t('provHer'), true); }
+      else toast(t('lagret'));
+    });
+  },
+  alleOk() { EGEN_SJEKK.forEach(([, r]) => r.forEach(([id]) => { if (!G[id]) G[id] = 'OK'; })); visEgenSkjema(); },
+  async lagreEgen(btn) {
+    if (!G.sykkel_id) return toast(t('velgSykkelToast'), true);
+    if (!G.bekreftet) return toast(t('egenBekreftToast'), true);
+    await medKnapp(btn, async () => {
+      const bilder = G.bilder || [];
+      const r = await api('lagreEgenerklaering', { egenerklaering: Object.assign({}, G, { bilder: undefined }) });
+      G = null;
+      const feil = await lastOppBilder(bilder, 'egen', r.id, btn);
+      lukkAlle(); await lastData(); render();
+      if (feil) { apne(() => visEgen(r.id)); toast(feil + t('provHer'), true); }
+      else toast(t('egenSendt'));
+    });
+  },
+  async lagreSykkel(btn) {
+    await medKnapp(btn, async () => {
+      await api('lagreSykkel', { sykkel: { id: B.id, telefon: B.telefon, regnr: B.regnr, modell: B.modell, aarsmodell: B.aarsmodell } });
+      B = null; await lastData(); tilbake(); render(); toast(t('sykkelLagret'));
+    });
+  },
+  async fjernSykkel(btn) {
+    if (!confirm(t('fjernSporsmal'))) return;
+    await medKnapp(btn, async () => {
+      await api('lagreSykkel', { sykkel: { id: B.id, aktiv: false } });
+      B = null; await lastData(); tilbake(); render(); toast(t('sykkelFjernet'));
+    });
+  },
+  async lagreBruker(btn) {
+    const ny = B._for === 'ny';
+    await medKnapp(btn, async () => {
+      const r = await api('lagreBruker', { bruker: { telefon: B.telefon, navn: B.navn, avdeling: B.avdeling, rolle: B.rolle, aktiv: B.aktiv, nytt: ny } });
+      await lastData();
+      if (ny) {
+        const u = S.d.brukere.find(x => r.kode && x.kode === r.kode);
+        B = null; LAG.pop();
+        if (u) apne(() => visBruker(u.telefon)); else lukkAlle();
+        toast(t('medlemLagtTil'));
+      } else { B = null; LAG[LAG.length - 1](); toast(t('lagretToast')); }
+      render();
+    });
+  },
+  async nyKode(btn) {
+    if (!confirm(t('nyKodeSporsmal'))) return;
+    await medKnapp(btn, async () => {
+      await api('nyKode', { telefon: B.telefon });
+      await lastData();
+      B = null; LAG[LAG.length - 1](); render();
+      toast(t('nyKodeLaget'));
+    });
+  },
+  loggUt() { loggUt(); },
+  async oppdater(btn) { await medKnapp(btn, async () => { await oppdaterAlt(); toast(t('oppdatert')); }); },
+  async slettBilde(btn) {
+    if (!confirm(t('slettBildeSp'))) return;
+    await medKnapp(btn, async () => {
+      await api('slettBilde', { id: btn.dataset.slettBilde });
+      await lastData(); tilbake(); render(); toast(t('bildeSlettet'));
+    });
+  },
+  async slettKontroll(btn) {
+    if (!confirm(t('slettKontrollSp'))) return;
+    await medKnapp(btn, async () => {
+      await api('slettKontroll', { id: btn.dataset.slettKontroll });
+      await lastData(); tilbake(); render(); toast(t('kontrollSlettet'));
+    });
+  }
+};
+
+// ─── Events ─────────────────────────────────────────────────
+function skjemaFor(el) { const s = el.closest('[data-skjema]'); return s ? { navn: s.dataset.skjema, obj: SKJEMA[s.dataset.skjema]() } : null; }
+function etterEndring(navn) { if (navn === 'K') { lagreUtkast(); oppdaterStatus(); } }
+
+document.addEventListener('click', ev => {
+  const el = ev.target.closest('button, a');
+  if (!el || el.disabled) return;
+  const ds = el.dataset;
+  if ('tilbake' in ds) return tilbake();
+  if ('sprak' in ds) return settSprak(ds.sprak);
+  if ('modus' in ds) return visLogin(ds.modus);
+  if ('fane' in ds) { S.fane = ds.fane; lukkAlle(); render(); return scrollTo(0, 0); }
+  if ('filter' in ds) { S.filter = S.filter === ds.filter ? 'alle' : ds.filter; return render(); }
+  if ('sett' in ds) {
+    const sk = skjemaFor(el); if (!sk || !sk.obj) return;
+    const v = 'num' in ds ? Number(ds.v) : ds.v;
+    sk.obj[ds.sett] = ('toggle' in ds && sk.obj[ds.sett] === v) ? '' : v;
+    $$(`[data-sett="${ds.sett}"]`, el.parentElement).forEach(b => b.classList.toggle('valgt', sk.obj[ds.sett] === ('num' in b.dataset ? Number(b.dataset.v) : b.dataset.v)));
+    const p = el.closest('.punkt'); if (p) p.classList.remove('mangler');
+    return etterEndring(sk.navn);
+  }
+  if ('sykkel' in ds) return apne(() => visSykkel(ds.sykkel));
+  if ('kontroll' in ds) return apne(() => visKontroll(ds.kontroll));
+  if ('egen' in ds) return apne(() => visEgen(ds.egen));
+  if ('egenNy' in ds) return startEgen(ds.egenNy);
+  if ('nyKontroll' in ds) return startKontroll(ds.nyKontroll);
+  if ('sykkelSkjema' in ds) { B = null; const id = ds.sykkelSkjema, eier = ds.eier || ''; return apne(() => visSykkelSkjema(id, eier)); }
+  if ('bruker' in ds) { B = null; const tlf = ds.bruker; return apne(() => visBruker(tlf)); }
+  if ('slettKontroll' in ds) return A.slettKontroll(el);
+  if ('slettBilde' in ds) return A.slettBilde(el);
+  if ('visBilde' in ds) return apne(() => visBilde(ds.visBilde));
+  if ('fjernBilde' in ds) {
+    const sk = skjemaFor(el); if (!sk || !sk.obj || !sk.obj.bilder) return;
+    sk.obj.bilder.splice(Number(ds.fjernBilde), 1);
+    if (sk.navn === 'K') { lagreUtkast(); render(); } else visEgenSkjema();
+    return;
+  }
+  if (ds.a && A[ds.a]) return A[ds.a](el);
+});
+
+function feltEndret(ev) {
+  const el = ev.target;
+  if (el.matches('input[data-bilde]')) { if (ev.type === 'change') velgBilder(el); return; }
+  if (el.matches('[data-avd]')) { S.avd = el.value; lagre('tk_avd', S.avd); if (S.fane === 'kontroll' && F) F.sykkel_id = ''; return render(); }
+  if (!el.matches('[data-f]')) return;
+  const sk = skjemaFor(el); if (!sk || !sk.obj) return;
+  sk.obj[el.dataset.f] = el.type === 'checkbox' ? el.checked : el.value;
+  if (sk.navn === 'K' && ev.type === 'change' && (el.dataset.f === 'sykkel_id' || el.dataset.f === 'maaned')) {
+    if (el.dataset.f === 'maaned') F.skjema = skjemaForMnd(Number(F.maaned.slice(5)));
+    if (el.dataset.f === 'sykkel_id') forhandsutfyll();
+    lagreUtkast(); return render();
+  }
+  if (sk.navn === 'G' && ev.type === 'change' && el.dataset.f === 'sykkel_id') return visEgenSkjema();
+  etterEndring(sk.navn);
+}
+document.addEventListener('input', feltEndret);
+document.addEventListener('change', feltEndret);
+
+document.addEventListener('submit', async ev => {
+  if (ev.target.id !== 'pwSkjema') return;
+  ev.preventDefault();
+  const f = Object.fromEntries(new FormData(ev.target));
+  if (f.nytt !== f.nytt2) return toast(t('nyeUlike'), true);
+  await medKnapp($('button', ev.target), async () => {
+    const r = await api('byttPassord', { gammelt: f.gammelt, nytt: f.nytt });
+    S.token = r.token; lagre('tk_token', r.token); ev.target.reset(); toast(t('passordByttet'));
+  });
+});
+
+// ─── Start ──────────────────────────────────────────────────
+(async function start() {
+  document.documentElement.lang = LANG === 'en' ? 'en' : 'no';
+  document.title = t('app');
+  if (API_URL.indexOf('http') !== 0) { $('#app').innerHTML = `<main><div class="banner v1">${t('apiMangler')}</div></main>`; return; }
+  if (!S.token) return visLogin('login');
+  try { await lastData(); render(); }
+  catch (e) {
+    if (e.kode === 'BYTT') return;
+    if (S.token) {
+      $('#app').innerHTML = `<main class="login"><div class="banner v1">${esc(e.message)}</div><button class="primar bred" onclick="location.reload()">${t('provIgjen')}</button><button class="bred" data-a="loggUt">${t('loggUt')}</button></main>`;
+    }
+  }
+})();
+</script>
+</body>
+</html>
