@@ -135,6 +135,13 @@ dl.info dd{margin:0;font-weight:600;text-align:right}
 .tommel span{position:absolute;left:0;right:0;bottom:0;font-size:11px;font-weight:700;padding:3px 6px;background:rgba(0,0,0,.66);color:#fff;text-align:left}
 .tommel .fjern{position:absolute;top:4px;right:4px;width:30px;height:30px;min-height:0;padding:0;border-radius:50%;background:rgba(0,0,0,.72);border:0;color:#fff;font-size:19px;line-height:1}
 img.stor{width:100%;border-radius:10px;display:block;background:#0c0e11;min-height:220px}
+/* install */
+.install{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;border-color:var(--aksent);background:linear-gradient(135deg,rgba(242,176,30,.13),var(--kort) 60%)}
+.install p{margin:0;font-weight:600}
+.install .knapperad button{min-height:40px}
+ol.steg{padding-left:22px;margin:0 0 12px;line-height:1.5}
+ol.steg li{margin-bottom:10px}
+ol.steg svg{width:20px;height:20px;vertical-align:-4px;color:var(--aksent)}
 /* follow-up, stats, feedback */
 .bunnlenke{text-align:center;margin:26px 0 6px;font-size:14px}
 .bunnlenke a{color:var(--dempet)}
@@ -244,6 +251,10 @@ const TXT = {
     f_wolfpack: 'Wolfpack', wpTittel: 'Wolfpack {0}', wpPeriode: 'Kjørte km fra 1. april til 30. oktober', wpAlle: 'Hele klubben',
     wpIngen: 'Ingen har nok km-målinger i perioden ennå.', wpLaster: 'Regner ut …', wpSykler: '{0} sykler',
     wpForklaring: 'Km regnes fra første måling etter 1. april til siste måling før 30. oktober. Bare kontroller og egenerklæringer med km teller.',
+    inst_banner: 'Installer appen – da får du eget ikon og fullskjerm, akkurat som en vanlig app.', inst_knapp: 'Installer appen', inst_ikkeNa: 'Ikke nå',
+    inst_tittel: 'Installer appen', inst_konto: 'Legg appen på hjemskjermen eller i Dock, så åpner den som en vanlig app.', inst_ferdig: 'Appen er installert ✓',
+    inst_ios: '<ol class="steg"><li>Trykk <b>Del</b>-knappen {0} nederst i Safari (på iPad: øverst).</li><li>Bla ned og velg <b>Legg til på Hjem-skjerm</b> (på engelsk: <i>Add to Home Screen</i>).</li><li>Trykk <b>Legg til</b> øverst til høyre.</li></ol><p class="dempet">Appen ligger nå på hjemskjermen med eget ikon. Bruker du Chrome på iPhone, finner du det samme under Del-knappen i adressefeltet.</p>',
+    inst_mac: '<ol class="steg"><li>I Safari: velg <b>File</b> → <b>Add to Dock</b> i menylinja (macOS Sonoma eller nyere).</li><li>Trykk <b>Add</b>.</li></ol><p class="dempet">Appen ligger nå i Dock og i Programmer. Bruker du Chrome, trykker du installeringsikonet til høyre i adressefeltet.</p>',
     tilbakemelding: 'Gi tilbakemelding', tilbakeHint: 'Ser du en feil eller savner noe? Si fra – appen er i testfase, og alle innspill hjelper.',
     tilbakeSms: 'Tilbakemelding Teknisk kontroll ({0}, {1} – side: {2}):\n\n',
     oppfolging: 'Til oppfølging', oppfolgingN: 'Til oppfølging ({0})', ingenOppfolging: 'Ingenting å følge opp akkurat nå 👍',
@@ -350,6 +361,10 @@ const TXT = {
     f_wolfpack: 'Wolfpack', wpTittel: 'Wolfpack {0}', wpPeriode: 'Kilometres ridden from 1 April to 30 October', wpAlle: 'Whole club',
     wpIngen: 'Nobody has enough odometer readings in the period yet.', wpLaster: 'Calculating …', wpSykler: '{0} bikes',
     wpForklaring: 'Counted from the first reading after 1 April to the last reading before 30 October. Only inspections and self-declarations with an odometer reading count.',
+    inst_banner: 'Install the app – you get your own icon and full screen, just like a regular app.', inst_knapp: 'Install the app', inst_ikkeNa: 'Not now',
+    inst_tittel: 'Install the app', inst_konto: 'Add the app to your home screen or Dock and it opens like a regular app.', inst_ferdig: 'The app is installed ✓',
+    inst_ios: '<ol class="steg"><li>Tap the <b>Share</b> button {0} at the bottom of Safari (on iPad: at the top).</li><li>Scroll down and choose <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b> in the top right corner.</li></ol><p class="dempet">The app is now on your home screen with its own icon. Using Chrome on iPhone? You find the same under the Share button in the address bar.</p>',
+    inst_mac: '<ol class="steg"><li>In Safari: choose <b>File</b> → <b>Add to Dock</b> in the menu bar (macOS Sonoma or later).</li><li>Click <b>Add</b>.</li></ol><p class="dempet">The app is now in the Dock and in Applications. Using Chrome? Click the install icon at the right of the address bar.</p>',
     tilbakemelding: 'Send feedback', tilbakeHint: 'Spotted a bug or missing something? Let us know – the app is in testing and every comment helps.',
     tilbakeSms: 'Feedback Technical inspection ({0}, {1} – page: {2}):\n\n',
     oppfolging: 'Follow-up', oppfolgingN: 'Follow-up ({0})', ingenOppfolging: 'Nothing to follow up right now 👍',
@@ -479,6 +494,7 @@ const IKON = {
   folk: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c1.8.7 3 2.4 3.5 5.2"/>',
   person: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.2 4-6.5 8-6.5s7 2.3 8 6.5"/>',
   pokal: '<path d="M8 4h8v4.5a4 4 0 0 1-8 0z"/><path d="M8 5.5H5v1a3 3 0 0 0 3 3M16 5.5h3v1a3 3 0 0 1-3 3"/><path d="M12 12.5V16M9 20h6l-.6-4h-4.8z"/>',
+  del: '<path d="M12 3v12M8 7l4-4 4 4"/><path d="M8 10H6v10h12V10h-2"/>',
   kamera: '<path d="M3.5 8.5h3.5l2-2.8h6l2 2.8h3.5v10.8h-17z"/><circle cx="12" cy="13.6" r="3.6"/>'
 };
 const svg = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
@@ -785,7 +801,7 @@ function render() {
   $('#app').innerHTML = `
     <header class="topp"><h1>${t('app')}</h1>
       <div class="hvem">${esc(b.navn)}<br>${esc(t('r_' + b.rolle))} · ${esc(b.avdeling)}</div></header>
-    <main>${innhold()}${tilbakeLenke()}</main>
+    <main><div id="installPlass">${installBanner()}</div>${innhold()}${tilbakeLenke()}</main>
     <nav class="bunn">${faner().map(([id, ik]) => `<button data-fane="${id}" class="${S.fane === id ? 'aktiv' : ''}">${svg(ik)}${t('f_' + id)}</button>`).join('')}</nav>`;
   if (S.fane === 'kontroll') oppdaterStatus();
   if (S.fane === 'wolfpack') lastWolfpack();
@@ -1258,6 +1274,33 @@ function visSykkelSkjema(id, eierTlf) {
     ${s ? `<button type="button" class="fare bred" data-a="fjernSykkel">${t('fjernSykkel')}</button><p class="dempet">${t('fjernHint')}</p>` : ''}</div>`);
 }
 
+// ─── Install as app ─────────────────────────────────────────
+const INSTALL = { prompt: null };
+const erInstallert = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+const erIOS = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const erMacSafari = () => /Macintosh/.test(navigator.userAgent) && /Safari\//.test(navigator.userAgent) && !/Chrome|Chromium|Edg|Firefox/.test(navigator.userAgent) && !(navigator.maxTouchPoints > 1);
+/** 'prompt' (Android, Chrome/Edge desktop), 'ios', 'mac' (Safari) or null when installed / not possible. */
+function installType() {
+  if (erInstallert()) return null;
+  if (INSTALL.prompt) return 'prompt';
+  if (erIOS()) return 'ios';
+  if (erMacSafari()) return 'mac';
+  return null;
+}
+function installBanner() {
+  const skjult = Number(hent('tk_inst_skjul') || 0);
+  if (!installType() || (skjult && Date.now() - skjult < 30 * 864e5) || hent('tk_inst_skjul') === '1') return '';
+  return `<div class="kort install"><p>📲 ${t('inst_banner')}</p>
+    <div class="knapperad"><button type="button" class="primar" data-a="installer">${t('inst_knapp')}</button><button type="button" data-a="skjulInstall">${t('inst_ikkeNa')}</button></div></div>`;
+}
+function oppdaterInstall() {
+  const el = $('#installPlass'); if (el) el.innerHTML = installBanner();
+  if (S.d && S.fane === 'konto') render();
+}
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); INSTALL.prompt = e; oppdaterInstall(); });
+window.addEventListener('appinstalled', () => { INSTALL.prompt = null; lagre('tk_inst_skjul', '1'); oppdaterInstall(); });
+
 // ─── Feedback ───────────────────────────────────────────────
 function smsUrl(tlf, tekst) {
   const nr = /^\d{8}$/.test(tlf) ? '+47' + tlf : tlf;
@@ -1444,6 +1487,9 @@ function visKonto() {
       <button class="bred" style="margin:0">${t('byttPassord')}</button></form>
     ${tilbakeUrl() ? `<h3>${t('tilbakemelding')}</h3><div class="kort"><p class="dempet">${t('tilbakeHint')}</p>
       <a class="knapp bred" style="margin:0" href="${esc(tilbakeUrl())}">${t('tilbakemelding')}</a></div>` : ''}
+    ${installType() ? `<h3>${t('inst_tittel')}</h3><div class="kort"><p class="dempet">${t('inst_konto')}</p>
+      <button type="button" class="bred" style="margin:0" data-a="installer">${t('inst_knapp')}</button></div>`
+      : erInstallert() ? `<p class="dempet">${t('inst_ferdig')}</p>` : ''}
     <details class="kort"><summary>${t('personvern')}</summary>${t('personvernTekst')}</details>
     <button class="fare bred" data-a="loggUt">${t('loggUt')}</button>
     <button class="bred" data-a="oppdater">${t('hentPaNytt')}</button>`;
@@ -1530,6 +1576,18 @@ const A = {
   },
   loggUt() { loggUt(); },
   oppfolging() { apne(visOppfolging); },
+  async installer() {
+    const ty = installType();
+    if (ty === 'prompt') {
+      INSTALL.prompt.prompt();
+      const valg = await INSTALL.prompt.userChoice.catch(() => ({}));
+      INSTALL.prompt = null;
+      if (valg && valg.outcome === 'accepted') lagre('tk_inst_skjul', '1');
+      return oppdaterInstall();
+    }
+    if (ty === 'ios' || ty === 'mac') apne(() => tegnLag(t('inst_tittel'), `<div class="kort">${t(ty === 'ios' ? 'inst_ios' : 'inst_mac', svg(IKON.del))}</div>`));
+  },
+  skjulInstall() { lagre('tk_inst_skjul', String(Date.now())); oppdaterInstall(); },
   statistikk() { apne(visStatistikk); },
   async oppdater(btn) { await medKnapp(btn, async () => { await oppdaterAlt(); toast(t('oppdatert')); }); },
   async slettBilde(btn) {
