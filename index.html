@@ -9,6 +9,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Kontroll">
 <title>Teknisk kontroll</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <style>
 :root{color-scheme:dark;--bg:#111316;--kort:#1b1e23;--kort2:#252930;--linje:#323741;--tekst:#eceef1;--dempet:#98a1ac;
   --aksent:#f2b01e;--aksent-t:#1a1300;--s0:#2e9e4f;--s1:#d6a915;--s2:#d43a3a;--r:12px}
@@ -132,6 +135,20 @@ dl.info dd{margin:0;font-weight:600;text-align:right}
 .tommel span{position:absolute;left:0;right:0;bottom:0;font-size:11px;font-weight:700;padding:3px 6px;background:rgba(0,0,0,.66);color:#fff;text-align:left}
 .tommel .fjern{position:absolute;top:4px;right:4px;width:30px;height:30px;min-height:0;padding:0;border-radius:50%;background:rgba(0,0,0,.72);border:0;color:#fff;font-size:19px;line-height:1}
 img.stor{width:100%;border-radius:10px;display:block;background:#0c0e11;min-height:220px}
+/* follow-up, stats, feedback */
+.bunnlenke{text-align:center;margin:26px 0 6px;font-size:14px}
+.bunnlenke a{color:var(--dempet)}
+.ofrad{display:flex;align-items:center;gap:10px}
+.ofrad .ofinfo{flex:1;min-width:0}
+.ofrad .knapp{min-height:38px;padding:6px 14px;flex:none}
+.knapp.sendt{border-color:var(--s0);color:#7fe39c}
+.sesong.pst span{font-size:11px;font-weight:700}
+.statavd{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+details.kort summary{cursor:pointer;font-weight:650;list-style:none}
+details.kort summary::-webkit-details-marker{display:none}
+details.kort summary::after{content:'▾';float:right;color:var(--dempet)}
+details.kort[open] summary{margin-bottom:10px}
+details.kort p{font-size:14.5px;color:#cfd3d9}
 /* wolfpack */
 .wp{display:flex;flex-direction:column;gap:8px}
 .wprad{display:flex;gap:10px;align-items:center;background:var(--kort);border:1px solid var(--linje);border-radius:var(--r);padding:10px 12px}
@@ -227,6 +244,21 @@ const TXT = {
     f_wolfpack: 'Wolfpack', wpTittel: 'Wolfpack {0}', wpPeriode: 'Kjørte km fra 1. april til 30. oktober', wpAlle: 'Hele klubben',
     wpIngen: 'Ingen har nok km-målinger i perioden ennå.', wpLaster: 'Regner ut …', wpSykler: '{0} sykler',
     wpForklaring: 'Km regnes fra første måling etter 1. april til siste måling før 30. oktober. Bare kontroller og egenerklæringer med km teller.',
+    tilbakemelding: 'Gi tilbakemelding', tilbakeHint: 'Ser du en feil eller savner noe? Si fra – appen er i testfase, og alle innspill hjelper.',
+    tilbakeSms: 'Tilbakemelding Teknisk kontroll ({0}, {1} – side: {2}):\n\n',
+    oppfolging: 'Til oppfølging', oppfolgingN: 'Til oppfølging ({0})', ingenOppfolging: 'Ingenting å følge opp akkurat nå 👍',
+    of_forbud: 'Kjøreforbud', of_frist: 'Frist passert', of_mangler: 'Mangler kontroll for {0}', of_papirer: 'Helsetrygdekort', of_slitasje: 'Dekk og batteri',
+    fristDato: 'frist {0}', utenFrist: 'ingen frist satt',
+    dekkF: 'Fordekk', dekkB: 'Bakdekk', v_dekkAlder: '{0} er fra {1} ({2} år) – bør vurderes byttet', v_monster: '{0}: {1} mm mønster – nærmer seg grensen',
+    v_batteri: 'Batteriet er fra {0} ({1} år)', varsler: 'Verdt å sjekke',
+    purr: 'Send påminnelse', purrHint: 'Åpner en ferdig SMS til ett medlem om gangen. Trykk Send, gå tilbake hit og ta neste.',
+    purrSms: 'Hei {0}! Påminnelse om teknisk kontroll for {1}: {2} er ikke kontrollert ennå. Gi meg en lyd når det passer. Hilsen {3}',
+    smsKnapp: 'SMS', smsSendt: 'Åpnet ✓',
+    statistikk: 'Statistikk', statKontrollert: 'Andel kontrollert per måned', statAvvik: 'Avvik i {0}', statAvvikHint: 'Antall kontroller med «bør utbedres» eller kjøreforbud per område.',
+    statIBruk: 'Har tatt appen i bruk', statIBrukN: '{0} av {1} medlemmer', helKlubben: 'Hele klubben', statSykler: '{0} sykler', ingenData: 'Ingen data ennå.',
+    personvern: 'Personvern',
+    personvernTekst: '<p><b>Hva lagres:</b> navn, telefonnummer, avdeling og rolle; syklene dine (regnr, modell, årsmodell); kontrollresultater med km-stand og merknader; bilder du eller RC laster opp; og egenerklæringen (reiseforsikring, førerkortklasse, utløpsdato for helsetrygdekort og MC-forsikringsselskap). Passordet lagres bare som en kryptografisk hash – ingen kan lese det.</p><p><b>Hvem ser det:</b> du ser dine egne data. Road Captain ser alle i sin avdeling. Klubbens app-administratorer ser alt. Wolfpack-lista viser bare navn, avdeling og kjørte km for hele klubben.</p><p><b>Hvor:</b> i et Google-regneark og en Google Drive-mappe som administreres av klubbens app-administrator. Ingenting deles med andre eller brukes til reklame.</p><p><b>Hvorfor:</b> for å gjennomføre og følge opp den tekniske kontrollen klubben krever.</p><p><b>Innsyn og sletting:</b> kontakt Road Captain eller administrator hvis du vil se hva som er lagret om deg, få noe rettet, eller bli slettet.</p>',
+    sistAktiv: 'Sist aktiv {0}', sistAktivAldri: 'Aldri logget inn', sistInnlogget: 'Sist innlogget', sistAktivTittel: 'Sist aktiv', iDag: 'i dag {0}', iGaar: 'i går {0}',
     profil: 'Profil', sisteEgen: 'Fra egenerklæring {0}', ingenEgenProfil: 'Ingen egenerklæring ennå.', kmTittel: 'Kilometer',
     kmAar: '{0}: {1} → {2} ({3} kjørt)', kmEn: '{0}: {1} (én måling)', kmIngen: 'Ingen km registrert.', antMedlemmer: '{0} medlemmer',
     forrigeMerknad: 'Merknad fra {0}: {1}', sistKort: 'sist: {0}', paVegneAv: 'Du registrerer egenerklæringen på vegne av {0}.',
@@ -318,6 +350,21 @@ const TXT = {
     f_wolfpack: 'Wolfpack', wpTittel: 'Wolfpack {0}', wpPeriode: 'Kilometres ridden from 1 April to 30 October', wpAlle: 'Whole club',
     wpIngen: 'Nobody has enough odometer readings in the period yet.', wpLaster: 'Calculating …', wpSykler: '{0} bikes',
     wpForklaring: 'Counted from the first reading after 1 April to the last reading before 30 October. Only inspections and self-declarations with an odometer reading count.',
+    tilbakemelding: 'Send feedback', tilbakeHint: 'Spotted a bug or missing something? Let us know – the app is in testing and every comment helps.',
+    tilbakeSms: 'Feedback Technical inspection ({0}, {1} – page: {2}):\n\n',
+    oppfolging: 'Follow-up', oppfolgingN: 'Follow-up ({0})', ingenOppfolging: 'Nothing to follow up right now 👍',
+    of_forbud: 'Do not ride', of_frist: 'Deadline passed', of_mangler: 'Missing inspection for {0}', of_papirer: 'Health card', of_slitasje: 'Tyres and battery',
+    fristDato: 'deadline {0}', utenFrist: 'no deadline set',
+    dekkF: 'Front tyre', dekkB: 'Rear tyre', v_dekkAlder: '{0} is from {1} ({2} years) – consider replacing', v_monster: '{0}: {1} mm tread – getting close to the limit',
+    v_batteri: 'Battery is from {0} ({1} years)', varsler: 'Worth checking',
+    purr: 'Send reminders', purrHint: 'Opens a ready-made text to one member at a time. Tap Send, come back here and take the next.',
+    purrSms: 'Hi {0}! Reminder about the technical inspection for {1}: {2} has not been inspected yet. Let me know when it suits you. Regards, {3}',
+    smsKnapp: 'Text', smsSendt: 'Opened ✓',
+    statistikk: 'Statistics', statKontrollert: 'Share inspected per month', statAvvik: 'Issues in {0}', statAvvikHint: 'Number of inspections with "fix soon" or do-not-ride per area.',
+    statIBruk: 'Using the app', statIBrukN: '{0} of {1} members', helKlubben: 'Whole club', statSykler: '{0} bikes', ingenData: 'No data yet.',
+    personvern: 'Privacy',
+    personvernTekst: '<p><b>What is stored:</b> name, phone number, chapter and role; your bikes (registration, model, year); inspection results with odometer readings and notes; photos uploaded by you or your Road Captain; and the self-declaration (travel insurance, licence class, health card expiry date and motorcycle insurer). Your password is only stored as a cryptographic hash – nobody can read it.</p><p><b>Who can see it:</b> you see your own data. Road Captains see everyone in their chapter. The club\'s app administrators see everything. The Wolfpack list only shows name, chapter and distance ridden for the whole club.</p><p><b>Where:</b> in a Google spreadsheet and a Google Drive folder managed by the club\'s app administrator. Nothing is shared with others or used for advertising.</p><p><b>Why:</b> to carry out and follow up the technical inspection the club requires.</p><p><b>Access and deletion:</b> contact your Road Captain or an administrator if you want to see what is stored about you, have something corrected, or be deleted.</p>',
+    sistAktiv: 'Last active {0}', sistAktivAldri: 'Never logged in', sistInnlogget: 'Last login', sistAktivTittel: 'Last active', iDag: 'today {0}', iGaar: 'yesterday {0}',
     profil: 'Profile', sisteEgen: 'From self-declaration {0}', ingenEgenProfil: 'No self-declaration yet.', kmTittel: 'Odometer',
     kmAar: '{0}: {1} → {2} ({3} ridden)', kmEn: '{0}: {1} (one reading)', kmIngen: 'No odometer readings.', antMedlemmer: '{0} members',
     forrigeMerknad: 'Note from {0}: {1}', sistKort: 'last: {0}', paVegneAv: 'You are registering the self-declaration on behalf of {0}.',
@@ -396,6 +443,13 @@ const pad = n => String(n).padStart(2, '0');
 const isoDato = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
 const idag = () => isoDato(new Date());
 const omDager = n => isoDato(new Date(Date.now() + n * 864e5));
+function fmtAktiv(s) {
+  if (!s) return '';
+  const d = String(s).slice(0, 10), kl = String(s).slice(11, 16);
+  const iso = x => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
+  const naa = new Date(), igaar = new Date(Date.now() - 864e5);
+  return d === iso(naa) ? t('iDag', kl) : d === iso(igaar) ? t('iGaar', kl) : fmtDato(d) + (kl ? ' ' + kl : '');
+}
 const fmtDato = s => { if (!s) return ''; const [y, m, d] = String(s).slice(0, 10).split('-'); return d ? `${+d}.${+m}.${y}` : String(s); };
 const hent = k => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } };
 const lagre = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) { /* private mode */ } };
@@ -731,7 +785,7 @@ function render() {
   $('#app').innerHTML = `
     <header class="topp"><h1>${t('app')}</h1>
       <div class="hvem">${esc(b.navn)}<br>${esc(t('r_' + b.rolle))} · ${esc(b.avdeling)}</div></header>
-    <main>${innhold()}</main>
+    <main>${innhold()}${tilbakeLenke()}</main>
     <nav class="bunn">${faner().map(([id, ik]) => `<button data-fane="${id}" class="${S.fane === id ? 'aktiv' : ''}">${svg(ik)}${t('f_' + id)}</button>`).join('')}</nav>`;
   if (S.fane === 'kontroll') oppdaterStatus();
   if (S.fane === 'wolfpack') lastWolfpack();
@@ -789,6 +843,8 @@ function visOversikt() {
   return `<h2>${t('oversikt')}${S.avd !== 'Alle' ? ' – ' + esc(S.avd) : ''}</h2>
     ${avdVelger()}
     <div class="stat">${statKnapp('alle', ant.alle, t('st_sykler'))}${am ? statKnapp('mangler', ant.mangler, t('st_mangler', mndNavn(am))) : statKnapp('alle', '–', t('st_utenfor'))}${statKnapp('avvik', ant.avvik, t('st_avvik'))}${statKnapp('forbud', ant.forbud, t('st_forbud'))}</div>
+    <div class="knapperad" style="margin:-4px 0 14px">${(() => { const n = oppfolgingPunkter().length; return `<button type="button" data-a="oppfolging" class="${n ? 'primar' : ''}">${n ? t('oppfolgingN', n) : t('oppfolging')}</button>`; })()}
+      <button type="button" data-a="statistikk">${t('statistikk')}</button></div>
     <div class="forklaring"><span><i style="background:var(--s0)"></i>${t('s0')}</span><span><i style="background:var(--s1)"></i>${t('s1')}</span><span><i style="background:var(--s2)"></i>${t('s2')}</span><span>${esc(t('sesong', aar()))}: ${esc(mndNavn(SESONG[0]))}–${esc(mndNavn(SESONG[SESONG.length - 1]))}</span></div>
     ${liste.length ? liste.map(i => sykkelKort(i, S.avd === 'Alle')).join('') :
       `<p class="tom">${alle.length ? t('ingenUtvalg') : t('ingenSykler')}</p>`}`;
@@ -847,6 +903,7 @@ function visSykkel(id) {
       <div class="dempet" style="margin-top:4px">${esc(s.regnr)}${s.modell ? ' · ' + esc(s.modell) : ''}${s.aarsmodell ? ' · ' + esc(s.aarsmodell) : ''} · ${esc(s.avdeling)}</div>
       ${sesongStripe(s)}${ks[0] ? chips(ks[0]) : ''}
       <div class="status">${kmLinjer(id)}</div></div>
+    ${(() => { const v = varslerFor(id); return v.length ? `<div class="banner v1"><div style="font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${t('varsler')}</div>${v.map(x => esc(x.tekst)).join('<br>')}</div>` : ''; })()}
     ${erLeder() ? `<button class="primar bred" data-ny-kontroll="${esc(id)}">${t('nyKontrollDenne')}</button>` : ''}
     ${erLeder() || s.telefon === meg().telefon ? `<button class="bred" data-egen-ny="${esc(id)}">${t('fyllEgen')}</button>` : ''}
     <button class="bred" data-sykkel-skjema="${esc(id)}">${t('redigerSykkel')}</button>
@@ -1201,6 +1258,114 @@ function visSykkelSkjema(id, eierTlf) {
     ${s ? `<button type="button" class="fare bred" data-a="fjernSykkel">${t('fjernSykkel')}</button><p class="dempet">${t('fjernHint')}</p>` : ''}</div>`);
 }
 
+// ─── Feedback ───────────────────────────────────────────────
+function smsUrl(tlf, tekst) {
+  const nr = /^\d{8}$/.test(tlf) ? '+47' + tlf : tlf;
+  return `sms:${nr}?&body=${encodeURIComponent(tekst)}`;
+}
+function tilbakeUrl() {
+  const tlf = S.d && S.d.innstillinger && S.d.innstillinger.tilbakemeldingTlf;
+  if (!tlf || tlf === meg().telefon) return '';
+  const lag = $('#lag');
+  const side = lag && !lag.hidden && lag.dataset.tittel ? lag.dataset.tittel : t('f_' + S.fane);
+  return smsUrl(tlf, t('tilbakeSms', meg().navn, meg().avdeling, side));
+}
+const tilbakeLenke = () => tilbakeUrl() ? `<p class="bunnlenke"><a href="${esc(tilbakeUrl())}">💬 ${t('tilbakemelding')}</a></p>` : '';
+
+// ─── Follow-up & warnings ───────────────────────────────────
+const DEKK_MAKS_AAR = 6, BATTERI_MAKS_AAR = 5, MONSTER_MIN = 2;
+/** Year from "2023", "04.2026", "mars 2026" or a DOT code like "3922" (week 39, 2022) / "123". */
+function aarFra(v) {
+  const s = String(v ?? '').trim();
+  const dot = () => { const y = 2000 + Number(s.slice(-2)); return y <= aar() ? y : null; };
+  if (/^\d{4}$/.test(s)) { const n = Number(s); return n >= 1990 && n <= aar() ? n : dot(); }
+  if (/^\d{3}$/.test(s)) return dot();
+  const m = s.match(/(?:19|20)\d{2}/);
+  return m && Number(m[0]) <= aar() ? Number(m[0]) : null;
+}
+function sisteVerdi(sykkelId, felt) {
+  const k = kontrollerFor(sykkelId).find(x => String(x[felt] ?? '').trim() !== '');
+  return k ? String(k[felt]).trim() : '';
+}
+function varslerFor(sykkelId) {
+  const v = [], na = aar();
+  [['dekk_f', 'dekkF'], ['dekk_b', 'dekkB']].forEach(([f, navn]) => {
+    const y = aarFra(sisteVerdi(sykkelId, f + '_dato'));
+    if (y && na - y >= DEKK_MAKS_AAR) v.push({ tekst: t('v_dekkAlder', t(navn), y, na - y) });
+    const mm = Number(sisteVerdi(sykkelId, f + '_mm').replace(',', '.'));
+    if (mm > 0 && mm < MONSTER_MIN) v.push({ tekst: t('v_monster', t(navn), String(mm).replace('.', LANG === 'en' ? '.' : ',')) });
+  });
+  const b = aarFra(sisteVerdi(sykkelId, 'batteri_dato'));
+  if (b && na - b >= BATTERI_MAKS_AAR) v.push({ tekst: t('v_batteri', b, na - b) });
+  return v;
+}
+function oppfolgingPunkter() {
+  const ut = [], am = aktivMnd(), y = String(aar());
+  const settHk = {};
+  S.d.sykler.filter(iAvd).forEach(s => {
+    const i = sykkelInfo(s);
+    if (i.forbud) ut.push({ g: 'of_forbud', s, tekst: i.k.frist ? t('fristDato', fmtDato(i.k.frist)) : t('utenFrist'), kl: 'rodt' });
+    else if (i.frist) ut.push({ g: 'of_frist', s, tekst: t('fristDato', fmtDato(i.k.frist)) + ' · ' + esc(i.k.merknad || ''), kl: 'rodt' });
+    if (i.manglerNa) ut.push({ g: 'of_mangler', s, purr: true });
+    const e = egenFor(s.telefon).find(x => String(x.dato).startsWith(y));
+    const hk = e && e.helsetrygdekort_utloper;
+    if (hk && hk < omDager(60) && !settHk[s.telefon]) { settHk[s.telefon] = 1; ut.push({ g: 'of_papirer', s, tekst: hk < idag() ? t('hkUtlopt') : t('hkUtloper', fmtDato(hk)), kl: 'oransje' }); }
+    const v = varslerFor(s.id);
+    if (v.length) ut.push({ g: 'of_slitasje', s, linjer: v.map(x => x.tekst) });
+  });
+  return ut;
+}
+const PURRET = {};
+function visOppfolging() {
+  const p = oppfolgingPunkter(), am = aktivMnd();
+  const grupper = ['of_forbud', 'of_frist', 'of_mangler', 'of_papirer', 'of_slitasje'];
+  const purr = s => { const fornavn = s.eier.split(' ')[0]; return smsUrl(s.telefon, t('purrSms', fornavn, mndNavn(am), s.regnr, meg().navn)); };
+  tegnLag(t('oppfolging'), p.length ? grupper.map(g => {
+    const rader = p.filter(x => x.g === g);
+    if (!rader.length) return '';
+    return `<h3>${esc(g === 'of_mangler' ? t(g, mndNavn(am)) : t(g))} · ${rader.length}</h3>
+      ${g === 'of_mangler' ? `<p class="dempet">${t('purrHint')}</p>` : ''}
+      ${rader.map(x => `<div class="kort ofrad"><div class="ofinfo" data-sykkel="${esc(x.s.id)}" role="button" style="cursor:pointer">
+          <b>${esc(x.s.eier)}</b><div class="dempet">${esc(x.s.regnr)}${S.avd === 'Alle' && rolle() === 'admin' ? ' · ' + esc(x.s.avdeling) : ''}</div>
+          ${x.tekst ? `<div class="status ${x.kl || ''}" style="margin-top:4px">${x.g === 'of_frist' ? x.tekst : esc(x.tekst)}</div>` : ''}
+          ${x.linjer ? `<div class="status" style="margin-top:4px">${x.linjer.map(esc).join('<br>')}</div>` : ''}</div>
+        ${x.purr ? `<a class="knapp${PURRET[x.s.id] ? ' sendt' : ''}" data-purret="${esc(x.s.id)}" href="${esc(purr(x.s))}">${PURRET[x.s.id] ? t('smsSendt') : t('smsKnapp')}</a>` : ''}</div>`).join('')}`;
+  }).join('') : `<p class="tom">${t('ingenOppfolging')}</p>`);
+}
+document.addEventListener('click', ev => {   // the follow-up rows open the bike when tapping the text
+  const el = ev.target.closest('.ofinfo[data-sykkel]');
+  if (el) { const id = el.dataset.sykkel; apne(() => visSykkel(id)); }
+});
+
+// ─── Statistics ─────────────────────────────────────────────
+function visStatistikk() {
+  const y = aar(), nm = naaMnd();
+  const mnd = SESONG.filter(m => m <= nm);
+  const sykler = S.d.sykler;
+  const avd = [...new Set(sykler.map(s => s.avdeling))].sort((a, b) => a.localeCompare(b, 'nb'));
+  const stripe = liste => `<div class="sesong pst">${SESONG.map(m => {
+    if (!mnd.includes(m) || !liste.length) return `<span class="fremtid">${esc(mndKort(m))}</span>`;
+    const pst = Math.round(liste.filter(s => mndStatus(s, m, y)).length / liste.length * 100);
+    return `<span class="${pst >= 80 ? 'v0' : pst >= 50 ? 'v1' : 'v2'}" title="${esc(Mnd(m))}">${pst}%</span>`;
+  }).join('')}</div><div class="sesong" style="margin-top:2px">${SESONG.map(m => `<span style="background:none;height:16px;font-size:10.5px">${esc(mndKort(m))}</span>`).join('')}</div>`;
+  const blokk = (navn, liste) => `<div class="kort"><div class="statavd"><b>${esc(navn)}</b><span class="dempet">${liste.length === 1 ? t('sykkel1') : t('syklerN', liste.length)}</span></div>${stripe(liste)}</div>`;
+  const aarK = S.d.kontroller.filter(k => String(k.dato).startsWith(String(y)));
+  const omr = [...GRUPPER, ['allmenn_tilstand', 'g_allmenn']].map(([f, n]) => ({ n: t(n), ant: aarK.filter(k => Number(k[f]) >= 1).length })).sort((a, b) => b.ant - a.ant);
+  const maks = Math.max(1, ...omr.map(o => o.ant));
+  const brukere = S.d.brukere.filter(u => u.aktiv);
+  const iBruk = brukere.filter(u => u.harPassord && !u.midlertidig).length;
+  tegnLag(t('statistikk'), `
+    <h3>${t('statIBruk')}</h3>
+    <div class="kort"><div class="linje1"><b>${esc(t('statIBrukN', iBruk, brukere.length))}</b><span class="dempet">${brukere.length ? Math.round(iBruk / brukere.length * 100) : 0}%</span></div>
+      <div class="wpbar"><span style="width:${brukere.length ? Math.round(iBruk / brukere.length * 100) : 0}%"></span></div></div>
+    <h3>${t('statKontrollert')}</h3>
+    ${sykler.length ? (avd.length > 1 ? blokk(t('helKlubben'), sykler) : '') + avd.map(a => blokk(a, sykler.filter(s => s.avdeling === a))).join('') : `<p class="tom">${t('ingenData')}</p>`}
+    <h3>${t('statAvvik', y)}</h3>
+    <div class="kort">${aarK.length ? omr.map(o => `<div style="margin-bottom:10px"><div class="linje1"><span>${esc(o.n)}</span><b>${o.ant}</b></div>
+      <div class="wpbar"><span style="width:${Math.round(o.ant / maks * 100)}%"></span></div></div>`).join('') : `<p class="tom" style="margin:0">${t('ingenData')}</p>`}
+      <p class="dempet" style="margin:4px 0 0">${t('statAvvikHint')}</p></div>`);
+}
+
 // ─── Members ────────────────────────────────────────────────
 const rolleRekke = { admin: 0, rc: 1, medlem: 2 };
 function brukerStatus(u) {
@@ -1218,7 +1383,8 @@ function visMedlemmer() {
     <button class="primar bred" data-bruker="">${t('leggTilMedlem')}</button>
     ${liste.map((u, i) => `${S.avd === 'Alle' && (i === 0 || liste[i - 1].avdeling !== u.avdeling) ? `<h3>${esc(u.avdeling)} · ${t('antMedlemmer', antIAvd(u.avdeling))}</h3>` : ''}<button class="kort" data-bruker="${esc(u.telefon)}">
       <div class="linje1"><b>${esc(u.navn)}</b>${brukerStatus(u)}</div>
-      <div class="dempet">${esc(u.telefon)} · ${antSykler(u.telefon)}${!u.harPassord && u.kode ? ' · ' + t('kode', esc(u.kode)) : ''}</div></button>`).join('') || `<p class="tom">${t('ingenMedlemmer')}</p>`}`;
+      <div class="dempet">${esc(u.telefon)} · ${antSykler(u.telefon)}${!u.harPassord && u.kode ? ' · ' + t('kode', esc(u.kode)) : ''}</div>
+      ${u.sistAktiv ? `<div class="dempet" style="font-size:12.5px">${esc(t('sistAktiv', fmtAktiv(u.sistAktiv)))}</div>` : ''}</button>`).join('') || `<p class="tom">${t('ingenMedlemmer')}</p>`}`;
 }
 
 function smsLenke(u, kode) {
@@ -1241,6 +1407,9 @@ function visBruker(tlf) {
       <div class="kodeboks"><b>${esc(u.kode)}</b><span class="dempet">${t('gjelderTil', fmtDato(u.kode_utloper))}</span></div>
       <a class="knapp primar bred" href="${esc(smsLenke(u, u.kode))}">${t('sendSms')}</a></div>` : ''}
     ${u ? profilKort(u.telefon) : ''}
+    ${u && 'sistAktiv' in u ? `<div class="kort"><dl class="info">
+      <dt>${t('sistAktivTittel')}</dt><dd>${u.sistAktiv ? esc(fmtAktiv(u.sistAktiv)) : `<span class="oransje">${t('sistAktivAldri')}</span>`}</dd>
+      <dt>${t('sistInnlogget')}</dt><dd>${u.sistInnlogget ? esc(fmtAktiv(u.sistInnlogget)) : '–'}</dd></dl></div>` : ''}
     <div class="kort">
       <label class="felt"><span>${t('navn')}</span><input data-f="navn" value="${esc(B.navn)}" ${kanEndre ? '' : 'readonly'} autocomplete="off"></label>
       <label class="felt"><span>${t('telefon')}${u ? t('brukernavn') : ''}</span><input data-f="telefon" type="tel" inputmode="tel" value="${esc(B.telefon)}" ${u ? 'readonly' : ''} autocomplete="off"></label>
@@ -1273,6 +1442,9 @@ function visKonto() {
       <label class="felt"><span>${t('nyttPassord')}</span><input name="nytt" type="password" autocomplete="new-password" minlength="6" required></label>
       <label class="felt"><span>${t('gjentaNytt')}</span><input name="nytt2" type="password" autocomplete="new-password" minlength="6" required></label>
       <button class="bred" style="margin:0">${t('byttPassord')}</button></form>
+    ${tilbakeUrl() ? `<h3>${t('tilbakemelding')}</h3><div class="kort"><p class="dempet">${t('tilbakeHint')}</p>
+      <a class="knapp bred" style="margin:0" href="${esc(tilbakeUrl())}">${t('tilbakemelding')}</a></div>` : ''}
+    <details class="kort"><summary>${t('personvern')}</summary>${t('personvernTekst')}</details>
     <button class="fare bred" data-a="loggUt">${t('loggUt')}</button>
     <button class="bred" data-a="oppdater">${t('hentPaNytt')}</button>`;
 }
@@ -1357,6 +1529,8 @@ const A = {
     });
   },
   loggUt() { loggUt(); },
+  oppfolging() { apne(visOppfolging); },
+  statistikk() { apne(visStatistikk); },
   async oppdater(btn) { await medKnapp(btn, async () => { await oppdaterAlt(); toast(t('oppdatert')); }); },
   async slettBilde(btn) {
     if (!confirm(t('slettBildeSp'))) return;
@@ -1403,6 +1577,7 @@ document.addEventListener('click', ev => {
   if ('nyKontroll' in ds) return startKontroll(ds.nyKontroll);
   if ('sykkelSkjema' in ds) { B = null; const id = ds.sykkelSkjema, eier = ds.eier || ''; return apne(() => visSykkelSkjema(id, eier)); }
   if ('bruker' in ds) { B = null; const tlf = ds.bruker; return apne(() => visBruker(tlf)); }
+  if ('purret' in ds) { el.classList.add('sendt'); el.textContent = t('smsSendt'); PURRET[ds.purret] = true; return; }
   if ('slettKontroll' in ds) return A.slettKontroll(el);
   if ('slettBilde' in ds) return A.slettBilde(el);
   if ('visBilde' in ds) return apne(() => visBilde(ds.visBilde));
