@@ -243,7 +243,7 @@ const TXT = {
     passordUlike: 'Passordene er ikke like', loggInnPaNytt: 'Logg inn på nytt',
     ingenKontakt: 'Får ikke kontakt med serveren. Sjekk nettet.', uventet: 'Uventet svar fra serveren ({0})', ukjentFeil: 'Ukjent feil',
     apiMangler: 'API_URL er ikke satt i index.html.', provIgjen: 'Prøv igjen', loggUt: 'Logg ut',
-    r_admin: 'Administrator', r_rc: 'Road Captain', r_medlem: 'Medlem',
+    r_admin: 'Administrator', r_officer: 'Officer', r_rc: 'Road Captain', r_medlem: 'Medlem',
     f_oversikt: 'Oversikt', f_kontroll: 'Ny kontroll', f_mine: 'Mine', f_medlemmer: 'Medlemmer', f_konto: 'Konto',
     avdeling: 'Avdeling', alleAvd: 'Alle avdelinger',
     s0: 'OK', s1: 'Bør utbedres', s2: 'Kjøreforbud', s0k: 'OK', s1k: 'Bør<br>utbedres', s2k: 'Kjøre&shy;forbud', forbudMerke: 'KJØREFORBUD',
@@ -326,7 +326,7 @@ const TXT = {
     medlemmer: 'Medlemmer', leggTilMedlem: '+ Legg til medlem', ingenMedlemmer: 'Ingen medlemmer.', b_deaktivert: 'DEAKTIVERT', b_venter: 'VENTER', b_midl: 'IKKE LOGGET INN',
     sykkel1: '1 sykkel', syklerN: '{0} sykler', kode: 'kode {0}', nyttMedlem: 'Nytt medlem', aktivering: 'Aktivering',
     ikkeLagetPassord: '{0} har ikke laget passord ennå. Gi denne koden:', gjelderTil: 'gjelder til {0}', sendSms: 'Send kode på SMS',
-    brukernavn: ' (brukernavn)', rolle: 'Rolle', rolleAdminHint: ' (tilgang til alt)', rolleRcHint: ' (egen avdeling)', aktivCb: 'Aktiv (kan logge inn)',
+    brukernavn: ' (brukernavn)', rolle: 'Rolle', rolleAdminHint: ' (tilgang til alt)', rolleOfficerHint: ' (ser alt, endrer egen avdeling)', rolleRcHint: ' (egen avdeling)', aktivCb: 'Aktiv (kan logge inn)',
     lagreEndringer: 'Lagre endringer', leggTilKode: 'Legg til og lag kode',
     barAdminEndre: 'Bare administrator kan endre Road Captains og administratorer.', sykler: 'Sykler', ingenSyklerKort: 'Ingen sykler.',
     passordTittel: 'Passord', glemtKode: 'Glemt passord – lag ny kode', lagNyKode: 'Lag ny kode',
@@ -356,7 +356,7 @@ const TXT = {
     passordUlike: "The passwords don't match", loggInnPaNytt: 'Please log in again',
     ingenKontakt: "Can't reach the server. Check your connection.", uventet: 'Unexpected response from the server ({0})', ukjentFeil: 'Unknown error',
     apiMangler: 'API_URL is not set in index.html.', provIgjen: 'Try again', loggUt: 'Log out',
-    r_admin: 'Administrator', r_rc: 'Road Captain', r_medlem: 'Member',
+    r_admin: 'Administrator', r_officer: 'Officer', r_rc: 'Road Captain', r_medlem: 'Member',
     f_oversikt: 'Overview', f_kontroll: 'Inspect', f_mine: 'Mine', f_medlemmer: 'Members', f_konto: 'Account',
     avdeling: 'Chapter', alleAvd: 'All chapters',
     s0: 'OK', s1: 'Fix soon', s2: 'Do not ride', s0k: 'OK', s1k: 'Fix<br>soon', s2k: 'Do not<br>ride', forbudMerke: 'DO NOT RIDE',
@@ -439,7 +439,7 @@ const TXT = {
     medlemmer: 'Members', leggTilMedlem: '+ Add member', ingenMedlemmer: 'No members.', b_deaktivert: 'DEACTIVATED', b_venter: 'PENDING', b_midl: 'NOT LOGGED IN',
     sykkel1: '1 bike', syklerN: '{0} bikes', kode: 'code {0}', nyttMedlem: 'New member', aktivering: 'Activation',
     ikkeLagetPassord: "{0} hasn't created a password yet. Give them this code:", gjelderTil: 'valid until {0}', sendSms: 'Send code by SMS',
-    brukernavn: ' (username)', rolle: 'Role', rolleAdminHint: ' (full access)', rolleRcHint: ' (own chapter)', aktivCb: 'Active (can log in)',
+    brukernavn: ' (username)', rolle: 'Role', rolleAdminHint: ' (full access)', rolleOfficerHint: ' (sees all, edits own chapter)', rolleRcHint: ' (own chapter)', aktivCb: 'Active (can log in)',
     lagreEndringer: 'Save changes', leggTilKode: 'Add and create code',
     barAdminEndre: 'Only administrators can edit Road Captains and administrators.', sykler: 'Bikes', ingenSyklerKort: 'No bikes.',
     passordTittel: 'Password', glemtKode: 'Forgot password – create new code', lagNyKode: 'Create new code',
@@ -583,7 +583,7 @@ async function lastData() {
   S.d = await api('hentData');
   Object.keys(WP).forEach(k => delete WP[k]);
   const r = rolle();
-  if (r !== 'admin') S.avd = S.d.bruker.avdeling;
+  if (r !== 'admin' && r !== 'officer') S.avd = S.d.bruker.avdeling;
   else if (S.avd !== 'Alle' && !S.d.avdelinger.includes(S.avd)) S.avd = 'Alle';
   if (!S.fane) S.fane = r === 'medlem' ? 'mine' : 'oversikt';
 }
@@ -618,6 +618,10 @@ const sprakKnapper = () => `<div class="sprak">${[['no', 'Norsk'], ['en', 'Engli
 const meg = () => S.d.bruker;
 const rolle = () => S.d.bruker.rolle;
 const erLeder = () => rolle() !== 'medlem';
+const erRcLik = () => rolle() === 'rc' || rolle() === 'officer';
+const serAlt = () => rolle() === 'admin' || rolle() === 'officer';
+/** May the current user change things in this chapter? Admin: everywhere. RC / Officer: own chapter only. */
+const kanEndreAvd = avd => rolle() === 'admin' || (erLeder() && avd === meg().avdeling);
 const finnSykkel = id => S.d.sykler.find(s => s.id === id);
 const kontrollerFor = id => S.d.kontroller.filter(k => k.sykkel_id === id);
 const sisteKontroll = id => S.d.kontroller.find(k => k.sykkel_id === id);
@@ -655,7 +659,7 @@ function chip(v, tekst) {
 const chips = k => `<div class="chips">${GRUPPER.map(([g, n]) => chip(k[g], t(n))).join('')}</div>`;
 
 function avdVelger() {
-  if (rolle() !== 'admin') return '';
+  if (!serAlt()) return '';
   return `<label class="felt"><span>${t('avdeling')}</span><select data-avd>
     <option value="Alle"${S.avd === 'Alle' ? ' selected' : ''}>${t('alleAvd')}</option>
     ${S.d.avdelinger.map(a => `<option value="${esc(a)}"${a === S.avd ? ' selected' : ''}>${esc(a)}</option>`).join('')}</select></label>`;
@@ -712,14 +716,14 @@ function fyllBilder(rot) {
 }
 function kanLeggeTilBilde(refType, ref) {
   if (rolle() === 'admin') return true;
-  const tilgang = (rolle() === 'rc' && ref.avdeling === meg().avdeling) || (refType === 'egen' && ref.telefon === meg().telefon);
+  const tilgang = (erRcLik() && ref.avdeling === meg().avdeling) || (refType === 'egen' && ref.telefon === meg().telefon);
   return tilgang && alderTimer(ref.tidspunkt) < S.d.innstillinger.bildeDager * 24;
 }
-const kanSletteBilde = b => rolle() === 'admin' || (['profil', 'sykkel'].includes(b.type) && (b.telefon === meg().telefon || (rolle() === 'rc' && b.avdeling === meg().avdeling))) ||
+const kanSletteBilde = b => rolle() === 'admin' || (['profil', 'sykkel'].includes(b.type) && (b.telefon === meg().telefon || (erRcLik() && b.avdeling === meg().avdeling))) ||
   (b.lastet_opp_av_tlf === meg().telefon && alderTimer(b.tidspunkt) < S.d.innstillinger.bildeDager * 24);
 const sisteBilde = (refType, refId) => bilderFor(refType, refId).slice(-1)[0];
-const kanProfilbilde = u => rolle() === 'admin' || u.telefon === meg().telefon || (rolle() === 'rc' && u.avdeling === meg().avdeling);
-const kanSykkelbilde = s => rolle() === 'admin' || s.telefon === meg().telefon || (rolle() === 'rc' && s.avdeling === meg().avdeling);
+const kanProfilbilde = u => rolle() === 'admin' || u.telefon === meg().telefon || (erRcLik() && u.avdeling === meg().avdeling);
+const kanSykkelbilde = s => rolle() === 'admin' || s.telefon === meg().telefon || (erRcLik() && s.avdeling === meg().avdeling);
 const filKnapp = (type, ref, tekst) => `<label class="lenkeknapp fil">${svg(IKON.kamera)}<span>${tekst}</span>
   <input type="file" accept="image/*" data-bilde="${type}" data-direkte="${type}:${esc(ref)}" hidden></label>`;
 function avatar(tlf, klasse) {
@@ -982,9 +986,9 @@ function visSykkel(id) {
       ${s.vin ? `<div class="dempet" style="font-size:12.5px;margin-top:6px">${t('vinKort')}: <span style="font-family:ui-monospace,Menlo,monospace">${esc(s.vin)}</span></div>` : ''}
       ${s.modell ? `<a class="knapp bred" style="margin:10px 0 0" target="_blank" rel="noopener" href="${esc(handbokUrl(s))}">📘 ${t('handbok')}</a>` : ''}</div>
     ${(() => { const v = varslerFor(id); return v.length ? `<div class="banner v1"><div style="font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${t('varsler')}</div>${v.map(x => esc(x.tekst)).join('<br>')}</div>` : ''; })()}
-    ${erLeder() ? `<button class="primar bred" data-ny-kontroll="${esc(id)}">${t('nyKontrollDenne')}</button>` : ''}
-    ${erLeder() || s.telefon === meg().telefon ? `<button class="bred" data-egen-ny="${esc(id)}">${t('fyllEgen')}</button>` : ''}
-    <button class="bred" data-sykkel-skjema="${esc(id)}">${t('redigerSykkel')}</button>
+    ${kanEndreAvd(s.avdeling) ? `<button class="primar bred" data-ny-kontroll="${esc(id)}">${t('nyKontrollDenne')}</button>` : ''}
+    ${kanEndreAvd(s.avdeling) || s.telefon === meg().telefon ? `<button class="bred" data-egen-ny="${esc(id)}">${t('fyllEgen')}</button>` : ''}
+    ${kanEndreAvd(s.avdeling) || s.telefon === meg().telefon ? `<button class="bred" data-sykkel-skjema="${esc(id)}">${t('redigerSykkel')}</button>` : ''}
     <h3>${t('kontroller', ks.length)}</h3>
     ${ks.length ? ks.map(k => `<button class="kort" data-kontroll="${esc(k.id)}">
         <div class="linje1"><b>${esc(Mnd(Number(kMnd(k).slice(5))))} · ${t('sk_' + kSkjema(k))}</b>${k.kjoreforbud === 'Ja' ? `<span class="merke">${t('forbudMerke')}</span>` : chip(k.sum_allmenn, skalaNavn(k.sum_allmenn))}</div>
@@ -998,7 +1002,7 @@ function visSykkel(id) {
 
 function kanSlette(k) {
   if (rolle() === 'admin') return true;
-  if (rolle() !== 'rc' || k.kontrollor_tlf !== meg().telefon) return false;
+  if (!erRcLik() || k.kontrollor_tlf !== meg().telefon) return false;
   return alderTimer(k.tidspunkt) < S.d.innstillinger.rcSlettTimer;
 }
 const okChip = v => v === 'OK' ? `<span class="chip v0">${t('ok')}</span>` : v === 'Ikke OK' ? `<span class="chip v2">${t('ikkeOk')}</span>` : '<span class="chip">–</span>';
@@ -1106,7 +1110,7 @@ let FORRIGE = {};
 function visKontrollSkjema() {
   if (!F) F = hentUtkast() || nyttSkjema();
   FORRIGE = F.sykkel_id ? forrigeVerdier(F.sykkel_id) : {};
-  const sykler = S.d.sykler.filter(iAvd).sort((a, b) => a.avdeling.localeCompare(b.avdeling) || a.eier.localeCompare(b.eier, 'nb'));
+  const sykler = S.d.sykler.filter(s => (rolle() === 'admin' ? iAvd(s) : kanEndreAvd(s.avdeling))).sort((a, b) => a.avdeling.localeCompare(b.avdeling) || a.eier.localeCompare(b.eier, 'nb'));
   if (F.sykkel_id && !finnSykkel(F.sykkel_id)) F.sykkel_id = '';
   const grupper = {};
   sykler.forEach(s => (grupper[s.avdeling] = grupper[s.avdeling] || []).push(s));
@@ -1120,7 +1124,7 @@ function visKontrollSkjema() {
 
   return `<div data-skjema="K">
     <h2>${t('nyKontroll')}</h2>
-    ${avdVelger()}
+    ${rolle() === 'admin' ? avdVelger() : ''}
     <div class="kort">
       <label class="felt"><span>${t('sykkel')}</span><select data-f="sykkel_id"><option value="">${t('velgSykkel')}</option>
         ${Object.keys(grupper).length > 1 ? Object.entries(grupper).map(([a, l]) => `<optgroup label="${esc(a)}">${l.map(opt).join('')}</optgroup>`).join('') : sykler.map(opt).join('')}
@@ -1166,7 +1170,7 @@ function aprilSkjema(sykler, grupper, opt, y) {
   const levert = s ? egenFor(s.telefon).find(e => String(e.dato).startsWith(String(y))) : null;
   return `<div data-skjema="K">
     <h2>${t('nyKontroll')}</h2>
-    ${avdVelger()}
+    ${rolle() === 'admin' ? avdVelger() : ''}
     <div class="kort">
       <label class="felt"><span>${t('sykkel')}</span><select data-f="sykkel_id"><option value="">${t('velgSykkel')}</option>
         ${Object.keys(grupper).length > 1 ? Object.entries(grupper).map(([a, l]) => `<optgroup label="${esc(a)}">${l.map(opt).join('')}</optgroup>`).join('') : sykler.map(opt).join('')}
@@ -1501,7 +1505,7 @@ function visOppfolging() {
     return `<h3>${esc(g === 'of_mangler' ? t(g, mndNavn(am)) : t(g))} · ${rader.length}</h3>
       ${g === 'of_mangler' ? `<p class="dempet">${t('purrHint')}</p>` : ''}
       ${rader.map(x => `<div class="kort ofrad"><div class="ofinfo" data-sykkel="${esc(x.s.id)}" role="button" style="cursor:pointer">
-          <b>${esc(x.s.eier)}</b><div class="dempet">${esc(x.s.regnr)}${S.avd === 'Alle' && rolle() === 'admin' ? ' · ' + esc(x.s.avdeling) : ''}</div>
+          <b>${esc(x.s.eier)}</b><div class="dempet">${esc(x.s.regnr)}${S.avd === 'Alle' && serAlt() ? ' · ' + esc(x.s.avdeling) : ''}</div>
           ${x.tekst ? `<div class="status ${x.kl || ''}" style="margin-top:4px">${x.g === 'of_frist' ? x.tekst : esc(x.tekst)}</div>` : ''}
           ${x.linjer ? `<div class="status" style="margin-top:4px">${x.linjer.map(esc).join('<br>')}</div>` : ''}</div>
         ${x.purr ? `<a class="knapp${PURRET[x.s.id] ? ' sendt' : ''}" data-purret="${esc(x.s.id)}" href="${esc(purr(x.s))}">${PURRET[x.s.id] ? t('smsSendt') : t('smsKnapp')}</a>` : ''}</div>`).join('')}`;
@@ -1572,10 +1576,10 @@ function visBruker(tlf) {
   const u = tlf ? S.d.brukere.find(x => x.telefon === tlf) : null;
   if (tlf && !u) return tilbake();
   const nokkel = tlf || 'ny';
-  if (!B || B._for !== nokkel) B = { _for: nokkel, telefon: u ? u.telefon : '', navn: u ? u.navn : '', avdeling: u ? u.avdeling : (S.avd !== 'Alle' ? S.avd : meg().avdeling), rolle: u ? u.rolle : 'medlem', aktiv: u ? u.aktiv : true };
+  if (!B || B._for !== nokkel) B = { _for: nokkel, telefon: u ? u.telefon : '', navn: u ? u.navn : '', avdeling: u ? u.avdeling : (rolle() === 'admin' && S.avd !== 'Alle' ? S.avd : meg().avdeling), rolle: u ? u.rolle : 'medlem', aktiv: u ? u.aktiv : true };
   const admin = rolle() === 'admin';
   const erMeg = u && u.telefon === meg().telefon;
-  const kanEndre = admin || (u ? u.rolle === 'medlem' : true);
+  const kanEndre = admin || (u ? u.rolle === 'medlem' && u.avdeling === meg().avdeling : true);
   const sykler = u ? S.d.sykler.filter(s => s.telefon === u.telefon) : [];
   tegnLag(u ? u.navn : t('nyttMedlem'), `<div data-skjema="B">
     ${u && !u.harPassord && u.kode ? `<div class="kort"><h3>${t('aktivering')}</h3><p>${esc(t('ikkeLagetPassord', u.navn.split(' ')[0]))}</p>
@@ -1589,7 +1593,7 @@ function visBruker(tlf) {
       <label class="felt"><span>${t('navn')}</span><input data-f="navn" value="${esc(B.navn)}" ${kanEndre ? '' : 'readonly'} autocomplete="off"></label>
       <label class="felt"><span>${t('telefon')}${u ? t('brukernavn') : ''}</span><input data-f="telefon" type="tel" inputmode="tel" value="${esc(B.telefon)}" ${u ? 'readonly' : ''} autocomplete="off"></label>
       ${admin ? `<label class="felt"><span>${t('avdeling')}</span><select data-f="avdeling">${S.d.avdelinger.map(a => `<option value="${esc(a)}"${a === B.avdeling ? ' selected' : ''}>${esc(a)}</option>`).join('')}</select></label>
-        <label class="felt"><span>${t('rolle')}</span><select data-f="rolle" ${erMeg ? 'disabled' : ''}>${['medlem', 'rc', 'admin'].map(r => `<option value="${r}"${r === B.rolle ? ' selected' : ''}>${t('r_' + r)}${r === 'admin' ? t('rolleAdminHint') : r === 'rc' ? t('rolleRcHint') : ''}</option>`).join('')}</select></label>`
+        <label class="felt"><span>${t('rolle')}</span><select data-f="rolle" ${erMeg ? 'disabled' : ''}>${['medlem', 'rc', 'officer', 'admin'].map(r => `<option value="${r}"${r === B.rolle ? ' selected' : ''}>${t('r_' + r)}${r === 'admin' ? t('rolleAdminHint') : r === 'officer' ? t('rolleOfficerHint') : r === 'rc' ? t('rolleRcHint') : ''}</option>`).join('')}</select></label>`
       : `<p class="dempet">${t('avdeling')}: ${esc(B.avdeling)} · ${t('rolle')}: ${t('r_' + B.rolle)}</p>`}
       ${u && !erMeg && kanEndre ? `<label class="sjekk"><input type="checkbox" data-f="aktiv" ${B.aktiv ? 'checked' : ''}> ${t('aktivCb')}</label>` : ''}
     </div>
