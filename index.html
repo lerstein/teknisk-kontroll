@@ -178,6 +178,11 @@ details.kort summary::after{content:'▾';float:right;color:var(--dempet)}
 details.kort[open] summary{margin-bottom:10px}
 details.kort p{font-size:14.5px;color:#cfd3d9}
 /* wolfpack */
+.wpmerke{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.06em;padding:2px 7px;border-radius:5px;margin-left:6px;vertical-align:2px}
+.wpmerke.red{background:#a6192e;color:#fff}.wpmerke.black{background:#000;color:#fff;box-shadow:inset 0 0 0 1px #555}
+.wpmerke.gold{background:#ffa326;color:#1a1300}.wpmerke.platina{background:linear-gradient(135deg,#f4f6f8,#b9c0c8);color:#1b1e23}
+.wpnivaa{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px}
+.wpnivaa span{font-size:12px}
 .wp{display:flex;flex-direction:column;gap:8px}
 .wprad{display:flex;gap:10px;align-items:center;background:var(--kort);border:1px solid var(--linje);border-radius:var(--r);padding:10px 12px}
 .wprad.forst{border-color:var(--aksent);box-shadow:inset 0 0 0 1px var(--aksent)}
@@ -276,6 +281,7 @@ const TXT = {
     inst_tittel: 'Installer appen', inst_konto: 'Legg appen på hjemskjermen eller i Dock, så åpner den som en vanlig app.', inst_ferdig: 'Appen er installert ✓',
     inst_ios: '<ol class="steg"><li>Trykk <b>Del</b>-knappen {0} nederst i Safari (på iPad: øverst).</li><li>Bla ned og velg <b>Legg til på Hjem-skjerm</b> (på engelsk: <i>Add to Home Screen</i>).</li><li>Trykk <b>Legg til</b> øverst til høyre.</li></ol><p class="dempet">Appen ligger nå på hjemskjermen med eget ikon. Bruker du Chrome på iPhone, finner du det samme under Del-knappen i adressefeltet.</p>',
     inst_mac: '<ol class="steg"><li>I Safari: velg <b>File</b> → <b>Add to Dock</b> i menylinja (macOS Sonoma eller nyere).</li><li>Trykk <b>Add</b>.</li></ol><p class="dempet">Appen ligger nå i Dock og i Programmer. Bruker du Chrome, trykker du installeringsikonet til høyre i adressefeltet.</p>',
+    wp_nivaa: 'Merkenivåer', wp_tilNeste: '{0} km til {1}', wp_naadd: '{0} nådd', wp_regler: 'Les Wolfpack-reglene', wp_merk: 'Merkenivået regnes fra én sykkel, slik reglene krever. Det er en indikasjon – offisielt Wolfpack-merke krever start- og sluttbevis sendt til Wolfpack Europe.', hb_wolfpack: 'Wolfpack',
     f_haandbok: 'Håndbok', hb_kapitler: 'Kjøreregler', hb_signaler: 'Håndsignaler', hb_klubb: 'Klubbsignal', hb_forslag: 'Forslag', hb_mangler: 'Bilde kommer', hb_engelsk: 'Håndboka er på engelsk, som klubbspråket.',
     tilbakemelding: 'Gi tilbakemelding', tilbakeHint: 'Ser du en feil eller savner noe? Si fra – appen er i testfase, og alle innspill hjelper.',
     tilbakeSms: 'Tilbakemelding RC Portal ({0}, {1} – side: {2}):\n\n',
@@ -388,6 +394,7 @@ const TXT = {
     inst_tittel: 'Install the app', inst_konto: 'Add the app to your home screen or Dock and it opens like a regular app.', inst_ferdig: 'The app is installed ✓',
     inst_ios: '<ol class="steg"><li>Tap the <b>Share</b> button {0} at the bottom of Safari (on iPad: at the top).</li><li>Scroll down and choose <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b> in the top right corner.</li></ol><p class="dempet">The app is now on your home screen with its own icon. Using Chrome on iPhone? You find the same under the Share button in the address bar.</p>',
     inst_mac: '<ol class="steg"><li>In Safari: choose <b>File</b> → <b>Add to Dock</b> in the menu bar (macOS Sonoma or later).</li><li>Click <b>Add</b>.</li></ol><p class="dempet">The app is now in the Dock and in Applications. Using Chrome? Click the install icon at the right of the address bar.</p>',
+    wp_nivaa: 'Patch levels', wp_tilNeste: '{0} km to {1}', wp_naadd: '{0} reached', wp_regler: 'Read the Wolfpack rules', wp_merk: 'The patch level is counted on one bike, as the rules require. It is an indication – an official Wolfpack patch requires start and finish evidence sent to Wolfpack Europe.', hb_wolfpack: 'Wolfpack',
     f_haandbok: 'Handbook', hb_kapitler: 'Road rules', hb_signaler: 'Hand signals', hb_klubb: 'Club signal', hb_forslag: 'Proposed', hb_mangler: 'Image coming', hb_engelsk: '',
     tilbakemelding: 'Send feedback', tilbakeHint: 'Spotted a bug or missing something? Let us know – the app is in testing and every comment helps.',
     tilbakeSms: 'Feedback RC Portal ({0}, {1} – page: {2}):\n\n',
@@ -1177,7 +1184,11 @@ function visWolfpack() {
       <button type="button" data-wp-avd="Alle" class="${wpAvd === 'Alle' ? 'aktiv' : ''}">${t('wpAlle')}</button>
       <button type="button" data-wp-avd="${esc(meg().avdeling)}" class="${wpAvd !== 'Alle' ? 'aktiv' : ''}">${esc(meg().avdeling)}</button></div>
     <div id="wolfpack"><div class="laster" style="min-height:30vh"><div><div class="spinn"></div>${t('wpLaster')}</div></div></div>
-    <p class="dempet" style="margin-top:14px">${t('wpForklaring')}</p>`;
+    <p class="dempet" style="margin-top:14px">${t('wpForklaring')}</p>
+    <h3>${t('wp_nivaa')}</h3>
+    <div class="wpnivaa">${[...WP_NIVAA].reverse().map(n => `<span>${wpMerke(n)} ${kmNr(n[0])} km</span>`).join('')}</div>
+    <p class="dempet">${t('wp_merk')}</p>
+    ${hbAlleKap().some(k => k.wolfpack) ? `<button class="bred" data-hb-kapittel="${hbAlleKap().findIndex(k => k.wolfpack)}">📜 ${t('wp_regler')}</button>` : ''}`;
 }
 async function lastWolfpack() {
   const aar = S.wpAar || new Date().getFullYear();
@@ -1186,6 +1197,10 @@ async function lastWolfpack() {
     tegnWolfpack(WP[aar]);
   } catch (e) { const el = $('#wolfpack'); if (el) el.innerHTML = `<div class="banner v1">${esc(e.message)}</div>`; }
 }
+const WP_NIVAA = [[50000, 'Platina', 'platina'], [35000, 'Gold', 'gold'], [25000, 'Black', 'black'], [15000, 'Red', 'red']];
+const wpNivaa = km => WP_NIVAA.find(([g]) => km >= g) || null;
+const wpNeste = km => [...WP_NIVAA].reverse().find(([g]) => km < g) || null;
+const wpMerke = n => n ? `<span class="wpmerke ${n[2]}">${n[1].toUpperCase()}</span>` : '';
 function tegnWolfpack(d) {
   const el = $('#wolfpack');
   if (!el) return;
@@ -1195,9 +1210,9 @@ function tegnWolfpack(d) {
   const medalje = ['🥇', '🥈', '🥉'];
   el.innerHTML = `<div class="wp">${liste.map((p, i) => `<div class="wprad${i === 0 ? ' forst' : ''}">
       <div class="wpnr">${medalje[i] || i + 1}</div>
-      <div class="wpinfo"><div class="linje1"><b>${esc(p.navn)}</b><span class="wpkm">${kmNr(p.km)} km</span></div>
+      <div class="wpinfo"><div class="linje1"><b>${esc(p.navn)}${wpMerke(wpNivaa(p.beste ?? p.km))}</b><span class="wpkm">${kmNr(p.km)} km</span></div>
         <div class="wpbar"><span style="width:${Math.max(2, Math.round(p.km / maks * 100))}%"></span></div>
-        <div class="dempet" style="font-size:12.5px">${esc(p.avdeling)}${p.sykler > 1 ? ' · ' + esc(t('wpSykler', p.sykler)) : ''}</div></div></div>`).join('')}</div>`;
+        <div class="dempet" style="font-size:12.5px">${esc(p.avdeling)}${p.sykler > 1 ? ' · ' + esc(t('wpSykler', p.sykler)) : ''}${(() => { const b = p.beste ?? p.km, n = wpNeste(b); return n ? ' · ' + esc(t('wp_tilNeste', kmNr(n[0] - b), n[1])) : ''; })()}</div></div></div>`).join('')}</div>`;
 }
 
 // ─── Mine ───────────────────────────────────────────────────
@@ -1319,17 +1334,21 @@ function visHaandbok() {
   return `<h2>${esc(HB.title)}</h2>
     ${t('hb_engelsk') ? `<p class="dempet" style="margin-top:-8px">${t('hb_engelsk')}</p>` : ''}
     <h3>${t('hb_kapitler')}</h3>
-    ${HB.chapters.map((k, i) => `<button class="kort" data-hb-kapittel="${i}"><div class="linje1"><b>${esc(k.h)}</b><span class="dempet">›</span></div></button>`).join('')}
+    ${hbAlleKap().map((k, i) => k.wolfpack ? '' : hbKapKnapp(k, i)).join('')}
+    ${hbAlleKap().some(k => k.wolfpack) ? `<h3>${t('hb_wolfpack')} 🐺</h3>${hbAlleKap().map((k, i) => k.wolfpack ? hbKapKnapp(k, i) : '').join('')}` : ''}
     <h3>${t('hb_signaler')}</h3>
     <p class="dempet">${esc(HB.signalsIntro)}</p>
     ${HB.groups.map(g => `<h3 style="margin-top:16px">${esc(g.h)}</h3><div class="hbgrid">${g.signals.map(kort).join('')}</div>`).join('')}`;
 }
 const hbListe = (items, nr) => `<${nr ? 'ol' : 'ul'}>${items.map(x => `<li>${esc(x)}</li>`).join('')}</${nr ? 'ol' : 'ul'}>`;
+const hbAlleKap = () => [...HB.chapters, ...((S.d && S.d.dokumenter) || [])];
+const hbKapKnapp = (k, i) => `<button class="kort" data-hb-kapittel="${i}"><div class="linje1"><b>${esc(k.h)}</b><span class="dempet">›</span></div></button>`;
 function visHbKapittel(i) {
-  const k = HB.chapters[i];
+  const alle = hbAlleKap(), k = alle[i];
+  if (!k) return tilbake();
   tegnLag(k.h, `<div class="kort hbseksjon">${k.body.map(x =>
     x.h3 ? `<h4>${esc(x.h3)}</h4>` : x.p ? `<p>${esc(x.p)}</p>` : x.b ? hbListe(x.b) : x.n ? hbListe(x.n, true) : '').join('')}</div>
-    ${HB.chapters[i + 1] ? `<button class="bred" data-hb-kapittel="${i + 1}">${esc(HB.chapters[i + 1].h)} ›</button>` : ''}`);
+    ${alle[i + 1] ? `<button class="bred" data-hb-kapittel="${i + 1}">${esc(alle[i + 1].h)} ›</button>` : ''}`);
 }
 function visHbSignal(navn) {
   const s = hbSignaler().find(x => x.h === navn);
