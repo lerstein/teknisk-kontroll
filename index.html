@@ -243,7 +243,7 @@ const TXT = {
     passordUlike: 'Passordene er ikke like', loggInnPaNytt: 'Logg inn på nytt',
     ingenKontakt: 'Får ikke kontakt med serveren. Sjekk nettet.', uventet: 'Uventet svar fra serveren ({0})', ukjentFeil: 'Ukjent feil',
     apiMangler: 'API_URL er ikke satt i index.html.', provIgjen: 'Prøv igjen', loggUt: 'Logg ut',
-    r_admin: 'Administrator', r_officer: 'Officer', r_rc: 'Road Captain', r_medlem: 'Medlem',
+    r_admin: 'Administrator', r_officer: 'Officer', r_president: 'President', r_rc: 'Road Captain', r_medlem: 'Medlem',
     f_oversikt: 'Oversikt', f_kontroll: 'Ny kontroll', f_mine: 'Mine', f_medlemmer: 'Medlemmer', f_konto: 'Konto',
     avdeling: 'Avdeling', alleAvd: 'Alle avdelinger',
     s0: 'OK', s1: 'Bør utbedres', s2: 'Kjøreforbud', s0k: 'OK', s1k: 'Bør<br>utbedres', s2k: 'Kjøre&shy;forbud', forbudMerke: 'KJØREFORBUD',
@@ -326,7 +326,7 @@ const TXT = {
     medlemmer: 'Medlemmer', leggTilMedlem: '+ Legg til medlem', ingenMedlemmer: 'Ingen medlemmer.', b_deaktivert: 'DEAKTIVERT', b_venter: 'VENTER', b_midl: 'IKKE LOGGET INN',
     sykkel1: '1 sykkel', syklerN: '{0} sykler', kode: 'kode {0}', nyttMedlem: 'Nytt medlem', aktivering: 'Aktivering',
     ikkeLagetPassord: '{0} har ikke laget passord ennå. Gi denne koden:', gjelderTil: 'gjelder til {0}', sendSms: 'Send kode på SMS',
-    brukernavn: ' (brukernavn)', rolle: 'Rolle', rolleAdminHint: ' (tilgang til alt)', rolleOfficerHint: ' (ser alt, endrer egen avdeling)', rolleRcHint: ' (egen avdeling)', aktivCb: 'Aktiv (kan logge inn)',
+    brukernavn: ' (brukernavn)', rolle: 'Rolle', rolleAdminHint: ' (tilgang til alt)', rolleOfficerHint: ' (ser alt, endrer egen avdeling)', rolePresidentHint: ' (ser egen avdeling, kan ikke endre)', rolleRcHint: ' (egen avdeling)', aktivCb: 'Aktiv (kan logge inn)',
     lagreEndringer: 'Lagre endringer', leggTilKode: 'Legg til og lag kode',
     barAdminEndre: 'Bare administrator kan endre Road Captains og administratorer.', sykler: 'Sykler', ingenSyklerKort: 'Ingen sykler.',
     passordTittel: 'Passord', glemtKode: 'Glemt passord – lag ny kode', lagNyKode: 'Lag ny kode',
@@ -356,7 +356,7 @@ const TXT = {
     passordUlike: "The passwords don't match", loggInnPaNytt: 'Please log in again',
     ingenKontakt: "Can't reach the server. Check your connection.", uventet: 'Unexpected response from the server ({0})', ukjentFeil: 'Unknown error',
     apiMangler: 'API_URL is not set in index.html.', provIgjen: 'Try again', loggUt: 'Log out',
-    r_admin: 'Administrator', r_officer: 'Officer', r_rc: 'Road Captain', r_medlem: 'Member',
+    r_admin: 'Administrator', r_officer: 'Officer', r_president: 'President', r_rc: 'Road Captain', r_medlem: 'Member',
     f_oversikt: 'Overview', f_kontroll: 'Inspect', f_mine: 'Mine', f_medlemmer: 'Members', f_konto: 'Account',
     avdeling: 'Chapter', alleAvd: 'All chapters',
     s0: 'OK', s1: 'Fix soon', s2: 'Do not ride', s0k: 'OK', s1k: 'Fix<br>soon', s2k: 'Do not<br>ride', forbudMerke: 'DO NOT RIDE',
@@ -439,7 +439,7 @@ const TXT = {
     medlemmer: 'Members', leggTilMedlem: '+ Add member', ingenMedlemmer: 'No members.', b_deaktivert: 'DEACTIVATED', b_venter: 'PENDING', b_midl: 'NOT LOGGED IN',
     sykkel1: '1 bike', syklerN: '{0} bikes', kode: 'code {0}', nyttMedlem: 'New member', aktivering: 'Activation',
     ikkeLagetPassord: "{0} hasn't created a password yet. Give them this code:", gjelderTil: 'valid until {0}', sendSms: 'Send code by SMS',
-    brukernavn: ' (username)', rolle: 'Role', rolleAdminHint: ' (full access)', rolleOfficerHint: ' (sees all, edits own chapter)', rolleRcHint: ' (own chapter)', aktivCb: 'Active (can log in)',
+    brukernavn: ' (username)', rolle: 'Role', rolleAdminHint: ' (full access)', rolleOfficerHint: ' (sees all, edits own chapter)', rolePresidentHint: ' (sees own chapter, read-only)', rolleRcHint: ' (own chapter)', aktivCb: 'Active (can log in)',
     lagreEndringer: 'Save changes', leggTilKode: 'Add and create code',
     barAdminEndre: 'Only administrators can edit Road Captains and administrators.', sykler: 'Bikes', ingenSyklerKort: 'No bikes.',
     passordTittel: 'Password', glemtKode: 'Forgot password – create new code', lagNyKode: 'Create new code',
@@ -621,7 +621,8 @@ const erLeder = () => rolle() !== 'medlem';
 const erRcLik = () => rolle() === 'rc' || rolle() === 'officer';
 const serAlt = () => rolle() === 'admin' || rolle() === 'officer';
 /** May the current user change things in this chapter? Admin: everywhere. RC / Officer: own chapter only. */
-const kanEndreAvd = avd => rolle() === 'admin' || (erLeder() && avd === meg().avdeling);
+const kanEndreAvd = avd => rolle() === 'admin' || (erRcLik() && avd === meg().avdeling);
+const kanEndreNoe = () => rolle() === 'admin' || erRcLik();   // false for President (read-only)
 const finnSykkel = id => S.d.sykler.find(s => s.id === id);
 const kontrollerFor = id => S.d.kontroller.filter(k => k.sykkel_id === id);
 const sisteKontroll = id => S.d.kontroller.find(k => k.sykkel_id === id);
@@ -843,7 +844,8 @@ function visTvungen() {
 // ─── Shell ──────────────────────────────────────────────────
 function faner() {
   const f = [];
-  if (erLeder()) f.push(['oversikt', IKON.liste], ['kontroll', IKON.skjema]);
+  if (erLeder()) f.push(['oversikt', IKON.liste]);
+  if (kanEndreNoe()) f.push(['kontroll', IKON.skjema]);
   f.push(['mine', IKON.sykkel], ['wolfpack', IKON.pokal], ['haandbok', IKON.bok]);
   if (erLeder()) f.push(['medlemmer', IKON.folk]);
   return f;
@@ -1508,7 +1510,7 @@ function visOppfolging() {
           <b>${esc(x.s.eier)}</b><div class="dempet">${esc(x.s.regnr)}${S.avd === 'Alle' && serAlt() ? ' · ' + esc(x.s.avdeling) : ''}</div>
           ${x.tekst ? `<div class="status ${x.kl || ''}" style="margin-top:4px">${x.g === 'of_frist' ? x.tekst : esc(x.tekst)}</div>` : ''}
           ${x.linjer ? `<div class="status" style="margin-top:4px">${x.linjer.map(esc).join('<br>')}</div>` : ''}</div>
-        ${x.purr ? `<a class="knapp${PURRET[x.s.id] ? ' sendt' : ''}" data-purret="${esc(x.s.id)}" href="${esc(purr(x.s))}">${PURRET[x.s.id] ? t('smsSendt') : t('smsKnapp')}</a>` : ''}</div>`).join('')}`;
+        ${x.purr && kanEndreNoe() ? `<a class="knapp${PURRET[x.s.id] ? ' sendt' : ''}" data-purret="${esc(x.s.id)}" href="${esc(purr(x.s))}">${PURRET[x.s.id] ? t('smsSendt') : t('smsKnapp')}</a>` : ''}</div>`).join('')}`;
   }).join('') : `<p class="tom">${t('ingenOppfolging')}</p>`);
 }
 document.addEventListener('click', ev => {   // the follow-up rows open the bike when tapping the text
@@ -1559,7 +1561,7 @@ function visMedlemmer() {
   const antSykler = tlf => { const n = S.d.sykler.filter(s => s.telefon === tlf).length; return n === 1 ? t('sykkel1') : t('syklerN', n); };
   return `<h2>${t('medlemmer')}${S.avd !== 'Alle' ? ' – ' + esc(S.avd) : ''}</h2>
     ${avdVelger()}
-    <button class="primar bred" data-bruker="">${t('leggTilMedlem')}</button>
+    ${kanEndreNoe() ? `<button class="primar bred" data-bruker="">${t('leggTilMedlem')}</button>` : ''}
     ${liste.map((u, i) => `${S.avd === 'Alle' && (i === 0 || liste[i - 1].avdeling !== u.avdeling) ? `<h3>${esc(u.avdeling)} · ${t('antMedlemmer', antIAvd(u.avdeling))}</h3>` : ''}<button class="kort" data-bruker="${esc(u.telefon)}">
       <div class="linje1"><b>${esc(u.navn)}</b>${brukerStatus(u)}</div>
       <div class="dempet">${esc(u.telefon)} · ${antSykler(u.telefon)}${!u.harPassord && u.kode ? ' · ' + t('kode', esc(u.kode)) : ''}</div>
@@ -1579,7 +1581,7 @@ function visBruker(tlf) {
   if (!B || B._for !== nokkel) B = { _for: nokkel, telefon: u ? u.telefon : '', navn: u ? u.navn : '', avdeling: u ? u.avdeling : (rolle() === 'admin' && S.avd !== 'Alle' ? S.avd : meg().avdeling), rolle: u ? u.rolle : 'medlem', aktiv: u ? u.aktiv : true };
   const admin = rolle() === 'admin';
   const erMeg = u && u.telefon === meg().telefon;
-  const kanEndre = admin || (u ? u.rolle === 'medlem' && u.avdeling === meg().avdeling : true);
+  const kanEndre = admin || (erRcLik() && (u ? u.rolle === 'medlem' && u.avdeling === meg().avdeling : true));
   const sykler = u ? S.d.sykler.filter(s => s.telefon === u.telefon) : [];
   tegnLag(u ? u.navn : t('nyttMedlem'), `<div data-skjema="B">
     ${u && !u.harPassord && u.kode ? `<div class="kort"><h3>${t('aktivering')}</h3><p>${esc(t('ikkeLagetPassord', u.navn.split(' ')[0]))}</p>
@@ -1593,11 +1595,11 @@ function visBruker(tlf) {
       <label class="felt"><span>${t('navn')}</span><input data-f="navn" value="${esc(B.navn)}" ${kanEndre ? '' : 'readonly'} autocomplete="off"></label>
       <label class="felt"><span>${t('telefon')}${u ? t('brukernavn') : ''}</span><input data-f="telefon" type="tel" inputmode="tel" value="${esc(B.telefon)}" ${u ? 'readonly' : ''} autocomplete="off"></label>
       ${admin ? `<label class="felt"><span>${t('avdeling')}</span><select data-f="avdeling">${S.d.avdelinger.map(a => `<option value="${esc(a)}"${a === B.avdeling ? ' selected' : ''}>${esc(a)}</option>`).join('')}</select></label>
-        <label class="felt"><span>${t('rolle')}</span><select data-f="rolle" ${erMeg ? 'disabled' : ''}>${['medlem', 'rc', 'officer', 'admin'].map(r => `<option value="${r}"${r === B.rolle ? ' selected' : ''}>${t('r_' + r)}${r === 'admin' ? t('rolleAdminHint') : r === 'officer' ? t('rolleOfficerHint') : r === 'rc' ? t('rolleRcHint') : ''}</option>`).join('')}</select></label>`
+        <label class="felt"><span>${t('rolle')}</span><select data-f="rolle" ${erMeg ? 'disabled' : ''}>${['medlem', 'president', 'rc', 'officer', 'admin'].map(r => `<option value="${r}"${r === B.rolle ? ' selected' : ''}>${t('r_' + r)}${r === 'admin' ? t('rolleAdminHint') : r === 'officer' ? t('rolleOfficerHint') : r === 'president' ? t('rolePresidentHint') : r === 'rc' ? t('rolleRcHint') : ''}</option>`).join('')}</select></label>`
       : `<p class="dempet">${t('avdeling')}: ${esc(B.avdeling)} · ${t('rolle')}: ${t('r_' + B.rolle)}</p>`}
       ${u && !erMeg && kanEndre ? `<label class="sjekk"><input type="checkbox" data-f="aktiv" ${B.aktiv ? 'checked' : ''}> ${t('aktivCb')}</label>` : ''}
     </div>
-    ${kanEndre ? `<button type="button" class="primar bred" data-a="lagreBruker">${u ? t('lagreEndringer') : t('leggTilKode')}</button>` : `<p class="dempet">${t('barAdminEndre')}</p>`}
+    ${kanEndre ? `<button type="button" class="primar bred" data-a="lagreBruker">${u ? t('lagreEndringer') : t('leggTilKode')}</button>` : kanEndreNoe() ? `<p class="dempet">${t('barAdminEndre')}</p>` : ''}
     ${u ? `<h3>${t('sykler')}</h3>
       ${sykler.map(s => `<button class="kort" data-sykkel="${esc(s.id)}"><b>${esc(s.regnr)}</b> <span class="dempet">${esc(s.modell)}</span></button>`).join('') || `<p class="tom">${t('ingenSyklerKort')}</p>`}
       ${kanEndre || erMeg ? `<button class="bred" data-sykkel-skjema="" data-eier="${esc(u.telefon)}">${t('leggTilSykkel')}</button>` : ''}
