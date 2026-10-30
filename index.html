@@ -39,6 +39,8 @@ button.tlfknapp svg{width:19px;height:19px}
 .tlfrad .hvem2 small{color:var(--dempet);font-size:12.5px}
 .tlfrad a.ring{display:inline-flex;align-items:center;gap:6px;color:var(--aksent);text-decoration:none;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:14.5px}
 .tlfrad a.ring svg{width:16px;height:16px}
+.tlfvalg{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.tlfrad a.signal{background:#3a76f0;color:#fff;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:650;text-decoration:none}
 /* handbook */
 .hbgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .hbkort{display:flex;flex-direction:column;padding:0;overflow:hidden;text-align:left;background:var(--kort);border:1px solid var(--linje);border-radius:var(--r);min-height:0;font:inherit;color:var(--tekst);align-items:stretch}
@@ -267,7 +269,7 @@ const TXT = {
     kontrollert: 'Kontrollert {0}', aldri: 'Aldri kontrollert', manglerMnd: '{0} mangler', frist: 'frist {0}', passert: ' – passert',
     egenOk: 'egenerklæring ✓', egenMangler: 'egenerklæring mangler', hkUtlopt: 'helsetrygdekort utløpt', hkUtloper: 'helsetrygdekort utløper {0}',
     sesong: 'Sesong {0}',
-    telefonliste: 'Telefonliste', tlfSok: 'Søk på navn, avdeling eller status', klubbhus: 'Klubbhus', klubbTlf: 'Klubbtelefon', visKart: 'Vis i kart', tlfHentet: 'Hentet fra klubbens telefonliste {0}', tlfIngen: 'Ingen treff.',
+    telefonliste: 'Telefonliste', tlfSok: 'Søk på navn, avdeling eller status', klubbhus: 'Klubbhus', klubbTlf: 'Klubbtelefon', ringVanlig: 'Ring vanlig', visKart: 'Vis i kart', tlfHentet: 'Hentet fra klubbens telefonliste {0}', tlfIngen: 'Ingen treff.',
     nyKontrollDenne: 'Ny kontroll av denne sykkelen', kontrollerSelv: 'Kontroller sykkelen selv', venterMerke: 'VENTER', venterGodkj: 'Venter på godkjenning fra Road Captain',
     godkjentAvTittel: 'Godkjent av', godkjenn: 'Godkjenn', rettGodkjenn: 'Rett og godkjenn', avvis: 'Avvis', avvisGrunn: 'Hvorfor avvises kontrollen? Medlemmet ser grunnen.',
     godkjentToast: 'Kontrollen er godkjent', avvistToast: 'Kontrollen er avvist', venterListe: 'Venter på godkjenning ({0})', sendtTilGodkj: 'Lagret – sendt til Road Captain for godkjenning',
@@ -385,7 +387,7 @@ const TXT = {
     kontrollert: 'Inspected {0}', aldri: 'Never inspected', manglerMnd: '{0} missing', frist: 'deadline {0}', passert: ' – overdue',
     egenOk: 'self-declaration ✓', egenMangler: 'self-declaration missing', hkUtlopt: 'health card expired', hkUtloper: 'health card expires {0}',
     sesong: 'Season {0}',
-    telefonliste: 'Phone list', tlfSok: 'Search name, chapter or status', klubbhus: 'Clubhouse', klubbTlf: 'Club phone', visKart: 'Show on map', tlfHentet: "From the club's phone list, {0}", tlfIngen: 'No matches.',
+    telefonliste: 'Phone list', tlfSok: 'Search name, chapter or status', klubbhus: 'Clubhouse', klubbTlf: 'Club phone', ringVanlig: 'Regular call', visKart: 'Show on map', tlfHentet: "From the club's phone list, {0}", tlfIngen: 'No matches.',
     nyKontrollDenne: 'New inspection of this bike', kontrollerSelv: 'Inspect the bike yourself', venterMerke: 'PENDING', venterGodkj: 'Waiting for approval from the Road Captain',
     godkjentAvTittel: 'Approved by', godkjenn: 'Approve', rettGodkjenn: 'Correct and approve', avvis: 'Reject', avvisGrunn: 'Why is the inspection rejected? The member will see the reason.',
     godkjentToast: 'Inspection approved', avvistToast: 'Inspection rejected', venterListe: 'Waiting for approval ({0})', sendtTilGodkj: 'Saved – sent to the Road Captain for approval',
@@ -1267,7 +1269,10 @@ function visWolfpack() {
 }
 // ─── Phone list (read live from the club's own sheet via the backend) ───
 let TLF = null, TLF_SOK = '';
-const telLenke = n => 'tel:' + String(n).replace(/[^\d+]/g, '');
+const e164 = n => { const d = String(n).replace(/[^\d+]/g, ''); return d.startsWith('+') ? d : d.startsWith('00') ? '+' + d.slice(2) : d.length === 8 ? '+47' + d : d; };
+const telLenke = n => 'tel:' + e164(n);
+// Opens a Signal chat with the number (Signal has no direct-call link); tap the call button in Signal from there.
+const signalLenke = n => 'https://signal.me/#p/' + e164(n);
 const avdNokkel = a => String(a || '').toLowerCase().replace(/[^a-zæøå]/g, '').slice(0, 6);
 async function visTelefonliste() {
   if (!TLF) {
@@ -1290,7 +1295,8 @@ async function visTelefonliste() {
         ${adr || a.telefon ? `<div class="tlfadr">${adr ? `${t('klubbhus')}: ${esc(adr)} · <a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(adr)}">${t('visKart')}</a>` : ''}
           ${a.telefon ? `${adr ? '<br>' : ''}${t('klubbTlf')}: <a href="${esc(telLenke(a.telefon))}">${esc(a.telefon)}</a>` : ''}</div>` : ''}
         ${p.map(x => `<div class="tlfrad"><div class="hvem2"><b>${esc(x.navn)}</b><small>${esc(x.status)}</small></div>
-          ${x.telefon.replace(/\D/g, '').length >= 6 ? `<a class="ring" href="${esc(telLenke(x.telefon))}">${svg(IKON.telefon)}${esc(x.telefon.replace(/^\(\+47\)\s*/, ''))}</a>` : ''}</div>`).join('')}</div>`;
+          ${x.telefon.replace(/\D/g, '').length >= 6 ? `<div class="tlfvalg"><a class="signal" href="${esc(signalLenke(x.telefon))}" target="_blank" rel="noopener">Signal</a>
+            <a class="ring" href="${esc(telLenke(x.telefon))}" aria-label="${esc(t('ringVanlig'))}">${svg(IKON.telefon)}${esc(x.telefon.replace(/^\(\+47\)\s*/, ''))}</a></div>` : ''}</div>`).join('')}</div>`;
     }).join('');
     const el = $('#tlfListe'); if (el) el.innerHTML = html || `<p class="tom">${t('tlfIngen')}</p>`;
   };
