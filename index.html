@@ -127,7 +127,7 @@ dl.info dd{margin:0;font-weight:600;text-align:right}
 /* login */
 .login{max-width:420px;padding-top:calc(48px + env(safe-area-inset-top))}
 .ordmerke{height:46px;width:auto;display:block;margin:0 auto}
-.ordmerke-topp{height:21px;width:auto;display:block}
+.ordmerke-topp{height:24px;width:auto;display:block}
 .logo{width:72px;height:72px;border-radius:18px;display:block;margin:0 auto 14px}
 div.logo{width:64px;height:64px;border-radius:16px;background:var(--aksent);color:var(--aksent-t);display:grid;place-items:center}
 .logo svg{width:40px;height:40px}
@@ -778,7 +778,7 @@ function visLogin(modus) {
   document.body.classList.add('uten-nav');
   $('#app').innerHTML = `<main class="login">
     <img class="logo" src="icon-192.png" alt="RC Portal">
-    <h1><img src="rcportal-logo.png" alt="${t('app')}" class="ordmerke"></h1>
+    <h1><img src="rcportal-logo.png?v=2" alt="${t('app')}" class="ordmerke"></h1>
     <div class="under">${t('undertittel')}</div>
     <div class="faner2"><button type="button" data-modus="login" class="${modus === 'login' ? 'aktiv' : ''}">${t('loggInn')}</button>
       <button type="button" data-modus="aktiver" class="${modus === 'aktiver' ? 'aktiv' : ''}">${t('forsteGang')}</button></div>
@@ -853,7 +853,7 @@ function render() {
   const b = meg();
   const innhold = { oversikt: visOversikt, kontroll: visKontrollSkjema, mine: visMine, wolfpack: visWolfpack, haandbok: visHaandbok, medlemmer: visMedlemmer, konto: visKonto }[S.fane] || visMine;
   $('#app').innerHTML = `
-    <header class="topp"><h1><img src="rcportal-topp.png" alt="${t('app')}" class="ordmerke-topp"></h1>
+    <header class="topp"><h1><img src="rcportal-topp.png?v=2" alt="${t('app')}" class="ordmerke-topp"></h1>
       <button type="button" class="hvem${S.fane === 'konto' ? ' aktiv' : ''}" data-fane="konto" aria-label="${esc(t('f_konto'))}"><span>${esc(b.navn)}<br>${esc(t('r_' + b.rolle))} · ${esc(b.avdeling)}</span>${avatar(b.telefon, 'avatar-liten') || svg(IKON.person)}</button></header>
     <main><div id="installPlass">${installBanner()}</div>${innhold()}${tilbakeLenke()}</main>
     <nav class="bunn">${faner().map(([id, ik]) => `<button data-fane="${id}" class="${S.fane === id ? 'aktiv' : ''}">${svg(ik)}${t('f_' + id)}</button>`).join('')}</nav>`;
