@@ -1,7 +1,7 @@
 {
-  "name": "Teknisk kontroll",
-  "short_name": "Kontroll",
-  "description": "Månedlig teknisk kontroll av MC",
+  "name": "RC Portal",
+  "short_name": "RC Portal",
+  "description": "Teknisk kontroll, Wolfpack og håndbok for Road Captains",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
