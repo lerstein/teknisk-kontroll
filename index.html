@@ -14,13 +14,13 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <style>
 :root{color-scheme:dark;--bg:#111316;--kort:#1b1e23;--kort2:#252930;--linje:#323741;--tekst:#eceef1;--dempet:#98a1ac;
-  --aksent:#f2b01e;--aksent-t:#1a1300;--s0:#2e9e4f;--s1:#d6a915;--s2:#d43a3a;--r:12px}
+  --aksent:#ffa326;--klubb:#a6192e;--aksent-t:#1a1300;--s0:#2e9e4f;--s1:#d6a915;--s2:#d43a3a;--r:12px}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--tekst);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
 body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
 body.uten-nav{padding-bottom:0}
 header.topp{position:sticky;top:0;z-index:5;background:rgba(17,19,22,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-  border-bottom:1px solid var(--linje);padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;gap:10px;min-height:56px}
+  border-bottom:3px solid var(--klubb);padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;gap:10px;min-height:56px}
 .topp h1{font-size:17px;margin:0;font-weight:700}
 .topp .hvem{margin-left:auto;font-size:12.5px;color:var(--dempet);text-align:right;line-height:1.25}
 button.hvem{background:none;border:0;padding:4px 0 4px 8px;min-height:0;font:inherit;font-size:12.5px;display:flex;align-items:center;gap:8px;color:var(--dempet);font-weight:400}
@@ -155,7 +155,7 @@ div.logo{width:64px;height:64px;border-radius:16px;background:var(--aksent);colo
 .tommel .fjern{position:absolute;top:4px;right:4px;width:30px;height:30px;min-height:0;padding:0;border-radius:50%;background:rgba(0,0,0,.72);border:0;color:#fff;font-size:19px;line-height:1}
 img.stor{width:100%;border-radius:10px;display:block;background:#0c0e11;min-height:220px}
 /* install */
-.install{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;border-color:var(--aksent);background:linear-gradient(135deg,rgba(242,176,30,.13),var(--kort) 60%)}
+.install{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;border-color:var(--aksent);background:linear-gradient(135deg,rgba(255,163,38,.13),var(--kort) 60%)}
 .install p{margin:0;font-weight:600}
 .install .knapperad button{min-height:40px}
 ol.steg{padding-left:22px;margin:0 0 12px;line-height:1.5}
@@ -183,8 +183,8 @@ details.kort p{font-size:14.5px;color:#cfd3d9}
 .wpinfo{flex:1;min-width:0}
 .wpkm{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
 .wpbar{height:12px;border-radius:6px;background:#0c0e11;margin:6px 0 4px;overflow:hidden}
-.wpbar span{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#b07c0c,var(--aksent))}
-.wprad.forst .wpbar span{background:linear-gradient(90deg,var(--aksent),#ffd65a)}
+.wpbar span{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#c4730f,var(--aksent))}
+.wprad.forst .wpbar span{background:linear-gradient(90deg,var(--aksent),#ffc46e)}
 /* season strip */
 .sesong{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px}
 .sesong span{display:flex;align-items:center;justify-content:center;height:28px;border-radius:6px;font-size:12px;font-weight:700;letter-spacing:.01em;background:#20242a;color:#6d7682;border:1px solid transparent}
