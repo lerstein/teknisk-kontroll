@@ -26,6 +26,19 @@ header.topp{position:sticky;top:0;z-index:5;background:rgba(17,19,22,.94);backdr
 button.hvem{background:none;border:0;padding:4px 0 4px 8px;min-height:0;font:inherit;font-size:12.5px;display:flex;align-items:center;gap:8px;color:var(--dempet);font-weight:400}
 button.hvem svg{width:26px;height:26px;flex:none;color:var(--tekst)}
 button.hvem.aktiv svg{color:var(--aksent)}
+button.tlfknapp{background:none;border:1.5px solid var(--kant,#2b3038);border-radius:50%;width:38px;height:38px;min-height:0;padding:0;display:grid;place-items:center;flex:none;color:var(--aksent)}
+button.tlfknapp svg{width:19px;height:19px}
+.tlfsok{margin-bottom:12px}
+.tlfavd h3{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.tlfadr{font-size:13.5px;color:var(--dempet);margin:-4px 0 8px;line-height:1.4}
+.tlfadr a{color:var(--aksent)}
+.tlfrad{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--kant,#2b3038)}
+.tlfrad:first-of-type{border-top:0}
+.tlfrad .hvem2{flex:1;min-width:0}
+.tlfrad .hvem2 b{display:block;font-weight:600}
+.tlfrad .hvem2 small{color:var(--dempet);font-size:12.5px}
+.tlfrad a.ring{display:inline-flex;align-items:center;gap:6px;color:var(--aksent);text-decoration:none;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:14.5px}
+.tlfrad a.ring svg{width:16px;height:16px}
 /* handbook */
 .hbgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .hbkort{display:flex;flex-direction:column;padding:0;overflow:hidden;text-align:left;background:var(--kort);border:1px solid var(--linje);border-radius:var(--r);min-height:0;font:inherit;color:var(--tekst);align-items:stretch}
@@ -254,6 +267,7 @@ const TXT = {
     kontrollert: 'Kontrollert {0}', aldri: 'Aldri kontrollert', manglerMnd: '{0} mangler', frist: 'frist {0}', passert: ' – passert',
     egenOk: 'egenerklæring ✓', egenMangler: 'egenerklæring mangler', hkUtlopt: 'helsetrygdekort utløpt', hkUtloper: 'helsetrygdekort utløper {0}',
     sesong: 'Sesong {0}',
+    telefonliste: 'Telefonliste', tlfSok: 'Søk på navn, avdeling eller status', klubbhus: 'Klubbhus', klubbTlf: 'Klubbtelefon', visKart: 'Vis i kart', tlfHentet: 'Hentet fra klubbens telefonliste {0}', tlfIngen: 'Ingen treff.',
     nyKontrollDenne: 'Ny kontroll av denne sykkelen', kontrollerSelv: 'Kontroller sykkelen selv', venterMerke: 'VENTER', venterGodkj: 'Venter på godkjenning fra Road Captain',
     godkjentAvTittel: 'Godkjent av', godkjenn: 'Godkjenn', rettGodkjenn: 'Rett og godkjenn', avvis: 'Avvis', avvisGrunn: 'Hvorfor avvises kontrollen? Medlemmet ser grunnen.',
     godkjentToast: 'Kontrollen er godkjent', avvistToast: 'Kontrollen er avvist', venterListe: 'Venter på godkjenning ({0})', sendtTilGodkj: 'Lagret – sendt til Road Captain for godkjenning',
@@ -371,6 +385,7 @@ const TXT = {
     kontrollert: 'Inspected {0}', aldri: 'Never inspected', manglerMnd: '{0} missing', frist: 'deadline {0}', passert: ' – overdue',
     egenOk: 'self-declaration ✓', egenMangler: 'self-declaration missing', hkUtlopt: 'health card expired', hkUtloper: 'health card expires {0}',
     sesong: 'Season {0}',
+    telefonliste: 'Phone list', tlfSok: 'Search name, chapter or status', klubbhus: 'Clubhouse', klubbTlf: 'Club phone', visKart: 'Show on map', tlfHentet: "From the club's phone list, {0}", tlfIngen: 'No matches.',
     nyKontrollDenne: 'New inspection of this bike', kontrollerSelv: 'Inspect the bike yourself', venterMerke: 'PENDING', venterGodkj: 'Waiting for approval from the Road Captain',
     godkjentAvTittel: 'Approved by', godkjenn: 'Approve', rettGodkjenn: 'Correct and approve', avvis: 'Reject', avvisGrunn: 'Why is the inspection rejected? The member will see the reason.',
     godkjentToast: 'Inspection approved', avvistToast: 'Inspection rejected', venterListe: 'Waiting for approval ({0})', sendtTilGodkj: 'Saved – sent to the Road Captain for approval',
@@ -542,6 +557,7 @@ const IKON = {
   skjema: '<path d="M9 3.5h6v3H9z"/><path d="M15 5h3.5v16h-13V5H9"/><path d="m9 13.5 2 2 4-4.5"/>',
   sykkel: '<circle cx="5.5" cy="16" r="3.5"/><circle cx="18.5" cy="16" r="3.5"/><path d="M5.5 16 9.5 9h4.5l4.5 7"/><path d="M14 9l-1.6-3.5H15.5M9.5 9 8 6.5H5.5"/>',
   folk: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c1.8.7 3 2.4 3.5 5.2"/>',
+  telefon: '<path d="M5 4h3.5l1.8 4.6-2.3 1.6a11.5 11.5 0 0 0 5.8 5.8l1.6-2.3L20 15.5V19a1.5 1.5 0 0 1-1.6 1.5A16.5 16.5 0 0 1 3.5 5.6 1.5 1.5 0 0 1 5 4z"/>',
   person: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.2 4-6.5 8-6.5s7 2.3 8 6.5"/>',
   pokal: '<path d="M8 4h8v4.5a4 4 0 0 1-8 0z"/><path d="M8 5.5H5v1a3 3 0 0 0 3 3M16 5.5h3v1a3 3 0 0 1-3 3"/><path d="M12 12.5V16M9 20h6l-.6-4h-4.8z"/>',
   bok: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M8 7.5h8M8 11h6"/>',
@@ -604,7 +620,7 @@ async function oppdaterAlt() {
 
 function loggUt(melding) {
   S.token = ''; S.d = null; S.fane = ''; S.filter = 'alle'; S.midlPw = ''; S.avd = hent('tk_avd') || 'Alle';
-  F = G = B = null; lagre('tk_token', null); lagre('tk_utkast', null);
+  F = G = B = null; TLF = null; TLF_SOK = ""; lagre('tk_token', null); lagre('tk_utkast', null);
   lukkAlle(); visLogin('login');
   if (melding) toast(typeof melding === 'string' ? melding : t('loggInnPaNytt'), true);
 }
@@ -870,7 +886,8 @@ function render() {
   const innhold = { oversikt: visOversikt, kontroll: visKontrollSkjema, mine: visMine, wolfpack: visWolfpack, haandbok: visHaandbok, medlemmer: visMedlemmer, konto: visKonto }[S.fane] || visMine;
   $('#app').innerHTML = `
     <header class="topp"><h1><img src="rcportal-topp.png?v=2" alt="${t('app')}" class="ordmerke-topp"></h1>
-      <button type="button" class="hvem${S.fane === 'konto' ? ' aktiv' : ''}" data-fane="konto" aria-label="${esc(t('f_konto'))}"><span>${esc(b.navn)}<br>${esc(t('r_' + b.rolle))} · ${esc(b.avdeling)}</span>${avatar(b.telefon, 'avatar-liten') || svg(IKON.person)}</button></header>
+      <button type="button" class="hvem${S.fane === 'konto' ? ' aktiv' : ''}" data-fane="konto" aria-label="${esc(t('f_konto'))}"><span>${esc(b.navn)}<br>${esc(t('r_' + b.rolle))} · ${esc(b.avdeling)}</span>${avatar(b.telefon, 'avatar-liten') || svg(IKON.person)}</button>
+      <button type="button" class="tlfknapp" data-a="telefonliste" aria-label="${esc(t('telefonliste'))}">${svg(IKON.telefon)}</button></header>
     <main><div id="installPlass">${installBanner()}</div>${innhold()}${tilbakeLenke()}</main>
     <nav class="bunn">${faner().map(([id, ik]) => `<button data-fane="${id}" class="${S.fane === id ? 'aktiv' : ''}">${svg(ik)}${t('f_' + id)}</button>`).join('')}</nav>`;
   if (S.fane === 'kontroll') oppdaterStatus();
@@ -1248,6 +1265,40 @@ function visWolfpack() {
     <p class="dempet">${t('wp_merk')}</p>
     ${hbAlleKap().some(k => k.wolfpack) ? `<button class="bred" data-hb-kapittel="${hbAlleKap().findIndex(k => k.wolfpack)}">📜 ${t('wp_regler')}</button>` : ''}`;
 }
+// ─── Phone list (read live from the club's own sheet via the backend) ───
+let TLF = null, TLF_SOK = '';
+const telLenke = n => 'tel:' + String(n).replace(/[^\d+]/g, '');
+const avdNokkel = a => String(a || '').toLowerCase().replace(/[^a-zæøå]/g, '').slice(0, 6);
+async function visTelefonliste() {
+  if (!TLF) {
+    tegnLag(t('telefonliste'), `<p class="dempet">${t('laster')}</p>`);
+    try { TLF = await api('telefonliste'); }
+    catch (e) { return tegnLag(t('telefonliste'), `<div class="banner v1">${esc(e.message)}</div>`); }
+  }
+  const egen = avdNokkel(meg().avdeling);
+  const avd = [...TLF.avdelinger].sort((a, b) => (avdNokkel(b.navn) === egen) - (avdNokkel(a.navn) === egen));
+  tegnLag(t('telefonliste'), `<input class="tlfsok" type="search" data-tlfsok placeholder="${esc(t('tlfSok'))}" value="${esc(TLF_SOK)}" autocomplete="off">
+    <div id="tlfListe"></div><p class="dempet" style="font-size:12.5px">${esc(t('tlfHentet', fmtAktiv(TLF.hentet)))}</p>`);
+  const tegn = () => {
+    const q = TLF_SOK.trim().toLowerCase();
+    const html = avd.map(a => {
+      const avdTreff = !q || a.navn.toLowerCase().includes(q);
+      const p = a.personer.filter(x => avdTreff || (x.navn + ' ' + x.status).toLowerCase().includes(q) || x.telefon.replace(/\D/g, '').includes(q.replace(/\D/g, '') || '§'));
+      if (!p.length) return '';
+      const adr = a.adresse.join(', ');
+      return `<div class="kort tlfavd"><h3><span>${esc(a.navn)}</span></h3>
+        ${adr || a.telefon ? `<div class="tlfadr">${adr ? `${t('klubbhus')}: ${esc(adr)} · <a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(adr)}">${t('visKart')}</a>` : ''}
+          ${a.telefon ? `${adr ? '<br>' : ''}${t('klubbTlf')}: <a href="${esc(telLenke(a.telefon))}">${esc(a.telefon)}</a>` : ''}</div>` : ''}
+        ${p.map(x => `<div class="tlfrad"><div class="hvem2"><b>${esc(x.navn)}</b><small>${esc(x.status)}</small></div>
+          ${x.telefon.replace(/\D/g, '').length >= 6 ? `<a class="ring" href="${esc(telLenke(x.telefon))}">${svg(IKON.telefon)}${esc(x.telefon.replace(/^\(\+47\)\s*/, ''))}</a>` : ''}</div>`).join('')}</div>`;
+    }).join('');
+    const el = $('#tlfListe'); if (el) el.innerHTML = html || `<p class="tom">${t('tlfIngen')}</p>`;
+  };
+  tegn();
+  const inp = $('[data-tlfsok]');
+  if (inp) inp.oninput = () => { TLF_SOK = inp.value; tegn(); };
+}
+
 async function lastWolfpack() {
   const aar = S.wpAar || new Date().getFullYear();
   try {
@@ -1782,6 +1833,7 @@ const A = {
   },
   loggUt() { loggUt(); },
   oppfolging() { apne(visOppfolging); },
+  telefonliste() { apne(visTelefonliste); },
   async installer() {
     const ty = installType();
     if (ty === 'prompt') {

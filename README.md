@@ -178,3 +178,11 @@ The key is only stored in Script Properties – never in `index.html` or the she
 Endpoint: `GET https://www.vegvesen.no/ws/no/vegvesen/kjoretoy/felles/datautlevering/enkeltoppslag/kjoretoydata?kjennemerke=<regnr>` with header `SVV-Authorization: Apikey <key>`. The response fields (`merke`, `handelsbetegnelse`, `understellsnummer`, `registrertForstegangNorgeDato`) are found by name anywhere in the response, so small changes in the structure don't break it.
 
 **Finn eierhåndbok** on the bike page opens a search for the owner's manual on Harley-Davidson's own Service Information Portal (other makes: a general search). There is no official direct-link format, so it is a search, not a direct download.
+
+## Phone list
+The phone button in the header opens the club's phone list. It is read live from the club's own sheet
+(`CFG.TELEFONLISTE_ID`, tab `CFG.TELEFONLISTE_ARK` = "Telefonliste BMC") and cached for 10 minutes, so changes there show up in the app by themselves.
+Only chapter, clubhouse address, club phone, status, name and phone are read – birthdays, e-mail and licences are not.
+The list is only sent to logged-in users. The account that owns the Apps Script must be able to open that sheet.
+Run **Teknisk kontroll → Test telefonlisten** once after updating to approve access and see what the app reads.
+Layout expected: column B = "BMC <chapter>" heading followed by address lines and "Telefon : …", C = status, E = name, G = phone.
