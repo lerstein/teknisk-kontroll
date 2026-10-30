@@ -237,7 +237,7 @@ const TXT = {
     kodeFraRc: 'Aktiveringskode fra Road Captain', velgPassord: 'Velg passord (minst 6 tegn)', gjentaPassord: 'Gjenta passord',
     lagPassordLogg: 'Lag passord og logg inn',
     hintAktiver: 'Koden får du av Road Captain i avdelingen din. Den gjelder i 14 dager.',
-    hintLogin: 'Har du fått et midlertidig passord, logger du inn med det her. Glemt passordet? Be Road Captain om en ny kode, og velg «Første gang».',
+    hintLogin: 'Har du fått et passord eller en kode fra Road Captain, skriver du det i passordfeltet. Første gang blir du bedt om å lage ditt eget passord. Glemt passordet? Be Road Captain om en ny kode.',
     byttTittel: 'Velg ditt eget passord', byttHint: 'Du er logget inn med et midlertidig passord. Lag ditt eget før du går videre.',
     midlertidig: 'Midlertidig passord', lagreGaVidere: 'Lagre og gå videre',
     passordUlike: 'Passordene er ikke like', loggInnPaNytt: 'Logg inn på nytt',
@@ -332,7 +332,7 @@ const TXT = {
     passordTittel: 'Passord', glemtKode: 'Glemt passord – lag ny kode', lagNyKode: 'Lag ny kode',
     glemtHint: 'Gammelt passord slutter å virke, og medlemmet logges ut.', nyKodeSporsmal: 'Lage ny kode? Medlemmet må lage nytt passord.',
     nyKodeLaget: 'Ny kode laget', medlemLagtTil: 'Medlem lagt til', lagretToast: 'Lagret',
-    smsTekst: 'Hei {0}! Du er lagt inn i appen for teknisk kontroll: {1}\nVelg «Første gang», skriv telefonnummeret ditt og koden {2}, og lag ditt eget passord. Koden gjelder i 14 dager.',
+    smsTekst: 'Hei {0}! Du er lagt inn i RC Portal, appen for teknisk kontroll: {1}\nLogg inn med telefonnummeret ditt og koden {2} som passord. Første gang blir du bedt om å lage ditt eget passord. Koden gjelder i 14 dager.',
     konto: 'Konto', telefonKort: 'Telefon', byttPassord: 'Bytt passord', navaerende: 'Nåværende passord', nyttPassord: 'Nytt passord (minst 6 tegn)',
     gjentaNytt: 'Gjenta nytt passord', nyeUlike: 'De nye passordene er ikke like', passordByttet: 'Passord byttet',
     hentPaNytt: 'Hent data på nytt', oppdatert: 'Oppdatert', sprak: 'Språk',
@@ -350,7 +350,7 @@ const TXT = {
     kodeFraRc: 'Activation code from your Road Captain', velgPassord: 'Choose a password (at least 6 characters)', gjentaPassord: 'Repeat password',
     lagPassordLogg: 'Create password and log in',
     hintAktiver: "Your chapter's Road Captain gives you the code. It is valid for 14 days.",
-    hintLogin: 'If you were given a temporary password, log in with it here. Forgot your password? Ask your Road Captain for a new code and choose "First time".',
+    hintLogin: 'If your Road Captain gave you a password or a code, type it in the password field. The first time, you will be asked to choose your own password. Forgot your password? Ask your Road Captain for a new code.',
     byttTittel: 'Choose your own password', byttHint: 'You are logged in with a temporary password. Create your own before you continue.',
     midlertidig: 'Temporary password', lagreGaVidere: 'Save and continue',
     passordUlike: "The passwords don't match", loggInnPaNytt: 'Please log in again',
@@ -445,7 +445,7 @@ const TXT = {
     passordTittel: 'Password', glemtKode: 'Forgot password – create new code', lagNyKode: 'Create new code',
     glemtHint: 'The old password stops working and the member is logged out.', nyKodeSporsmal: 'Create a new code? The member will have to choose a new password.',
     nyKodeLaget: 'New code created', medlemLagtTil: 'Member added', lagretToast: 'Saved',
-    smsTekst: 'Hi {0}! You have been added to the technical inspection app: {1}\nChoose "First time", enter your phone number and the code {2}, and create your own password. The code is valid for 14 days.',
+    smsTekst: 'Hi {0}! You have been added to RC Portal, the technical inspection app: {1}\nLog in with your phone number and the code {2} as your password. The first time, you will be asked to choose your own password. The code is valid for 14 days.',
     konto: 'Account', telefonKort: 'Phone', byttPassord: 'Change password', navaerende: 'Current password', nyttPassord: 'New password (at least 6 characters)',
     gjentaNytt: 'Repeat new password', nyeUlike: "The new passwords don't match", passordByttet: 'Password changed',
     hentPaNytt: 'Reload data', oppdatert: 'Updated', sprak: 'Language',
@@ -774,14 +774,13 @@ function visBilde(id) {
 }
 
 // ─── Login ──────────────────────────────────────────────────
-function visLogin(modus) {
+function visLogin() {
+  const modus = 'login';
   document.body.classList.add('uten-nav');
   $('#app').innerHTML = `<main class="login">
     <img class="logo" src="icon-192.png" alt="RC Portal">
     <h1><img src="rcportal-logo.png?v=2" alt="${t('app')}" class="ordmerke"></h1>
     <div class="under">${t('undertittel')}</div>
-    <div class="faner2"><button type="button" data-modus="login" class="${modus === 'login' ? 'aktiv' : ''}">${t('loggInn')}</button>
-      <button type="button" data-modus="aktiver" class="${modus === 'aktiver' ? 'aktiv' : ''}">${t('forsteGang')}</button></div>
     <form id="loginSkjema" class="kort" autocomplete="on">
       <label class="felt"><span>${t('telefon')}</span><input name="telefon" type="tel" inputmode="tel" autocomplete="username" required value="${esc(hent('tk_tlf'))}"></label>
       ${modus === 'aktiver' ? `
