@@ -254,7 +254,11 @@ const TXT = {
     kontrollert: 'Kontrollert {0}', aldri: 'Aldri kontrollert', manglerMnd: '{0} mangler', frist: 'frist {0}', passert: ' – passert',
     egenOk: 'egenerklæring ✓', egenMangler: 'egenerklæring mangler', hkUtlopt: 'helsetrygdekort utløpt', hkUtloper: 'helsetrygdekort utløper {0}',
     sesong: 'Sesong {0}',
-    nyKontrollDenne: 'Ny kontroll av denne sykkelen', redigerSykkel: 'Rediger sykkel', kontroller: 'Kontroller ({0})',
+    nyKontrollDenne: 'Ny kontroll av denne sykkelen', kontrollerSelv: 'Kontroller sykkelen selv', venterMerke: 'VENTER', venterGodkj: 'Venter på godkjenning fra Road Captain',
+    godkjentAvTittel: 'Godkjent av', godkjenn: 'Godkjenn', rettGodkjenn: 'Rett og godkjenn', avvis: 'Avvis', avvisGrunn: 'Hvorfor avvises kontrollen? Medlemmet ser grunnen.',
+    godkjentToast: 'Kontrollen er godkjent', avvistToast: 'Kontrollen er avvist', venterListe: 'Venter på godkjenning ({0})', sendtTilGodkj: 'Lagret – sendt til Road Captain for godkjenning',
+    rettTittel: 'Rett kontrollen', egenKontrollInfo: 'Du kontrollerer din egen sykkel. Kontrollen teller med en gang, men Road Captain må godkjenne den.',
+    avvistBanner: 'Kontrollen av {0} ({1}) ble avvist av {2}', trekkTilbake: 'Trekk tilbake kontrollen', redigerSykkel: 'Rediger sykkel', kontroller: 'Kontroller ({0})',
     ingenKontroller: 'Ingen kontroller registrert.', egenerkl: 'Egenerklæringer ({0})', ingenEgen: 'Ingen egenerklæring for denne sykkelen.',
     altOk: 'Alt OK', ikkeOkAnt: '{0} IKKE OK', bilde1: ' · 1 bilde', bilderN: ' · {0} bilder',
     kontrollTittel: 'Kontroll {0}', forbudFrist: 'Kjøreforbud – må fikses innen {0}', forbudUten: 'Kjøreforbud', borFrist: 'Bør utbedres innen {0}', bor: 'Bør utbedres',
@@ -367,7 +371,11 @@ const TXT = {
     kontrollert: 'Inspected {0}', aldri: 'Never inspected', manglerMnd: '{0} missing', frist: 'deadline {0}', passert: ' – overdue',
     egenOk: 'self-declaration ✓', egenMangler: 'self-declaration missing', hkUtlopt: 'health card expired', hkUtloper: 'health card expires {0}',
     sesong: 'Season {0}',
-    nyKontrollDenne: 'New inspection of this bike', redigerSykkel: 'Edit bike', kontroller: 'Inspections ({0})',
+    nyKontrollDenne: 'New inspection of this bike', kontrollerSelv: 'Inspect the bike yourself', venterMerke: 'PENDING', venterGodkj: 'Waiting for approval from the Road Captain',
+    godkjentAvTittel: 'Approved by', godkjenn: 'Approve', rettGodkjenn: 'Correct and approve', avvis: 'Reject', avvisGrunn: 'Why is the inspection rejected? The member will see the reason.',
+    godkjentToast: 'Inspection approved', avvistToast: 'Inspection rejected', venterListe: 'Waiting for approval ({0})', sendtTilGodkj: 'Saved – sent to the Road Captain for approval',
+    rettTittel: 'Correct the inspection', egenKontrollInfo: 'You are inspecting your own bike. It counts at once, but the Road Captain must approve it.',
+    avvistBanner: 'The inspection of {0} ({1}) was rejected by {2}', trekkTilbake: 'Withdraw the inspection', redigerSykkel: 'Edit bike', kontroller: 'Inspections ({0})',
     ingenKontroller: 'No inspections registered.', egenerkl: 'Self-declarations ({0})', ingenEgen: 'No self-declaration for this bike.',
     altOk: 'All OK', ikkeOkAnt: '{0} NOT OK', bilde1: ' · 1 photo', bilderN: ' · {0} photos',
     kontrollTittel: 'Inspection {0}', forbudFrist: 'Do not ride – must be fixed by {0}', forbudUten: 'Do not ride', borFrist: 'Fix by {0}', bor: 'Fix soon',
@@ -623,6 +631,9 @@ const serAlt = () => rolle() === 'admin' || rolle() === 'officer';
 /** May the current user change things in this chapter? Admin: everywhere. RC / Officer: own chapter only. */
 const kanEndreAvd = avd => rolle() === 'admin' || (erRcLik() && avd === meg().avdeling);
 const kanEndreNoe = () => rolle() === 'admin' || erRcLik();   // false for President (read-only)
+const venter = k => k.status === 'venter';
+const kanGodkjenne = k => venter(k) && kanEndreAvd(k.avdeling);
+const venterMerke = k => venter(k) ? `<span class="merke gul">${t('venterMerke')}</span>` : '';
 const finnSykkel = id => S.d.sykler.find(s => s.id === id);
 const kontrollerFor = id => S.d.kontroller.filter(k => k.sykkel_id === id);
 const sisteKontroll = id => S.d.kontroller.find(k => k.sykkel_id === id);
@@ -919,6 +930,10 @@ function visOversikt() {
   return `<h2>${t('oversikt')}${S.avd !== 'Alle' ? ' – ' + esc(S.avd) : ''}</h2>
     ${avdVelger()}
     <div class="stat">${statKnapp('alle', ant.alle, t('st_sykler'))}${am ? statKnapp('mangler', ant.mangler, t('st_mangler', mndNavn(am))) : statKnapp('alle', '–', t('st_utenfor'))}${statKnapp('avvik', ant.avvik, t('st_avvik'))}${statKnapp('forbud', ant.forbud, t('st_forbud'))}</div>
+    ${(() => { const v = S.d.kontroller.filter(k => kanGodkjenne(k) && iAvd(k));
+      return v.length ? `<div class="kort"><h3>${t('venterListe', v.length)}</h3>${v.map(k => `<button class="kort" style="margin:6px 0 0" data-kontroll="${esc(k.id)}">
+        <div class="linje1"><b>${esc(k.navn)}</b>${k.kjoreforbud === 'Ja' ? `<span class="merke">${t('forbudMerke')}</span>` : chip(k.sum_allmenn, skalaNavn(k.sum_allmenn))}</div>
+        <div class="dempet">${esc(k.regnr)} · ${esc(Mnd(Number(kMnd(k).slice(5))))} · ${fmtDato(k.dato)}${S.avd === 'Alle' ? ' · ' + esc(k.avdeling) : ''}</div></button>`).join('')}</div>` : ''; })()}
     <div class="knapperad" style="margin:-4px 0 14px">${(() => { const n = oppfolgingPunkter().length; return `<button type="button" data-a="oppfolging" class="${n ? 'primar' : ''}">${n ? t('oppfolgingN', n) : t('oppfolging')}</button>`; })()}
       <button type="button" data-a="statistikk">${t('statistikk')}</button></div>
     <div class="forklaring"><span><i style="background:var(--s0)"></i>${t('s0')}</span><span><i style="background:var(--s1)"></i>${t('s1')}</span><span><i style="background:var(--s2)"></i>${t('s2')}</span><span>${esc(t('sesong', aar()))}: ${esc(mndNavn(SESONG[0]))}–${esc(mndNavn(SESONG[SESONG.length - 1]))}</span></div>
@@ -988,12 +1003,13 @@ function visSykkel(id) {
       ${s.vin ? `<div class="dempet" style="font-size:12.5px;margin-top:6px">${t('vinKort')}: <span style="font-family:ui-monospace,Menlo,monospace">${esc(s.vin)}</span></div>` : ''}
       ${s.modell ? `<a class="knapp bred" style="margin:10px 0 0" target="_blank" rel="noopener" href="${esc(handbokUrl(s))}">📘 ${t('handbok')}</a>` : ''}</div>
     ${(() => { const v = varslerFor(id); return v.length ? `<div class="banner v1"><div style="font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${t('varsler')}</div>${v.map(x => esc(x.tekst)).join('<br>')}</div>` : ''; })()}
-    ${kanEndreAvd(s.avdeling) ? `<button class="primar bred" data-ny-kontroll="${esc(id)}">${t('nyKontrollDenne')}</button>` : ''}
+    ${kanEndreAvd(s.avdeling) ? `<button class="primar bred" data-ny-kontroll="${esc(id)}">${t('nyKontrollDenne')}</button>`
+      : s.telefon === meg().telefon ? `<button class="primar bred" data-ny-kontroll="${esc(id)}">${t('kontrollerSelv')}</button>` : ''}
     ${kanEndreAvd(s.avdeling) || s.telefon === meg().telefon ? `<button class="bred" data-egen-ny="${esc(id)}">${t('fyllEgen')}</button>` : ''}
     ${kanEndreAvd(s.avdeling) || s.telefon === meg().telefon ? `<button class="bred" data-sykkel-skjema="${esc(id)}">${t('redigerSykkel')}</button>` : ''}
     <h3>${t('kontroller', ks.length)}</h3>
     ${ks.length ? ks.map(k => `<button class="kort" data-kontroll="${esc(k.id)}">
-        <div class="linje1"><b>${esc(Mnd(Number(kMnd(k).slice(5))))} · ${t('sk_' + kSkjema(k))}</b>${k.kjoreforbud === 'Ja' ? `<span class="merke">${t('forbudMerke')}</span>` : chip(k.sum_allmenn, skalaNavn(k.sum_allmenn))}</div>
+        <div class="linje1"><b>${esc(Mnd(Number(kMnd(k).slice(5))))} · ${t('sk_' + kSkjema(k))}</b>${venterMerke(k)}${k.kjoreforbud === 'Ja' ? `<span class="merke">${t('forbudMerke')}</span>` : chip(k.sum_allmenn, skalaNavn(k.sum_allmenn))}</div>
         <div class="dempet">${fmtDato(k.dato)} · ${esc(k.kontrollor)}${k.km !== '' ? ' · ' + fmtKm(k.km) : ''}${antBilder('kontroll', k.id)}</div>${chips(k)}</button>`).join('')
       : `<p class="tom">${t('ingenKontroller')}</p>`}
     <h3>${t('egenerkl', es.length)}</h3>
@@ -1004,6 +1020,7 @@ function visSykkel(id) {
 
 function kanSlette(k) {
   if (rolle() === 'admin') return true;
+  if (venter(k) && k.kontrollor_tlf === meg().telefon) return true;
   if (!erRcLik() || k.kontrollor_tlf !== meg().telefon) return false;
   return alderTimer(k.tidspunkt) < S.d.innstillinger.rcSlettTimer;
 }
@@ -1018,6 +1035,10 @@ function visKontroll(id) {
     `<dt>${t(p.n)}${(p.x || []).map(([xid, xn]) => k[xid] !== '' && k[xid] != null ? `<br><small>${t(xn)}: ${esc(k[xid])}</small>` : '').join('')}</dt><dd>${chip(k[p.id], skalaNavn(k[p.id]))}</dd>`).join('')}</dl></div>`;
   const sum = Number(k.sum_allmenn);
   tegnLag(t('kontrollTittel', fmtDato(k.dato)), `
+    ${venter(k) ? `<div class="banner info">${t('venterGodkj')}${kanGodkjenne(k) ? `<div class="knapperad" style="margin:10px 0 0">
+        <button type="button" class="primar" data-a="godkjenn" data-id="${esc(k.id)}">${t('godkjenn')}</button>
+        <button type="button" data-a="rettKontroll" data-id="${esc(k.id)}">${t('rettGodkjenn')}</button>
+        <button type="button" class="fare" data-a="avvis" data-id="${esc(k.id)}">${t('avvis')}</button></div>` : ''}</div>` : ''}
     ${k.kjoreforbud === 'Ja' ? `<div class="banner v2">${k.frist ? t('forbudFrist', fmtDato(k.frist)) : t('forbudUten')}</div>` :
       sum >= 1 ? `<div class="banner v1">${k.frist ? t('borFrist', fmtDato(k.frist)) : t('bor')}</div>` : ''}
     <div class="kort"><dl class="info">
@@ -1026,7 +1047,8 @@ function visKontroll(id) {
       <dt>${t('maaned')}</dt><dd>${esc(Mnd(Number(kMnd(k).slice(5))))} ${esc(kMnd(k).slice(0, 4))}</dd><dt>${t('skjema')}</dt><dd>${t('sk_' + sk)}</dd>
       <dt>${t('km')}</dt><dd>${k.km !== '' ? fmtKm(k.km) : '–'}</dd>
       ${sk === 'stor' ? `<dt>${t('bildeAvis')}</dt><dd>${jaNei(k.bilde_avis)}</dd>` : ''}
-      <dt>${t('kontrollor')}</dt><dd>${esc(k.kontrollor)}</dd><dt>${t('registrert')}</dt><dd>${esc(k.tidspunkt)}</dd></dl>${sk === 'stor' ? chips(k) : ''}</div>
+      <dt>${t('kontrollor')}</dt><dd>${esc(k.kontrollor)}</dd><dt>${t('registrert')}</dt><dd>${esc(k.tidspunkt)}</dd>
+      ${!venter(k) && k.godkjent_av ? `<dt>${t('godkjentAvTittel')}</dt><dd>${esc(k.godkjent_av)}</dd>` : ''}</dl>${sk === 'stor' ? chips(k) : ''}</div>
     ${bildeKort('kontroll', k, ['km', 'avis', 'annet'])}
     ${sk === 'enkel'
       ? `<div class="kort"><h3>${t('sk_enkel')}</h3><dl class="info">${ENKEL.map(([id, n]) => `<dt>${t(n)}</dt><dd>${chip(k[id], skalaNavn(k[id]))}</dd>`).join('')}</dl></div>`
@@ -1034,7 +1056,7 @@ function visKontroll(id) {
         `<div class="kort"><h3>${t('oljeTittel')}</h3><dl class="info">${OLJER.map(([o, n]) => `<dt>${t(n)}${k[o] !== '' && k[o] != null ? ` <small>(${esc(k[o])})</small>` : ''}</dt><dd>${okChip(k[o + '_ok'])}</dd>`).join('')}
           <dt>${t('batteri')}${k.batteri_dato !== '' && k.batteri_dato != null ? ` <small>(${esc(k.batteri_dato)})</small>` : ''}</dt><dd>${okChip(k.batteri_ok)}</dd></dl></div>`}
     ${k.merknad ? `<div class="kort"><h3>${t('merknad')}</h3><p style="white-space:pre-wrap;margin:0">${esc(k.merknad)}</p></div>` : ''}
-    ${kanSlette(k) ? `<button class="fare bred" data-slett-kontroll="${esc(k.id)}">${t('slettKontroll')}</button>` : ''}`);
+    ${kanSlette(k) ? `<button class="fare bred" data-slett-kontroll="${esc(k.id)}">${venter(k) && k.kontrollor_tlf === meg().telefon && !kanEndreAvd(k.avdeling) ? t('trekkTilbake') : t('slettKontroll')}</button>` : ''}`);
 }
 
 // ─── New inspection ─────────────────────────────────────────
@@ -1090,6 +1112,7 @@ const harInnhold = f => f && [...PUNKTER, ...ENKEL.map(([id]) => id)].some(p => 
 
 function startKontroll(id) {
   if (!F) F = hentUtkast();
+  if (F && F._retter) F = null;
   if (harInnhold(F) && F.sykkel_id && F.sykkel_id !== id && !confirm(t('annenSykkelUtkast'))) return;
   if (!F || F.sykkel_id !== id) { F = nyttSkjema(id); forhandsutfyll(); }
   lagreUtkast(); lukkAlle(); S.fane = 'kontroll'; render(); scrollTo(0, 0);
@@ -1112,7 +1135,7 @@ let FORRIGE = {};
 function visKontrollSkjema() {
   if (!F) F = hentUtkast() || nyttSkjema();
   FORRIGE = F.sykkel_id ? forrigeVerdier(F.sykkel_id) : {};
-  const sykler = S.d.sykler.filter(s => (rolle() === 'admin' ? iAvd(s) : kanEndreAvd(s.avdeling))).sort((a, b) => a.avdeling.localeCompare(b.avdeling) || a.eier.localeCompare(b.eier, 'nb'));
+  const sykler = S.d.sykler.filter(s => (F._retter ? s.id === F.sykkel_id : rolle() === 'admin' ? iAvd(s) : kanEndreAvd(s.avdeling) || s.telefon === meg().telefon)).sort((a, b) => a.avdeling.localeCompare(b.avdeling) || a.eier.localeCompare(b.eier, 'nb'));
   if (F.sykkel_id && !finnSykkel(F.sykkel_id)) F.sykkel_id = '';
   const grupper = {};
   sykler.forEach(s => (grupper[s.avdeling] = grupper[s.avdeling] || []).push(s));
@@ -1124,9 +1147,11 @@ function visKontrollSkjema() {
   const y = Number(F.maaned.slice(0, 4));
   if (F.skjema === 'egen') return aprilSkjema(sykler, grupper, opt, y);
 
+  const egenK = !F._retter && F.sykkel_id && !kanEndreAvd((finnSykkel(F.sykkel_id) || {}).avdeling);
   return `<div data-skjema="K">
-    <h2>${t('nyKontroll')}</h2>
-    ${rolle() === 'admin' ? avdVelger() : ''}
+    <h2>${F._retter ? t('rettTittel') : t('nyKontroll')}</h2>
+    ${rolle() === 'admin' && !F._retter ? avdVelger() : ''}
+    ${egenK || (!F._retter && !kanEndreNoe()) ? `<div class="banner info">${t('egenKontrollInfo')}</div>` : ''}
     <div class="kort">
       <label class="felt"><span>${t('sykkel')}</span><select data-f="sykkel_id"><option value="">${t('velgSykkel')}</option>
         ${Object.keys(grupper).length > 1 ? Object.entries(grupper).map(([a, l]) => `<optgroup label="${esc(a)}">${l.map(opt).join('')}</optgroup>`).join('') : sykler.map(opt).join('')}
@@ -1255,7 +1280,9 @@ function visMine() {
   const egne = egenFor(b.telefon);
   const y = String(aar());
   const iAar = egne.find(e => String(e.dato).startsWith(y));
-  return `${profilKort(b.telefon)}
+  const avviste = (S.d.avviste || []).filter(k => k.telefon === b.telefon && alderTimer(k.godkjent_tid || k.tidspunkt) < 60 * 24);
+  return `${avviste.map(k => `<div class="banner v1">${esc(t('avvistBanner', k.regnr, Mnd(Number(kMnd(k).slice(5))), k.godkjent_av || 'RC'))}${k.avvist_grunn ? `:<br><i>${esc(k.avvist_grunn)}</i>` : ''}</div>`).join('')}
+    ${profilKort(b.telefon)}
     <h2>${t('mineSykler')}</h2>
     ${mine.length ? mine.map(i => sykkelKort(i, false)).join('') : `<p class="tom">${t('ingenMine')}</p>`}
     <button class="bred" data-sykkel-skjema="" data-eier="${esc(b.telefon)}">${t('leggTilSykkel')}</button>
@@ -1653,14 +1680,43 @@ const A = {
     await medKnapp(btn, async () => {
       const id = F.sykkel_id;
       const bilder = F.bilder || [];
-      const r = await api('lagreKontroll', { kontroll: Object.assign({}, F, { bilder: undefined, _forhand: undefined, _forhandVerdi: undefined }) });
+      const data = Object.assign({}, F, { bilder: undefined, _forhand: undefined, _forhandVerdi: undefined, _retter: undefined });
+      const retter = F._retter;
+      const r = retter ? Object.assign(await api('godkjennKontroll', { id: retter, handling: 'godkjenn', kontroll: data }), { id: retter })
+                       : await api('lagreKontroll', { kontroll: data });
       F = null; lagre('tk_utkast', null);
       const feil = await lastOppBilder(bilder, 'kontroll', r.id, btn);
-      await lastData(); S.fane = 'oversikt'; render(); scrollTo(0, 0);
+      await lastData(); S.fane = kanEndreNoe() ? 'oversikt' : 'mine'; render(); scrollTo(0, 0);
       apne(() => visSykkel(id));
       if (feil) { apne(() => visKontroll(r.id)); toast(feil + t('provHer'), true); }
-      else toast(t('lagret'));
+      else toast(retter ? t('godkjentToast') : r.status === 'venter' ? t('sendtTilGodkj') : t('lagret'));
     });
+  },
+  async godkjenn(btn) {
+    await medKnapp(btn, async () => {
+      await api('godkjennKontroll', { id: btn.dataset.id, handling: 'godkjenn' });
+      await lastData(); render(); if (LAG.length) LAG[LAG.length - 1](); toast(t('godkjentToast'));
+    });
+  },
+  async avvis(btn) {
+    const grunn = prompt(t('avvisGrunn'));
+    if (grunn === null) return;
+    await medKnapp(btn, async () => {
+      await api('godkjennKontroll', { id: btn.dataset.id, handling: 'avvis', grunn });
+      await lastData(); render(); tilbake(); toast(t('avvistToast'));
+    });
+  },
+  rettKontroll(btn) {
+    const k = S.d.kontroller.find(x => x.id === btn.dataset.id);
+    if (!k) return;
+    const sk = kSkjema(k);
+    F = { _retter: k.id, sykkel_id: k.sykkel_id, maaned: kMnd(k), skjema: sk, dato: String(k.dato).slice(0, 10), km: k.km === '' ? '' : String(k.km),
+          bilde_avis: k.bilde_avis || '', kjoreforbud: k.kjoreforbud === 'Ja' && Number(k.sum_allmenn) < 2, frist: k.frist ? String(k.frist).slice(0, 10) : '', merknad: k.merknad || '' };
+    (sk === 'stor' ? PUNKTER : ENKEL.map(([id]) => id)).forEach(p => { if (k[p] !== '' && k[p] != null) F[p] = Number(k[p]); });
+    if (sk === 'stor') ['dekk_f_mm', 'dekk_f_dato', 'dekk_b_mm', 'dekk_b_dato', 'brems_f_belegg', 'brems_b_belegg', 'batteri_dato', 'batteri_ok',
+      'olje_primaer', 'olje_primaer_ok', 'olje_clutch', 'olje_clutch_ok', 'olje_hydr', 'olje_hydr_ok', 'olje_motor', 'olje_motor_ok', 'kjolevaeske', 'kjolevaeske_ok']
+      .forEach(f => { if (k[f] !== '' && k[f] != null) F[f] = String(k[f]); });
+    lagreUtkast(); lukkAlle(); S.fane = 'kontroll'; render(); scrollTo(0, 0);
   },
   alleOk() { EGEN_SJEKK.forEach(([, r]) => r.forEach(([id]) => { if (!G[id]) G[id] = 'OK'; })); visEgenSkjema(); },
   async lagreEgen(btn) {

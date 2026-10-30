@@ -77,11 +77,21 @@ If you use the import, `CFG.ADMIN_TELEFON` can be left empty, because the import
 
 | Role | Sees | Can do |
 |---|---|---|
-| `medlem` | own bikes, own controls and declarations | add own bikes, fill in egenerklæring |
-| `rc` | everything in own avdeling | register controls, add/edit members (role medlem) and bikes in own avdeling, delete own control within 24 h |
-| `admin` | everything | everything, incl. making RC/admin and deleting any control |
+| `medlem` | own bikes, own controls and declarations | add own bikes, fill in egenerklæring, inspect own bike (needs RC approval) |
+| `president` | everything in own avdeling (read-only) | same as `medlem` for his own bikes – cannot change anything for others |
+| `rc` | everything in own avdeling | register controls, approve/correct/reject members' own inspections, add/edit members (role medlem) and bikes in own avdeling, delete own control within 24 h |
+| `officer` | everything, all avdelinger | the same as `rc`, but only in own avdeling |
+| `admin` | everything | everything, incl. setting roles and deleting any control |
 
-You can also edit roles directly in the `Brukere` sheet (`medlem` / `rc` / `admin`). Set `aktiv` to `Nei` to block someone.
+You can also edit roles directly in the `Brukere` sheet (`medlem` / `president` / `rc` / `officer` / `admin`). Set `aktiv` to `Nei` to block someone.
+
+### Members inspecting their own bike
+Everyone can inspect his own bike from the bike page ("Inspect the bike yourself"). The inspection counts at once (status, warnings, Wolfpack km),
+but is marked **PENDING** (`status` = `venter` in `Kontroller`). The chapter's RC (or an admin / the chapter's officer) opens it from
+"Waiting for approval" on the overview and chooses **Approve**, **Correct and approve** (edit the answers first) or **Reject** with a short reason.
+A rejected inspection (`status` = `avvist`) no longer counts anywhere; the member sees the reason on "Mine" for 60 days.
+The member can withdraw his own inspection while it is pending. Inspections an RC registers are approved at once.
+Columns `status`, `godkjent_av`, `godkjent_tid`, `avvist_grunn` are added to `Kontroller` automatically.
 
 ## Season, forms and scale
 
