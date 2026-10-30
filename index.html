@@ -156,6 +156,16 @@ div.logo{width:64px;height:64px;border-radius:16px;background:var(--aksent);colo
 .tommel span{position:absolute;left:0;right:0;bottom:0;font-size:11px;font-weight:700;padding:3px 6px;background:rgba(0,0,0,.66);color:#fff;text-align:left}
 .tommel .fjern{position:absolute;top:4px;right:4px;width:30px;height:30px;min-height:0;padding:0;border-radius:50%;background:rgba(0,0,0,.72);border:0;color:#fff;font-size:19px;line-height:1}
 img.stor{width:100%;border-radius:10px;display:block;background:#0c0e11;min-height:220px}
+/* profile & bike photos */
+.avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;background:#0c0e11 center/cover;flex:none;border:2px solid var(--aksent);display:grid;place-items:center;color:#4b525c;overflow:hidden}
+.avatar svg{width:38px;height:38px}
+.avatar-liten{width:30px;height:30px;border-radius:50%;object-fit:cover;flex:none;border:1.5px solid var(--aksent)}
+.profiltopp{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.profiltopp .navn{font-weight:700;font-size:17px}
+.mcmini{width:44px;height:30px;border-radius:6px;object-fit:cover;margin-right:8px;vertical-align:middle;flex:none}
+.mcbilde{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:10px;display:block;background:#0c0e11;margin-bottom:10px}
+.lenkeknapp.fil{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.lenkeknapp.fil svg{width:18px;height:18px}
 /* install */
 .install{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;border-color:var(--aksent);background:linear-gradient(135deg,rgba(255,163,38,.13),var(--kort) 60%)}
 .install p{margin:0;font-weight:600}
@@ -326,7 +336,7 @@ const TXT = {
     konto: 'Konto', telefonKort: 'Telefon', byttPassord: 'Bytt passord', navaerende: 'Nåværende passord', nyttPassord: 'Nytt passord (minst 6 tegn)',
     gjentaNytt: 'Gjenta nytt passord', nyeUlike: 'De nye passordene er ikke like', passordByttet: 'Passord byttet',
     hentPaNytt: 'Hent data på nytt', oppdatert: 'Oppdatert', sprak: 'Språk',
-    bt_km: 'Kilometerstand', bt_avis: 'Bilde m/avis', bt_annet: 'Bilde', bk_km: 'Km-stand', bk_avis: 'Bilde m/avis', bk_annet: 'Andre bilder',
+    bt_km: 'Kilometerstand', bt_avis: 'Bilde m/avis', bt_annet: 'Bilde', bt_profil: 'Profilbilde', bt_sykkel: 'Bilde av sykkelen', bk_profil: 'Bytt profilbilde', bk_profilNy: 'Legg til profilbilde', bk_sykkel: 'Bytt bilde av sykkelen', bk_sykkelNy: 'Legg til bilde av sykkelen', bk_km: 'Km-stand', bk_avis: 'Bilde m/avis', bk_annet: 'Andre bilder',
     fjernBilde: 'Fjern bilde', kunneIkkeLese: 'Kunne ikke lese bildet «{0}»', kunneIkkeLaste: 'Kunne ikke laste bildet', ingenBilder: 'Ingen bilder.',
     lasterOppAv: 'Laster opp bilde {0} av {1}…', lasterOppFlere: 'Laster opp {0} bilder…', lasterOpp1: 'Laster opp bilde…',
     bildeFeil: '{0} av {1} bilder ble ikke lagret: {2}', bildeLagret: 'Bilde lagret', lastetOppAv: 'Lastet opp av {0} {1}',
@@ -439,7 +449,7 @@ const TXT = {
     konto: 'Account', telefonKort: 'Phone', byttPassord: 'Change password', navaerende: 'Current password', nyttPassord: 'New password (at least 6 characters)',
     gjentaNytt: 'Repeat new password', nyeUlike: "The new passwords don't match", passordByttet: 'Password changed',
     hentPaNytt: 'Reload data', oppdatert: 'Updated', sprak: 'Language',
-    bt_km: 'Odometer', bt_avis: 'Photo w/ newspaper', bt_annet: 'Photo', bk_km: 'Odometer', bk_avis: 'Newspaper', bk_annet: 'Other photos',
+    bt_km: 'Odometer', bt_avis: 'Photo w/ newspaper', bt_annet: 'Photo', bt_profil: 'Profile photo', bt_sykkel: 'Photo of the bike', bk_profil: 'Change profile photo', bk_profilNy: 'Add profile photo', bk_sykkel: 'Change bike photo', bk_sykkelNy: 'Add a photo of the bike', bk_km: 'Odometer', bk_avis: 'Newspaper', bk_annet: 'Other photos',
     fjernBilde: 'Remove photo', kunneIkkeLese: 'Could not read the image "{0}"', kunneIkkeLaste: 'Could not load the photo', ingenBilder: 'No photos.',
     lasterOppAv: 'Uploading photo {0} of {1}…', lasterOppFlere: 'Uploading {0} photos…', lasterOpp1: 'Uploading photo…',
     bildeFeil: '{0} of {1} photos were not saved: {2}', bildeLagret: 'Photo saved', lastetOppAv: 'Uploaded by {0} {1}',
@@ -653,17 +663,17 @@ function avdVelger() {
 
 // ─── Photos ─────────────────────────────────────────────────
 const BILDECACHE = {};
-const bilderFor = (refType, refId) => (S.d.bilder || []).filter(b => b.ref_type === refType && b.ref_id === refId);
+const bilderFor = (refType, refId) => (S.d.bilder || []).filter(b => b.ref_type === refType && String(b.ref_id) === String(refId));
 const alderTimer = ts => (Date.now() - new Date(String(ts).replace(' ', 'T')).getTime()) / 3600e3;
 const antBilder = (ty, id) => { const n = bilderFor(ty, id).length; return n ? (n === 1 ? t('bilde1') : t('bilderN', n)) : ''; };
 
 /** Scale down on the phone before upload: max 1600 px, JPEG 80 %, typically 200–400 kB. */
-function lesBilde(fil) {
+function lesBilde(fil, maks = 1600) {
   return new Promise((ok, avvis) => {
     const url = URL.createObjectURL(fil);
     const img = new Image();
     img.onload = () => {
-      const f = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+      const f = Math.min(1, maks / Math.max(img.naturalWidth, img.naturalHeight));
       const c = document.createElement('canvas');
       c.width = Math.round(img.naturalWidth * f); c.height = Math.round(img.naturalHeight * f);
       c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
@@ -705,7 +715,17 @@ function kanLeggeTilBilde(refType, ref) {
   const tilgang = (rolle() === 'rc' && ref.avdeling === meg().avdeling) || (refType === 'egen' && ref.telefon === meg().telefon);
   return tilgang && alderTimer(ref.tidspunkt) < S.d.innstillinger.bildeDager * 24;
 }
-const kanSletteBilde = b => rolle() === 'admin' || (b.lastet_opp_av_tlf === meg().telefon && alderTimer(b.tidspunkt) < S.d.innstillinger.bildeDager * 24);
+const kanSletteBilde = b => rolle() === 'admin' || (['profil', 'sykkel'].includes(b.type) && (b.telefon === meg().telefon || (rolle() === 'rc' && b.avdeling === meg().avdeling))) ||
+  (b.lastet_opp_av_tlf === meg().telefon && alderTimer(b.tidspunkt) < S.d.innstillinger.bildeDager * 24);
+const sisteBilde = (refType, refId) => bilderFor(refType, refId).slice(-1)[0];
+const kanProfilbilde = u => rolle() === 'admin' || u.telefon === meg().telefon || (rolle() === 'rc' && u.avdeling === meg().avdeling);
+const kanSykkelbilde = s => rolle() === 'admin' || s.telefon === meg().telefon || (rolle() === 'rc' && s.avdeling === meg().avdeling);
+const filKnapp = (type, ref, tekst) => `<label class="lenkeknapp fil">${svg(IKON.kamera)}<span>${tekst}</span>
+  <input type="file" accept="image/*" data-bilde="${type}" data-direkte="${type}:${esc(ref)}" hidden></label>`;
+function avatar(tlf, klasse) {
+  const b = sisteBilde('profil', tlf);
+  return b ? `<img class="${klasse || 'avatar'}" data-bilde-id="${esc(b.id)}" alt="">` : (klasse ? '' : `<div class="avatar">${svg(IKON.person)}</div>`);
+}
 function bildeKort(refType, ref, typer) {
   const galleri = bildeGalleri(refType, ref.id);
   const kan = kanLeggeTilBilde(refType, ref);
@@ -728,14 +748,15 @@ async function velgBilder(el) {
   if (!filer.length) return;
   const type = el.dataset.bilde;
   let data;
-  try { data = await Promise.all(filer.map(lesBilde)); } catch (e) { return toast(e.message, true); }
+  const maks = type === 'profil' ? 500 : type === 'sykkel' ? 1400 : 1600;
+  try { data = await Promise.all(filer.map(f => lesBilde(f, maks))); } catch (e) { return toast(e.message, true); }
   const nye = data.map(d => ({ type, data: d }));
   if (el.dataset.direkte) {
     const [refType, refId] = el.dataset.direkte.split(':');
     toast(nye.length > 1 ? t('lasterOppFlere', nye.length) : t('lasterOpp1'));
     const feil = await lastOppBilder(nye, refType, refId);
     try { await lastData(); } catch (e) { /* toast below */ }
-    if (LAG.length) LAG[LAG.length - 1]();
+    render(); if (LAG.length) LAG[LAG.length - 1]();
     return toast(feil || t('bildeLagret'), !!feil);
   }
   const sk = skjemaFor(el);
@@ -833,11 +854,12 @@ function render() {
   const innhold = { oversikt: visOversikt, kontroll: visKontrollSkjema, mine: visMine, wolfpack: visWolfpack, haandbok: visHaandbok, medlemmer: visMedlemmer, konto: visKonto }[S.fane] || visMine;
   $('#app').innerHTML = `
     <header class="topp"><h1><img src="rcportal-topp.png" alt="${t('app')}" class="ordmerke-topp"></h1>
-      <button type="button" class="hvem${S.fane === 'konto' ? ' aktiv' : ''}" data-fane="konto" aria-label="${esc(t('f_konto'))}"><span>${esc(b.navn)}<br>${esc(t('r_' + b.rolle))} · ${esc(b.avdeling)}</span>${svg(IKON.person)}</button></header>
+      <button type="button" class="hvem${S.fane === 'konto' ? ' aktiv' : ''}" data-fane="konto" aria-label="${esc(t('f_konto'))}"><span>${esc(b.navn)}<br>${esc(t('r_' + b.rolle))} · ${esc(b.avdeling)}</span>${avatar(b.telefon, 'avatar-liten') || svg(IKON.person)}</button></header>
     <main><div id="installPlass">${installBanner()}</div>${innhold()}${tilbakeLenke()}</main>
     <nav class="bunn">${faner().map(([id, ik]) => `<button data-fane="${id}" class="${S.fane === id ? 'aktiv' : ''}">${svg(ik)}${t('f_' + id)}</button>`).join('')}</nav>`;
   if (S.fane === 'kontroll') oppdaterStatus();
   if (S.fane === 'wolfpack') lastWolfpack();
+  fyllBilder($('#app'));
 }
 
 // overlay stack
@@ -874,7 +896,7 @@ function sykkelKort(i, visAvd) {
   const egen = e ? (hk && hk < omDager(60) ? `<span class="oransje">${hk < idag() ? t('hkUtlopt') : t('hkUtloper', fmtDato(hk))}</span>` : t('egenOk'))
                  : `<span class="dempet">${t('egenMangler')}</span>`;
   return `<button class="kort" data-sykkel="${esc(s.id)}">
-    <div class="linje1"><b>${esc(s.eier)}</b>${i.forbud ? `<span class="merke">${t('forbudMerke')}</span>` : ''}</div>
+    <div class="linje1"><span style="display:flex;align-items:center">${(() => { const mb = sisteBilde('sykkel', s.id); return mb ? `<img class="mcmini" data-bilde-id="${esc(mb.id)}" alt="">` : ''; })()}<b>${esc(s.eier)}</b></span>${i.forbud ? `<span class="merke">${t('forbudMerke')}</span>` : ''}</div>
     <div class="dempet">${esc(s.regnr)}${s.modell ? ' · ' + esc(s.modell) : ''}${visAvd ? ' · ' + esc(s.avdeling) : ''}</div>
     ${sesongStripe(s)}
     ${k ? chips(k) : ''}
@@ -926,7 +948,11 @@ function profilKort(tlf) {
   const sykler = S.d.sykler.filter(s => s.telefon === tlf);
   const hk = e && e.helsetrygdekort_utloper;
   const hkKl = hk && hk < idag() ? 'rodt' : hk && hk < omDager(60) ? 'oransje' : '';
+  const u = S.d.brukere.find(x => x.telefon === tlf) || (tlf === meg().telefon ? meg() : { telefon: tlf });
+  const pb = sisteBilde('profil', tlf);
   return `<div class="kort"><h3>${t('profil')}</h3>
+    <div class="profiltopp">${pb ? `<button type="button" class="avatar" style="padding:0" data-vis-bilde="${esc(pb.id)}"><img class="avatar" style="border:0" data-bilde-id="${esc(pb.id)}" alt=""></button>` : avatar(tlf)}
+      <div><div class="navn">${esc(u.navn || '')}</div>${kanProfilbilde(u) ? filKnapp('profil', tlf, pb ? t('bk_profil') : t('bk_profilNy')) : ''}</div></div>
     ${e ? `<dl class="info">
       <dt>${t('reiseforsikring')}</dt><dd>${jaNei(e.reiseforsikring)}${e.reiseforsikring_selskap ? ' – ' + esc(e.reiseforsikring_selskap) : ''}</dd>
       <dt>${t('forerkortKort')}</dt><dd>${esc(e.forerkort_klasse) || '–'}${e.forerkort_merknad ? ' (' + esc(e.forerkort_merknad) + ')' : ''}</dd>
@@ -948,6 +974,8 @@ function visSykkel(id) {
   const ks = kontrollerFor(id);
   const es = egenFor(s.telefon).filter(e => e.sykkel_id === id);
   tegnLag(s.regnr, `
+    ${(() => { const mb = sisteBilde('sykkel', id); return mb ? `<button type="button" style="padding:0;border:0;background:none;width:100%;min-height:0;display:block" data-vis-bilde="${esc(mb.id)}"><img class="mcbilde" data-bilde-id="${esc(mb.id)}" alt="${esc(s.regnr)}"></button>` : ''; })()}
+    ${kanSykkelbilde(s) ? `<p style="margin:-2px 0 10px">${filKnapp('sykkel', id, sisteBilde('sykkel', id) ? t('bk_sykkel') : t('bk_sykkelNy'))}</p>` : ''}
     <div class="kort"><div class="linje1"><h2 style="margin:0">${esc(s.eier)}</h2>${ks[0] && ks[0].kjoreforbud === 'Ja' ? `<span class="merke">${t('forbudMerke')}</span>` : ''}</div>
       <div class="dempet" style="margin-top:4px">${esc(s.regnr)}${s.modell ? ' · ' + esc(s.modell) : ''}${s.aarsmodell ? ' · ' + esc(s.aarsmodell) : ''} · ${esc(s.avdeling)}</div>
       ${sesongStripe(s)}${ks[0] ? chips(ks[0]) : ''}
