@@ -126,7 +126,8 @@ dl.info dd{margin:0;font-weight:600;text-align:right}
 .kodeboks b{font-size:32px;letter-spacing:.18em;color:var(--aksent);display:block;font-variant-numeric:tabular-nums}
 /* login */
 .login{max-width:420px;padding-top:calc(48px + env(safe-area-inset-top))}
-.logo{width:64px;height:64px;border-radius:16px;background:var(--aksent);color:var(--aksent-t);display:grid;place-items:center;margin:0 auto 14px}
+.logo{width:72px;height:72px;border-radius:18px;display:block;margin:0 auto 14px}
+div.logo{width:64px;height:64px;border-radius:16px;background:var(--aksent);color:var(--aksent-t);display:grid;place-items:center}
 .logo svg{width:40px;height:40px}
 .login h1{text-align:center;font-size:24px;margin:0 0 4px}
 .login .under{text-align:center;color:var(--dempet);margin-bottom:22px}
@@ -744,7 +745,7 @@ function visBilde(id) {
 function visLogin(modus) {
   document.body.classList.add('uten-nav');
   $('#app').innerHTML = `<main class="login">
-    <div class="logo">${svg(IKON.skjema)}</div>
+    <img class="logo" src="icon-192.png" alt="RC Portal">
     <h1>${t('app')}</h1>
     <div class="under">${t('undertittel')}</div>
     <div class="faner2"><button type="button" data-modus="login" class="${modus === 'login' ? 'aktiv' : ''}">${t('loggInn')}</button>
