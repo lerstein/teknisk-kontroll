@@ -180,6 +180,7 @@ div.logo{width:64px;height:64px;border-radius:16px;background:var(--aksent);colo
 @keyframes spinn{to{transform:rotate(360deg)}}
 /* photos */
 .bildeknapper{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.bildeknapper .knapp.krav{border-color:var(--aksent);color:var(--aksent)}
 .bildeknapper .knapp{flex:1 1 0;flex-direction:column;gap:4px;font-size:13.5px;padding:9px 4px;min-width:0;min-height:62px;text-align:center;line-height:1.15}
 .bildeknapper svg{width:22px;height:22px;flex:none}
 .bilderad{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:10px}
@@ -309,7 +310,7 @@ const TXT = {
     o_primaer: 'Primær', o_clutch: 'Clutch', o_hydr: 'Hydr. clutch', o_motor: 'Motorolje', o_kjole: 'Kjølevæske', aarDato: 'År/dato', datoNytt: 'Dato/nytt',
     nyKontroll: 'Ny kontroll', velgSykkel: 'Velg sykkel…', forrigeKontroll: 'Forrige kontroll {0}', dato: 'Dato', sist: 'Sist {0}',
     bildeAvisLevert: 'Bilde m/avis levert', levert: 'Levert', ikkeLevert: 'Ikke levert',
-    bilderTittel: 'Bilder', bilderHint: 'Kilometerstand, bilde m/avis, skader, slitte dekk …',
+    bilderTittel: 'Bilder', bilderHint: 'Bilde av begge dekkene er påkrevd (*). Ellers gjerne kilometerstand, bilde m/avis, skader …',
     alleOk: 'Sett alle punkter til «OK»', alleOkToast: 'Alle umerkede punkter satt til OK', oljeByttet: 'Olje og væsker – byttet',
     status: 'Status', fiksesInnen: 'Må fikses innen', merknadPh: 'F.eks. hva som må gjøres', lagreKontroll: 'Lagre kontroll', tomSkjema: 'Tøm skjemaet',
     autoLagret: 'Skjemaet lagres automatisk på telefonen mens du fyller ut. Signeres med ditt navn.',
@@ -377,7 +378,7 @@ const TXT = {
     konto: 'Konto', telefonKort: 'Telefon', byttPassord: 'Bytt passord', navaerende: 'Nåværende passord', nyttPassord: 'Nytt passord (minst 6 tegn)',
     gjentaNytt: 'Gjenta nytt passord', nyeUlike: 'De nye passordene er ikke like', passordByttet: 'Passord byttet',
     hentPaNytt: 'Hent data på nytt', oppdatert: 'Oppdatert', sprak: 'Språk',
-    bt_km: 'Kilometerstand', bt_avis: 'Bilde m/avis', bt_annet: 'Bilde', bt_profil: 'Profilbilde', bt_sykkel: 'Bilde av sykkelen', bk_profil: 'Bytt profilbilde', bk_profilNy: 'Legg til profilbilde', bk_sykkel: 'Bytt bilde av sykkelen', bk_sykkelNy: 'Legg til bilde av sykkelen', bk_km: 'Km-stand', bk_avis: 'Bilde m/avis', bk_annet: 'Andre bilder',
+    bt_km: 'Kilometerstand', bt_dekk_f: 'Dekk foran', bt_dekk_b: 'Dekk bak', bk_dekk_f: 'Dekk foran *', bk_dekk_b: 'Dekk bak *', dekkBildeKrav: 'Ta bilde av begge dekkene – foran og bak – før du lagrer.', bt_avis: 'Bilde m/avis', bt_annet: 'Bilde', bt_profil: 'Profilbilde', bt_sykkel: 'Bilde av sykkelen', bk_profil: 'Bytt profilbilde', bk_profilNy: 'Legg til profilbilde', bk_sykkel: 'Bytt bilde av sykkelen', bk_sykkelNy: 'Legg til bilde av sykkelen', bk_km: 'Km-stand', bk_avis: 'Bilde m/avis', bk_annet: 'Andre bilder',
     fjernBilde: 'Fjern bilde', kunneIkkeLese: 'Kunne ikke lese bildet «{0}»', kunneIkkeLaste: 'Kunne ikke laste bildet', ingenBilder: 'Ingen bilder.',
     lasterOppAv: 'Laster opp bilde {0} av {1}…', lasterOppFlere: 'Laster opp {0} bilder…', lasterOpp1: 'Laster opp bilde…',
     bildeFeil: '{0} av {1} bilder ble ikke lagret: {2}', bildeLagret: 'Bilde lagret', lastetOppAv: 'Lastet opp av {0} {1}',
@@ -431,7 +432,7 @@ const TXT = {
     o_primaer: 'Primary', o_clutch: 'Clutch', o_hydr: 'Hydr. clutch', o_motor: 'Engine oil', o_kjole: 'Coolant', aarDato: 'Year/date', datoNytt: 'Date/new',
     nyKontroll: 'New inspection', velgSykkel: 'Choose bike…', forrigeKontroll: 'Previous inspection {0}', dato: 'Date', sist: 'Last {0}',
     bildeAvisLevert: 'Photo with newspaper delivered', levert: 'Delivered', ikkeLevert: 'Not delivered',
-    bilderTittel: 'Photos', bilderHint: 'Odometer, photo with newspaper, damage, worn tyres …',
+    bilderTittel: 'Photos', bilderHint: 'A photo of both tyres is required (*). Also useful: odometer, photo with newspaper, damage …',
     alleOk: 'Set all items to "OK"', alleOkToast: 'All unrated items set to OK', oljeByttet: 'Oil and fluids – changed',
     status: 'Status', fiksesInnen: 'Fix by', merknadPh: 'E.g. what needs to be done', lagreKontroll: 'Save inspection', tomSkjema: 'Clear form',
     autoLagret: 'The form is saved on your phone as you go. It is signed with your name.',
@@ -499,7 +500,7 @@ const TXT = {
     konto: 'Account', telefonKort: 'Phone', byttPassord: 'Change password', navaerende: 'Current password', nyttPassord: 'New password (at least 6 characters)',
     gjentaNytt: 'Repeat new password', nyeUlike: "The new passwords don't match", passordByttet: 'Password changed',
     hentPaNytt: 'Reload data', oppdatert: 'Updated', sprak: 'Language',
-    bt_km: 'Odometer', bt_avis: 'Photo w/ newspaper', bt_annet: 'Photo', bt_profil: 'Profile photo', bt_sykkel: 'Photo of the bike', bk_profil: 'Change profile photo', bk_profilNy: 'Add profile photo', bk_sykkel: 'Change bike photo', bk_sykkelNy: 'Add a photo of the bike', bk_km: 'Odometer', bk_avis: 'Newspaper', bk_annet: 'Other photos',
+    bt_km: 'Odometer', bt_dekk_f: 'Front tyre', bt_dekk_b: 'Rear tyre', bk_dekk_f: 'Front tyre *', bk_dekk_b: 'Rear tyre *', dekkBildeKrav: 'Take a photo of both tyres – front and rear – before saving.', bt_avis: 'Photo w/ newspaper', bt_annet: 'Photo', bt_profil: 'Profile photo', bt_sykkel: 'Photo of the bike', bk_profil: 'Change profile photo', bk_profilNy: 'Add profile photo', bk_sykkel: 'Change bike photo', bk_sykkelNy: 'Add a photo of the bike', bk_km: 'Odometer', bk_avis: 'Newspaper', bk_annet: 'Other photos',
     fjernBilde: 'Remove photo', kunneIkkeLese: 'Could not read the image "{0}"', kunneIkkeLaste: 'Could not load the photo', ingenBilder: 'No photos.',
     lasterOppAv: 'Uploading photo {0} of {1}…', lasterOppFlere: 'Uploading {0} photos…', lasterOpp1: 'Uploading photo…',
     bildeFeil: '{0} of {1} photos were not saved: {2}', bildeLagret: 'Photo saved', lastetOppAv: 'Uploaded by {0} {1}',
@@ -746,7 +747,8 @@ function lesBilde(fil, maks = 1600) {
 }
 
 function bildeKnapper(typer, attr) {
-  return `<div class="bildeknapper">${typer.map(ty => `<label class="knapp">${svg(IKON.kamera)}<span>${t('bk_' + ty)}</span>
+  const mangler = ty => ty.startsWith('dekk') && typeof F !== 'undefined' && F && !(F.bilder || []).some(b => b.type === ty);
+  return `<div class="bildeknapper">${typer.map(ty => `<label class="knapp${mangler(ty) ? ' krav' : ''}">${svg(IKON.kamera)}<span>${t('bk_' + ty)}</span>
     <input type="file" accept="image/*" ${ty === 'annet' ? 'multiple' : ''} data-bilde="${ty}" ${attr || ''} hidden></label>`).join('')}</div>`;
 }
 function ventendeBilder(liste) {
@@ -1100,7 +1102,7 @@ function visKontroll(id) {
       ${sk === 'stor' ? `<dt>${t('bildeAvis')}</dt><dd>${jaNei(k.bilde_avis)}</dd>` : ''}
       <dt>${t('kontrollor')}</dt><dd>${esc(k.kontrollor)}</dd><dt>${t('registrert')}</dt><dd>${esc(k.tidspunkt)}</dd>
       ${!venter(k) && k.godkjent_av ? `<dt>${t('godkjentAvTittel')}</dt><dd>${esc(k.godkjent_av)}</dd>` : ''}</dl>${sk === 'stor' ? chips(k) : ''}</div>
-    ${bildeKort('kontroll', k, ['km', 'avis', 'annet'])}
+    ${bildeKort('kontroll', k, ['dekk_f', 'dekk_b', 'km', 'avis', 'annet'])}
     ${sk === 'enkel'
       ? `<div class="kort"><h3>${t('sk_enkel')}</h3><dl class="info">${ENKEL.map(([id, n]) => `<dt>${t(n)}</dt><dd>${chip(k[id], skalaNavn(k[id]))}</dd>`).join('')}</dl></div>`
       : SEKSJONER.map(seksjon).join('') +
@@ -1221,7 +1223,7 @@ function visKontrollSkjema() {
     </div>
     <div class="kort"><h3>${t('bilderTittel')}</h3>
       <p class="dempet" style="margin:0">${t('bilderHint')}</p>
-      ${ventendeBilder(F.bilder)}${bildeKnapper(stor ? ['km', 'avis', 'annet'] : ['km', 'annet'])}</div>
+      ${ventendeBilder(F.bilder)}${F._retter ? bildeKnapper(stor ? ['km', 'avis', 'annet'] : ['km', 'annet']) : bildeKnapper(stor ? ['dekk_f', 'dekk_b', 'km', 'avis', 'annet'] : ['dekk_f', 'dekk_b', 'km', 'annet'])}</div>
     <button type="button" class="bred" data-a="alleBra">${t('alleOk')}</button>
     ${stor
       ? SEKSJONER.map(s => `<div class="kort"><h3>${t(s.t)}</h3>${s.r.map(p => punktRad(p.id, t(p.n), p.x)).join('')}</div>`).join('') + `
@@ -2040,6 +2042,13 @@ const A = {
     if (mangler.length) {
       toast(mangler.length === 1 ? t('ikkeVurdert1') : t('ikkeVurdertN', mangler.length), true);
       $(`[data-punkt="${mangler[0]}"]`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    // a photo of both tyres is required on every inspection (not when an RC corrects one that already exists)
+    const harDekk = ty => (F.bilder || []).some(b => b.type === ty);
+    if (!F._retter && (!harDekk('dekk_f') || !harDekk('dekk_b'))) {
+      toast(t('dekkBildeKrav'), true);
+      const kort = $('main .bildeknapper'); if (kort) kort.closest('.kort').scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
     const maks = Math.max(...ider.map(p => Number(F[p])));
