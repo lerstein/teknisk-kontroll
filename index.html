@@ -287,7 +287,7 @@ const TXT = {
     egenOk: 'egenerklæring ✓', egenMangler: 'egenerklæring mangler', hkUtlopt: 'helsetrygdekort utløpt', hkUtloper: 'helsetrygdekort utløper {0}',
     sesong: 'Sesong {0}',
     kalTittel: 'Kalender', kalNeste: 'Kommende', kalAlle: 'Hele kalenderen', kalHeldag: 'Hele dagen', kalLeggTil: 'Legg i min kalender', kalTom: 'Ingen kommende arrangementer.', kalFeilet: 'Fikk ikke hentet: {0}',
-    sokSykkel: 'Søk regnr, navn eller modell', skannSkilt: 'Ta bilde av skiltet eller velg fra bilder', skannLeser: 'Leser skiltet…', skannLaster: 'Laster skiltleser (første gang tar litt tid)…', skannFant: 'Fant {0}', skannUsikker: 'Usikker – velg riktig sykkel i lista', skannIngen: 'Fant ikke noe skilt. Ta bildet nærmere, så skiltet fyller bildet.', skannFeil: 'Skiltleseren kunne ikke lastes. Sjekk nettet, eller skriv regnr.',
+    sokSykkel: 'Søk regnr, navn eller modell', skannSkilt: 'Ta bilde av skiltet eller velg fra bilder', skannLeser: 'Leser skiltet…', skannLaster: 'Laster skiltleser (første gang tar litt tid)…', skannFant: 'Fant {0}', skannUsikker: 'Usikker – velg riktig sykkel i lista', skannUkjentNaer: 'Leste {0} – den er ikke registrert. Lista viser de som ligner.', skannUkjent: 'Leste {0}, men den sykkelen er ikke registrert i appen (eller hører til en annen avdeling).', skannIngen: 'Fant ikke noe skilt. Ta bildet nærmere, så skiltet fyller bildet.', skannFeil: 'Skiltleseren kunne ikke lastes. Sjekk nettet, eller skriv regnr.',
     telefonliste: 'Telefonliste', tlfSok: 'Søk på navn, avdeling eller status', klubbhus: 'Klubbhus', klubbTlf: 'Klubbtelefon', ringVanlig: 'Ring vanlig', visKart: 'Vis i kart', tlfHentet: 'Hentet fra klubbens telefonliste {0}', tlfIngen: 'Ingen treff.',
     nyKontrollDenne: 'Ny kontroll av denne sykkelen', kontrollerSelv: 'Kontroller sykkelen selv', venterMerke: 'VENTER', venterGodkj: 'Venter på godkjenning fra Road Captain',
     godkjentAvTittel: 'Godkjent av', godkjenn: 'Godkjenn', rettGodkjenn: 'Rett og godkjenn', avvis: 'Avvis', avvisGrunn: 'Hvorfor avvises kontrollen? Medlemmet ser grunnen.',
@@ -407,7 +407,7 @@ const TXT = {
     egenOk: 'self-declaration ✓', egenMangler: 'self-declaration missing', hkUtlopt: 'health card expired', hkUtloper: 'health card expires {0}',
     sesong: 'Season {0}',
     kalTittel: 'Calendar', kalNeste: 'Coming up', kalAlle: 'Full calendar', kalHeldag: 'All day', kalLeggTil: 'Add to my calendar', kalTom: 'No upcoming events.', kalFeilet: 'Could not load: {0}',
-    sokSykkel: 'Search reg. no., name or model', skannSkilt: 'Take or choose a photo of the plate', skannLeser: 'Reading the plate…', skannLaster: 'Loading the plate reader (takes a moment the first time)…', skannFant: 'Found {0}', skannUsikker: 'Not sure – pick the right bike in the list', skannIngen: 'No plate found. Take the photo closer, so the plate fills the picture.', skannFeil: 'Could not load the plate reader. Check your connection, or type the reg. no.',
+    sokSykkel: 'Search reg. no., name or model', skannSkilt: 'Take or choose a photo of the plate', skannLeser: 'Reading the plate…', skannLaster: 'Loading the plate reader (takes a moment the first time)…', skannFant: 'Found {0}', skannUsikker: 'Not sure – pick the right bike in the list', skannUkjentNaer: 'Read {0} – not registered. The list shows similar ones.', skannUkjent: 'Read {0}, but that bike is not registered in the app (or belongs to another chapter).', skannIngen: 'No plate found. Take the photo closer, so the plate fills the picture.', skannFeil: 'Could not load the plate reader. Check your connection, or type the reg. no.',
     telefonliste: 'Phone list', tlfSok: 'Search name, chapter or status', klubbhus: 'Clubhouse', klubbTlf: 'Club phone', ringVanlig: 'Regular call', visKart: 'Show on map', tlfHentet: "From the club's phone list, {0}", tlfIngen: 'No matches.',
     nyKontrollDenne: 'New inspection of this bike', kontrollerSelv: 'Inspect the bike yourself', venterMerke: 'PENDING', venterGodkj: 'Waiting for approval from the Road Captain',
     godkjentAvTittel: 'Approved by', godkjenn: 'Approve', rettGodkjenn: 'Correct and approve', avvis: 'Reject', avvisGrunn: 'Why is the inspection rejected? The member will see the reason.',
@@ -1310,19 +1310,20 @@ function lev(a, b) {
   return d[a.length][b.length];
 }
 function skiltKandidater(tekster) {
-  const ut = new Set();
+  const ut = new Map();   // candidate → how many times it was read (most frequent first)
+  const add = k => ut.set(k, (ut.get(k) || 0) + 1);
   tekster.forEach(t => {
     const s = String(t || '').toUpperCase().replace(/[^A-Z0-9\s]/g, ' ');
     const re = /([A-Z0-9]{2})\s*([0-9A-Z]{4,5})(?![0-9A-Z])/g; let m;   // MC plates have the letters on a line of their own
     while ((m = re.exec(s))) {
       const L = m[1].split('').map(c => TIL_BOKSTAV[c] || c).join(''), D = m[2].split('').map(c => TIL_SIFFER[c] || c).join('');
-      if (/^[A-Z]{2}$/.test(L) && /^\d{4,5}$/.test(D)) ut.add(L + D);
+      if (/^[A-Z]{2}$/.test(L) && /^\d{4,5}$/.test(D)) add(L + D);
       re.lastIndex = m.index + 1;
     }
     // digits alone (letters often misread or lost)
-    (s.replace(/\s+/g, ' ').match(/[0-9OQDILJTZSBG]{4,5}/g) || []).forEach(x => { const D = x.split('').map(c => TIL_SIFFER[c] || c).join(''); if (/^\d{4,5}$/.test(D) && /\d{3}/.test(x)) ut.add('??' + D); });
+    (s.replace(/\s+/g, ' ').match(/[0-9OQDILJTZSBG]{4,5}/g) || []).forEach(x => { const D = x.split('').map(c => TIL_SIFFER[c] || c).join(''); if (/^\d{4,5}$/.test(D) && /\d{3}/.test(x)) add('??' + D); });
   });
-  return [...ut];
+  return [...ut.entries()].sort((a, b) => b[1] - a[1]).map(x => x[0]);
 }
 function finnSykkelFraTekst(tekster, sykler) {
   const kand = skiltKandidater(tekster);
@@ -1337,6 +1338,12 @@ function finnSykkelFraTekst(tekster, sykler) {
   return { kandidater: kand, treff: res.slice(0, 4), sikker: sikker ? res[0].s : null };
 }
 
+/** The plate as read, for messages – just the digits when the readings disagree about the letters. */
+function lesbarSkilt(kand) {
+  const hele = kand.filter(k => !k.startsWith('??')); if (!hele.length) return '';
+  const f = hele[0], uenig = hele.some(k => k.slice(2) === f.slice(2) && k.slice(0, 2) !== f.slice(0, 2));
+  return uenig ? '…' + f.slice(2) : f;
+}
 let OCR = null;
 function lastSkript(url) { return new Promise((ok, feil) => { const s = document.createElement('script'); s.src = url; s.onload = ok; s.onerror = feil; document.head.appendChild(s); }); }
 async function ocrArbeider() {
@@ -1388,9 +1395,11 @@ function finnSkilt(img) {
       for (const q of [x > 0 ? p - 1 : -1, x < w - 1 ? p + 1 : -1, y > 0 ? p - w : -1, y < h - 1 ? p + w : -1]) if (q >= 0 && hvit[q] && !sett[q]) { sett[q] = 1; ko[hale++] = q; }
     }
     const bw = x1 - x0 + 1, bh = y1 - y0 + 1, ar = bw / bh, fyll = n / (bw * bh);
-    if (n >= w * h * 0.004 && ar > 0.7 && ar < 5 && fyll > 0.35) ut.push({ n, x: x0 / sk, y: y0 / sk, w: bw / sk, h: bh / sk });
+    // a plate fills its box well; light asphalt or sky is ragged and usually runs off the edge of the picture
+    const kanter = (x0 === 0) + (y0 === 0) + (x1 === w - 1) + (y1 === h - 1);
+    if (n >= w * h * 0.004 && n <= w * h * 0.5 && ar > 0.7 && ar < 5 && fyll > 0.5 && kanter < 2) ut.push({ n, fyll, x: x0 / sk, y: y0 / sk, w: bw / sk, h: bh / sk });
   }
-  return ut.sort((a, b) => b.n - a.n).slice(0, 2);
+  return ut.sort((a, b) => b.n * b.fyll * b.fyll - a.n * a.fyll * a.fyll).slice(0, 3);
 }
 async function skannSkilt(fil) {
   let tekster = [], r;
@@ -1412,10 +1421,12 @@ async function skannSkilt(fil) {
     const q = r.treff.length === 1 ? r.treff[0].s.regnr : '';
     if (inp) { inp.value = q; filtrerSykler(q); }
     if (!q) { const ids = r.treff.map(x => x.s.id); $$('main [data-sykkel][data-sok]').forEach(el => { el.hidden = !ids.includes(el.dataset.sykkel); }); }
-    return toast(t('skannUsikker'), true);
+    const lestHelt = lesbarSkilt(r.kandidater);
+    return toast(lestHelt && r.treff[0].dist > 0 ? t('skannUkjentNaer', lestHelt) : t('skannUsikker'), true);
   }
-  const gjett = (r.kandidater.find(k => !k.startsWith('??')) || '');
-  if (inp && gjett) { inp.value = gjett; filtrerSykler(gjett); }
+  // read a plate, but it is not among the bikes this user can see
+  const lest = lesbarSkilt(r.kandidater);
+  if (lest) { if (inp) { inp.value = lest; filtrerSykler(lest); } return toast(t('skannUkjent', lest), true); }
   toast(t('skannIngen'), true);
 }
 
