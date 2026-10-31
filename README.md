@@ -198,7 +198,7 @@ Nothing is ever sent to members – the calendar is read-only in the app. Result
 
 ## Find a bike from a photo of the plate
 On the overview there is a search field (reg. no., name or model) and a camera button. The camera button takes a photo of the
-licence plate or picks one from the photo library; the app reads it on the phone with Tesseract.js (loaded from cdn.jsdelivr.net the first time, a few MB) and matches
+licence plate or picks one from the photo library; the app first looks for the white plate in the picture (also two-line MC plates), then reads it on the phone with Tesseract.js (loaded from cdn.jsdelivr.net the first time, a few MB) and matches
 it against the bikes the user can see, allowing for typical misreadings (O/0, I/1, S/5, B/8 …). A sure match opens the bike;
 otherwise the closest bikes are shown in the list. If the centre of the picture gives no sure match, the whole picture is read. The photo never leaves the phone. Works best when the plate fills the picture.
 On iPhone, the search field also supports the keyboard's built-in "Scan Text".

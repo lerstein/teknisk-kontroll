@@ -1313,7 +1313,7 @@ function skiltKandidater(tekster) {
   const ut = new Set();
   tekster.forEach(t => {
     const s = String(t || '').toUpperCase().replace(/[^A-Z0-9\s]/g, ' ');
-    const re = /([A-Z0-9]{2})\s?([0-9A-Z]{4,5})(?![0-9A-Z])/g; let m;
+    const re = /([A-Z0-9]{2})\s*([0-9A-Z]{4,5})(?![0-9A-Z])/g; let m;   // MC plates have the letters on a line of their own
     while ((m = re.exec(s))) {
       const L = m[1].split('').map(c => TIL_BOKSTAV[c] || c).join(''), D = m[2].split('').map(c => TIL_SIFFER[c] || c).join('');
       if (/^[A-Z]{2}$/.test(L) && /^\d{4,5}$/.test(D)) ut.add(L + D);
@@ -1332,7 +1332,7 @@ function finnSykkelFraTekst(tekster, sykler) {
     kand.forEach(k => { const kl = k.slice(0, 2), kd = k.slice(2);
       const dist = lev(kd, D) * 1.0 + (kl === '??' ? 1.5 : lev(kl, L) * 0.6); if (dist < best) best = dist; });
     return { s, dist: best };
-  }).filter(x => x.dist <= 2.6).sort((a, b) => a.dist - b.dist);
+  }).filter(x => x.dist <= 2.1).sort((a, b) => a.dist - b.dist);
   const sikker = res.length && (res.length === 1 || res[1].dist - res[0].dist >= 1) && res[0].dist <= 1.6;
   return { kandidater: kand, treff: res.slice(0, 4), sikker: sikker ? res[0].s : null };
 }
@@ -1346,31 +1346,65 @@ async function ocrArbeider() {
   OCR = await window.Tesseract.createWorker('eng');
   return OCR;
 }
-/** Centre crop (where people aim), grey and contrast-stretched – plates read much better than from the whole photo. */
-function skiltBilde(fil, helt) {
+function lastBilde(fil) {
   return new Promise((ok, avvis) => {
     const url = URL.createObjectURL(fil), img = new Image();
-    img.onload = () => {
-      const W = img.naturalWidth, H = img.naturalHeight, cw = helt ? W : W * 0.84, ch = helt ? H : Math.min(H * 0.5, cw * 0.6);
-      const maks = helt ? 1800 : 1400;
-      const ut = Math.min(maks, cw), c = document.createElement('canvas'); c.width = Math.round(ut); c.height = Math.round(ch * ut / cw);
-      const g = c.getContext('2d'); g.filter = 'grayscale(1) contrast(1.6)';
-      g.drawImage(img, (W - cw) / 2, (H - ch) / 2, cw, ch, 0, 0, c.width, c.height);
-      URL.revokeObjectURL(url); ok(c);
-    };
+    img.onload = () => { URL.revokeObjectURL(url); ok(img); };
     img.onerror = () => { URL.revokeObjectURL(url); avvis(new Error('image')); };
     img.src = url;
   });
+}
+/** Cuts a region out of the photo, grey and contrast-stretched, at most `maks` px wide. */
+function utsnitt(img, x, y, w, h, maks) {
+  const ut = Math.min(maks, w), c = document.createElement('canvas'); c.width = Math.round(ut); c.height = Math.round(h * ut / w);
+  const g = c.getContext('2d'); g.filter = 'grayscale(1)';
+  g.drawImage(img, x, y, w, h, 0, 0, c.width, c.height);
+  // stretch the grey levels (1st–99th percentile) – plates in shade or glare read much better
+  const bd = g.getImageData(0, 0, c.width, c.height), p = bd.data, hist = new Uint32Array(256);
+  for (let i = 0; i < p.length; i += 4) hist[p[i]]++;
+  const N = p.length / 4; let lo = 0, hi = 255, sum = 0;
+  for (let v = 0; v < 256; v++) { sum += hist[v]; if (sum > N * 0.01) { lo = v; break; } }
+  sum = 0; for (let v = 255; v >= 0; v--) { sum += hist[v]; if (sum > N * 0.01) { hi = v; break; } }
+  const k = 255 / Math.max(1, hi - lo);
+  for (let i = 0; i < p.length; i += 4) { const v = Math.max(0, Math.min(255, (p[i] - lo) * k)); p[i] = p[i + 1] = p[i + 2] = v; }
+  g.putImageData(bd, 0, 0); return c;
+}
+/**
+ * Finds likely plates: large, bright, colourless, roughly rectangular areas (the white plate) in a 400 px copy of the photo.
+ * Returns boxes in full-size pixels, biggest first.
+ */
+function finnSkilt(img) {
+  const W = img.naturalWidth, H = img.naturalHeight, sk = 400 / Math.max(W, H), w = Math.round(W * sk), h = Math.round(H * sk);
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.drawImage(img, 0, 0, w, h);
+  const d = g.getImageData(0, 0, w, h).data, hvit = new Uint8Array(w * h), sett = new Uint8Array(w * h), ut = [];
+  for (let i = 0; i < w * h; i++) { const r = d[i * 4], gg = d[i * 4 + 1], b = d[i * 4 + 2], mn = Math.min(r, gg, b), mx = Math.max(r, gg, b); hvit[i] = mn > 140 && mx - mn < 45 ? 1 : 0; }
+  const ko = new Int32Array(w * h);
+  for (let s0 = 0; s0 < w * h; s0++) {
+    if (!hvit[s0] || sett[s0]) continue;
+    let hode = 0, hale = 0, n = 0, x0 = w, x1 = 0, y0 = h, y1 = 0; ko[hale++] = s0; sett[s0] = 1;
+    while (hode < hale) {
+      const p = ko[hode++], x = p % w, y = (p - x) / w; n++;
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+      for (const q of [x > 0 ? p - 1 : -1, x < w - 1 ? p + 1 : -1, y > 0 ? p - w : -1, y < h - 1 ? p + w : -1]) if (q >= 0 && hvit[q] && !sett[q]) { sett[q] = 1; ko[hale++] = q; }
+    }
+    const bw = x1 - x0 + 1, bh = y1 - y0 + 1, ar = bw / bh, fyll = n / (bw * bh);
+    if (n >= w * h * 0.004 && ar > 0.7 && ar < 5 && fyll > 0.35) ut.push({ n, x: x0 / sk, y: y0 / sk, w: bw / sk, h: bh / sk });
+  }
+  return ut.sort((a, b) => b.n - a.n).slice(0, 2);
 }
 async function skannSkilt(fil) {
   let tekster = [], r;
   try {
     const w = await ocrArbeider(); toast(t('skannLeser'));
     const les = async (bilde, psmer) => { for (const psm of psmer) { await w.setParameters({ tessedit_pageseg_mode: psm }); tekster.push((await w.recognize(bilde)).data.text); } };
-    // first the centre (a photo taken for this), then the whole picture (a photo from the gallery may have the plate anywhere)
-    await les(await skiltBilde(fil), ['7', '11']);
-    r = finnSykkelFraTekst(tekster, S.d.sykler);
-    if (!r.sikker) { await les(await skiltBilde(fil, true), ['11', '3']); r = finnSykkelFraTekst(tekster, S.d.sykler); }
+    const img = await lastBilde(fil), W = img.naturalWidth, H = img.naturalHeight;
+    // 1) the white plate itself, found in the photo; 2) the centre (where people aim); 3) the whole picture
+    // inside the white plate, without the frame and the blue N band (they confuse the reader), then the plate with a little margin
+    const forsok = finnSkilt(img).flatMap(b => { const venstre = b.w / b.h > 2.5 ? 0.09 : 0.17; return [
+      () => les(utsnitt(img, b.x + b.w * venstre, b.y + b.h * 0.04, b.w * (0.98 - venstre), b.h * 0.92, 900), ['6', '11']),
+      () => les(utsnitt(img, Math.max(0, b.x - b.w * 0.05), Math.max(0, b.y - b.h * 0.05), Math.min(W, b.w * 1.1), Math.min(H, b.h * 1.1), 900), ['11'])]; })
+      .concat([() => les(utsnitt(img, W * 0.08, H * 0.15, W * 0.84, H * 0.7, 1400), ['6', '11']), () => les(utsnitt(img, 0, 0, W, H, 1800), ['11'])]);
+    for (const f of forsok) { await f(); r = finnSykkelFraTekst(tekster, S.d.sykler); if (r.sikker) break; }
   } catch (e) { return toast(t('skannFeil'), true); }
   if (r.sikker) { toast(t('skannFant', r.sikker.regnr)); return apne(() => visSykkel(r.sikker.id)); }
   const inp = $('[data-sykkelsok]');
