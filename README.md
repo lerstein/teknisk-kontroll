@@ -194,7 +194,10 @@ Set the calendars in `CFG.KALENDERE` in Code.gs: `id` is the Calendar ID (calend
 `avdelinger: []` means everyone sees it, otherwise only members of the chapters listed – whatever their role.
 The account that owns the Apps Script must have at least "See all event details" on each calendar.
 Run **Teknisk kontroll → Test kalenderne** once after updating to approve calendar access and check what the app reads.
-Nothing is ever sent to members – the calendar is read-only in the app. Results are cached for 10 minutes.
+Nothing is ever sent to members. Results are cached for 10 minutes.
+Each event has three answer buttons – **Going** (green), **Maybe** (yellow), **Not going** (red); tap the chosen one again to
+remove the answer. Everyone who can see the event sees who answered what, and the list shows the counts as coloured dots.
+Answers are stored in the `Svar` sheet (created automatically): event, calendar, title, start, phone, name, chapter, answer, time.
 
 ## Find a bike from a photo of the plate
 On the overview there is a search field (reg. no., name or model) and a camera button. The camera button takes a photo of the
