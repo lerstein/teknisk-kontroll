@@ -1353,6 +1353,11 @@ async function ocrArbeider() {
   OCR = await window.Tesseract.createWorker('eng');
   return OCR;
 }
+function roter(c, grader) {
+  const v = grader * Math.PI / 180, cs = Math.abs(Math.cos(v)), sn = Math.abs(Math.sin(v));
+  const r = document.createElement('canvas'); r.width = Math.round(c.width * cs + c.height * sn); r.height = Math.round(c.width * sn + c.height * cs);
+  const g = r.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, r.width, r.height); g.translate(r.width / 2, r.height / 2); g.rotate(v); g.drawImage(c, -c.width / 2, -c.height / 2); return r;
+}
 function lastBilde(fil) {
   return new Promise((ok, avvis) => {
     const url = URL.createObjectURL(fil), img = new Image();
@@ -1412,7 +1417,10 @@ async function skannSkilt(fil) {
     const forsok = finnSkilt(img).flatMap(b => { const venstre = b.w / b.h > 2.5 ? 0.09 : 0.17; return [
       () => les(utsnitt(img, b.x + b.w * venstre, b.y + b.h * 0.04, b.w * (0.98 - venstre), b.h * 0.92, 900), ['6', '11']),
       () => les(utsnitt(img, Math.max(0, b.x - b.w * 0.05), Math.max(0, b.y - b.h * 0.05), Math.min(W, b.w * 1.1), Math.min(H, b.h * 1.1), 900), ['11'])]; })
-      .concat([() => les(utsnitt(img, W * 0.08, H * 0.15, W * 0.84, H * 0.7, 1400), ['6', '11']), () => les(utsnitt(img, 0, 0, W, H, 1800), ['11'])]);
+      .concat([() => les(utsnitt(img, W * 0.08, H * 0.15, W * 0.84, H * 0.7, 1400), ['6', '11']), () => les(utsnitt(img, 0, 0, W, H, 1800), ['11'])])
+      // a tilted or sideways photo: the plate is found, but the text is skewed or runs up/down (last resort, biggest plate only)
+      .concat(finnSkilt(img).slice(0, 1).flatMap(b => [12, -12, 90, 78, 102, -90, -78, -102].map(gr => () =>
+        les(roter(utsnitt(img, Math.max(0, b.x - b.w * 0.03), Math.max(0, b.y - b.h * 0.03), Math.min(W, b.w * 1.06), Math.min(H, b.h * 1.06), 900), gr), ['6']))));
     for (const f of forsok) { await f(); r = finnSykkelFraTekst(tekster, S.d.sykler); if (r.sikker) break; }
   } catch (e) { return toast(t('skannFeil'), true); }
   if (r.sikker) { toast(t('skannFant', r.sikker.regnr)); return apne(() => visSykkel(r.sikker.id)); }
