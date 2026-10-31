@@ -1325,17 +1325,33 @@ function skiltKandidater(tekster) {
   });
   return [...ut.entries()].sort((a, b) => b[1] - a[1]).map(x => x[0]);
 }
+
+// Generic plate matcher: works for any plate format, because it compares the OCR text with the registered plates
+// instead of expecting one country's pattern. Semi-global alignment (the plate may sit anywhere in the text), where
+// look-alike characters (O/0, I/1, S/5 …) are cheap substitutions and a wrong letter costs less than a wrong digit.
+const LIKE = ['O0', 'Q0', 'D0', 'U0', 'I1', 'L1', 'J1', 'T7', 'Z2', 'S5', 'B8', 'G6', 'A4', 'G0', 'E8', 'H4', 'P9'];
+const likePar = new Set(LIKE.flatMap(p => [p, p[1] + p[0]]));
+const subKost = (r, s) => r === s ? 0 : likePar.has(r + s) ? 0.35 : /\d/.test(r) ? 1 : 0.7;
+function semiGlobal(R, S) {
+  // R = registered plate (all must be matched), S = OCR text (free start and end)
+  let prev = new Array(S.length + 1).fill(0);
+  for (let i = 1; i <= R.length; i++) {
+    const cur = [i * 0.9];
+    for (let j = 1; j <= S.length; j++) cur[j] = Math.min(prev[j - 1] + subKost(R[i - 1], S[j - 1]), prev[j] + 0.9, cur[j - 1] + 0.9);
+    prev = cur;
+  }
+  return Math.min(...prev);
+}
+const kompakt = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 function finnSykkelFraTekst(tekster, sykler) {
-  const kand = skiltKandidater(tekster);
+  const S = [...new Set(tekster.map(kompakt).filter(x => x.length >= 3))].map(x => x.slice(0, 400));
   const res = sykler.map(s => {
-    const r = String(s.regnr).toUpperCase().replace(/[^A-Z0-9]/g, ''), L = r.slice(0, 2), D = r.slice(2);
-    let best = 99;
-    kand.forEach(k => { const kl = k.slice(0, 2), kd = k.slice(2);
-      const dist = lev(kd, D) * 1.0 + (kl === '??' ? 1.5 : lev(kl, L) * 0.6); if (dist < best) best = dist; });
+    const R = kompakt(s.regnr); if (R.length < 3) return { s, dist: 9 };
+    let best = 9; S.forEach(x => { const d = semiGlobal(R, x) / R.length; if (d < best) best = d; });
     return { s, dist: best };
-  }).filter(x => x.dist <= 2.1).sort((a, b) => a.dist - b.dist);
-  const sikker = res.length && (res.length === 1 || res[1].dist - res[0].dist >= 1) && res[0].dist <= 1.6;
-  return { kandidater: kand, treff: res.slice(0, 4), sikker: sikker ? res[0].s : null };
+  }).filter(x => x.dist <= 0.34).sort((a, b) => a.dist - b.dist);
+  const sikker = res.length && res[0].dist <= 0.25 && (res.length === 1 || res[1].dist - res[0].dist >= 0.09);
+  return { treff: res.slice(0, 4), sikker: sikker ? res[0].s : null };
 }
 
 /** The plate as read, for messages – just the digits when the readings disagree about the letters. */
@@ -1352,6 +1368,40 @@ async function ocrArbeider() {
   if (!window.Tesseract) await lastSkript('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js');
   OCR = await window.Tesseract.createWorker('eng');
   return OCR;
+}
+/**
+ * MC plates have the letters on one row and the digits on the next. Reading each row on its own, with only letters or
+ * only digits allowed, gets the letters right far more often than reading the whole plate. Rows are found from the
+ * dark pixels (two thresholds, and a plain top/bottom split as a fallback); every letters × digits pair is added as text.
+ */
+async function lesLinjer(w, c, tekster, alleTegn) {
+  const g = c.getContext('2d'), d = g.getImageData(0, 0, c.width, c.height).data, W = c.width, H = c.height;
+  const gra = new Uint8Array(W * H); for (let i = 0; i < W * H; i++) gra[i] = d[i * 4];
+  const otsu = () => { const h = new Float64Array(256); gra.forEach(v => h[v]++); let sum = 0; for (let t = 0; t < 256; t++) sum += t * h[t];
+    let wb = 0, sb = 0, best = 0, th = 128; for (let t = 0; t < 256; t++) { wb += h[t]; if (!wb) continue; const wf = W * H - wb; if (!wf) break; sb += t * h[t];
+      const v = wb * wf * Math.pow(sb / wb - (sum - sb) / wf, 2); if (v > best) { best = v; th = t; } } return th; };
+  const rader = th => { const ut = []; let i = 0; const on = y => { let n = 0; for (let x = 0; x < W; x++) if (gra[y * W + x] < th) n++; return n / W > 0.08; };
+    while (i < H) { if (on(i)) { let j = i; while (j < H && on(j)) j++; if (j - i > H * 0.12) ut.push([i, j]); i = j; } else i++; }
+    return ut.map(([i, j]) => { let x0 = W, x1 = 0; for (let x = 0; x < W; x++) { let n = 0; for (let y = i; y < j; y++) if (gra[y * W + x] < th) n++; if (n / (j - i) > 0.05) { if (x < x0) x0 = x; x1 = x; } }
+      const p = Math.round((j - i) * 0.25); return x1 > x0 ? [Math.max(0, x0 - p), Math.max(0, i - p), Math.min(W, x1 + p) - Math.max(0, x0 - p), Math.min(H, j + p) - Math.max(0, i - p)] : null; }).filter(Boolean); };
+  const bit = ([x, y, bw, bh]) => { const hoy = 100, br = Math.max(1, Math.round(bw * hoy / bh)), k = document.createElement('canvas'); k.width = br + 40; k.height = hoy + 40;
+    const kg = k.getContext('2d'); kg.fillStyle = '#fff'; kg.fillRect(0, 0, k.width, k.height); kg.drawImage(c, x, y, bw, bh, 20, 20, br, hoy); return k; };
+  const les1 = async (bilde, wl, psm) => { await w.setParameters({ tessedit_pageseg_mode: psm, tessedit_char_whitelist: wl }); return (await w.recognize(bilde)).data.text.replace(/\s+/g, ''); };
+  const BOKST = 'ABCDEFGHJKLMNPRSTUVWXYZ', SIFF = '0123456789';   // 3 letters read on the top row: a bolt or dirt can add one, so both pairs are tried
+  const oppsett = [rader(110), rader(otsu()), [[0, 0, W, Math.round(H * 0.5)], [0, Math.round(H * 0.45), W, H - Math.round(H * 0.45)]]];
+  try {
+    for (const r of oppsett) {
+      if (r.length < 2) continue;
+      const topp = bit(r[0]), bunn = bit(r[r.length - 1]), L = new Set(), D = new Set();
+      if (alleTegn) {   // other countries: both rows can hold letters and digits (UK AB12 / CDE, Ireland 191-D / 12345, Sweden ABC / 123)
+        const t = await les1(topp, BOKST + 'IOQ' + SIFF, '8'), b = await les1(bunn, BOKST + 'IOQ' + SIFF, '8');
+        if (t && b) tekster.push(t + ' ' + b);
+        continue;
+      }
+      for (const psm of ['8', '7']) { const l = await les1(topp, BOKST, psm); if (/^[A-Z]{2,3}$/.test(l)) { L.add(l.slice(0, 2)); if (l.length === 3) L.add(l.slice(1)); } const dd = await les1(bunn, SIFF, psm); if (/^\d{4,5}$/.test(dd)) D.add(dd); }
+      D.forEach(dd => { if (L.size) L.forEach(l => tekster.push(l + ' ' + dd)); else tekster.push(dd); });
+    }
+  } finally { await w.setParameters({ tessedit_char_whitelist: '' }); }
 }
 function roter(c, grader) {
   const v = grader * Math.PI / 180, cs = Math.abs(Math.cos(v)), sn = Math.abs(Math.sin(v));
@@ -1389,7 +1439,7 @@ function finnSkilt(img) {
   const W = img.naturalWidth, H = img.naturalHeight, sk = 400 / Math.max(W, H), w = Math.round(W * sk), h = Math.round(H * sk);
   const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.drawImage(img, 0, 0, w, h);
   const d = g.getImageData(0, 0, w, h).data, hvit = new Uint8Array(w * h), sett = new Uint8Array(w * h), ut = [];
-  for (let i = 0; i < w * h; i++) { const r = d[i * 4], gg = d[i * 4 + 1], b = d[i * 4 + 2], mn = Math.min(r, gg, b), mx = Math.max(r, gg, b); hvit[i] = mn > 140 && mx - mn < 45 ? 1 : 0; }
+  for (let i = 0; i < w * h; i++) { const r = d[i * 4], gg = d[i * 4 + 1], b = d[i * 4 + 2], mn = Math.min(r, gg, b), mx = Math.max(r, gg, b); hvit[i] = (mn > 140 && mx - mn < 45) || (r > 150 && gg > 110 && b < 120 && r - b > 70 && Math.abs(r - gg) < 80) ? 1 : 0; }   // white, or yellow (UK rear plates)
   const ko = new Int32Array(w * h);
   for (let s0 = 0; s0 < w * h; s0++) {
     if (!hvit[s0] || sett[s0]) continue;
@@ -1415,13 +1465,16 @@ async function skannSkilt(fil) {
     // 1) the white plate itself, found in the photo; 2) the centre (where people aim); 3) the whole picture
     // inside the white plate, without the frame and the blue N band (they confuse the reader), then the plate with a little margin
     const forsok = finnSkilt(img).flatMap(b => { const venstre = b.w / b.h > 2.5 ? 0.09 : 0.17; return [
+      () => lesLinjer(w, utsnitt(img, b.x + b.w * venstre, b.y + b.h * 0.04, b.w * (0.98 - venstre), b.h * 0.92, 900), tekster),
       () => les(utsnitt(img, b.x + b.w * venstre, b.y + b.h * 0.04, b.w * (0.98 - venstre), b.h * 0.92, 900), ['6', '11']),
       () => les(utsnitt(img, Math.max(0, b.x - b.w * 0.05), Math.max(0, b.y - b.h * 0.05), Math.min(W, b.w * 1.1), Math.min(H, b.h * 1.1), 900), ['11'])]; })
+      // foreign plates: rows with letters and digits, using (almost) the full width – not every country has the band on the left
+      .concat(finnSkilt(img).slice(0, 2).map(b => () => lesLinjer(w, utsnitt(img, b.x + b.w * 0.03, b.y + b.h * 0.04, b.w * 0.94, b.h * 0.92, 900), tekster, true)))
       .concat([() => les(utsnitt(img, W * 0.08, H * 0.15, W * 0.84, H * 0.7, 1400), ['6', '11']), () => les(utsnitt(img, 0, 0, W, H, 1800), ['11'])])
       // a tilted or sideways photo: the plate is found, but the text is skewed or runs up/down (last resort, biggest plate only)
       .concat(finnSkilt(img).slice(0, 1).flatMap(b => [12, -12, 90, 78, 102, -90, -78, -102].map(gr => () =>
         les(roter(utsnitt(img, Math.max(0, b.x - b.w * 0.03), Math.max(0, b.y - b.h * 0.03), Math.min(W, b.w * 1.06), Math.min(H, b.h * 1.06), 900), gr), ['6']))));
-    for (const f of forsok) { await f(); r = finnSykkelFraTekst(tekster, S.d.sykler); if (r.sikker) break; }
+    for (const f of forsok) { await f(); r = finnSykkelFraTekst(tekster, S.d.sykler); r.kandidater = skiltKandidater(tekster); if (r.sikker) break; }
   } catch (e) { return toast(t('skannFeil'), true); }
   if (r.sikker) { toast(t('skannFant', r.sikker.regnr)); return apne(() => visSykkel(r.sikker.id)); }
   const inp = $('[data-sykkelsok]');
