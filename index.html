@@ -1536,7 +1536,12 @@ async function lastKalender() {
       // the same event is sometimes entered twice (or in both calendars) – show it once
       const sett = {}; KAL.hendelser = KAL.hendelser.filter(h => { const k = h.start + '|' + h.tittel.toLowerCase().trim(); return sett[k] ? false : (sett[k] = true); });
     }
-  } catch (e) { KAL_HENTER = null; return; }
+  } catch (e) {
+    KAL_HENTER = null;
+    // show what went wrong instead of hiding the calendar – makes problems after an update visible
+    const el = $('#kalNeste'); if (el) el.innerHTML = `<div class="kort"><h3>${t('kalNeste')}</h3><p class="dempet" style="margin:0">${esc(e.message || String(e))}</p></div>`;
+    return;
+  }
   const el = $('#kalNeste');
   if (!el || !KAL.kalendere.length) return;
   const neste = KAL.hendelser.slice(0, 3);
