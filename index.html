@@ -287,7 +287,7 @@ const TXT = {
     egenOk: 'egenerklæring ✓', egenMangler: 'egenerklæring mangler', hkUtlopt: 'helsetrygdekort utløpt', hkUtloper: 'helsetrygdekort utløper {0}',
     sesong: 'Sesong {0}',
     kalTittel: 'Kalender', kalNeste: 'Kommende', kalAlle: 'Hele kalenderen', kalHeldag: 'Hele dagen', kalLeggTil: 'Legg i min kalender', kalTom: 'Ingen kommende arrangementer.', kalFeilet: 'Fikk ikke hentet: {0}',
-    sokSykkel: 'Søk regnr, navn eller modell', skannSkilt: 'Ta bilde av skiltet', skannLeser: 'Leser skiltet…', skannLaster: 'Laster skiltleser (første gang tar litt tid)…', skannFant: 'Fant {0}', skannUsikker: 'Usikker – velg riktig sykkel i lista', skannIngen: 'Fant ikke noe skilt. Ta bildet nærmere, så skiltet fyller bildet.', skannFeil: 'Skiltleseren kunne ikke lastes. Sjekk nettet, eller skriv regnr.',
+    sokSykkel: 'Søk regnr, navn eller modell', skannSkilt: 'Ta bilde av skiltet eller velg fra bilder', skannLeser: 'Leser skiltet…', skannLaster: 'Laster skiltleser (første gang tar litt tid)…', skannFant: 'Fant {0}', skannUsikker: 'Usikker – velg riktig sykkel i lista', skannIngen: 'Fant ikke noe skilt. Ta bildet nærmere, så skiltet fyller bildet.', skannFeil: 'Skiltleseren kunne ikke lastes. Sjekk nettet, eller skriv regnr.',
     telefonliste: 'Telefonliste', tlfSok: 'Søk på navn, avdeling eller status', klubbhus: 'Klubbhus', klubbTlf: 'Klubbtelefon', ringVanlig: 'Ring vanlig', visKart: 'Vis i kart', tlfHentet: 'Hentet fra klubbens telefonliste {0}', tlfIngen: 'Ingen treff.',
     nyKontrollDenne: 'Ny kontroll av denne sykkelen', kontrollerSelv: 'Kontroller sykkelen selv', venterMerke: 'VENTER', venterGodkj: 'Venter på godkjenning fra Road Captain',
     godkjentAvTittel: 'Godkjent av', godkjenn: 'Godkjenn', rettGodkjenn: 'Rett og godkjenn', avvis: 'Avvis', avvisGrunn: 'Hvorfor avvises kontrollen? Medlemmet ser grunnen.',
@@ -407,7 +407,7 @@ const TXT = {
     egenOk: 'self-declaration ✓', egenMangler: 'self-declaration missing', hkUtlopt: 'health card expired', hkUtloper: 'health card expires {0}',
     sesong: 'Season {0}',
     kalTittel: 'Calendar', kalNeste: 'Coming up', kalAlle: 'Full calendar', kalHeldag: 'All day', kalLeggTil: 'Add to my calendar', kalTom: 'No upcoming events.', kalFeilet: 'Could not load: {0}',
-    sokSykkel: 'Search reg. no., name or model', skannSkilt: 'Photo of the plate', skannLeser: 'Reading the plate…', skannLaster: 'Loading the plate reader (takes a moment the first time)…', skannFant: 'Found {0}', skannUsikker: 'Not sure – pick the right bike in the list', skannIngen: 'No plate found. Take the photo closer, so the plate fills the picture.', skannFeil: 'Could not load the plate reader. Check your connection, or type the reg. no.',
+    sokSykkel: 'Search reg. no., name or model', skannSkilt: 'Take or choose a photo of the plate', skannLeser: 'Reading the plate…', skannLaster: 'Loading the plate reader (takes a moment the first time)…', skannFant: 'Found {0}', skannUsikker: 'Not sure – pick the right bike in the list', skannIngen: 'No plate found. Take the photo closer, so the plate fills the picture.', skannFeil: 'Could not load the plate reader. Check your connection, or type the reg. no.',
     telefonliste: 'Phone list', tlfSok: 'Search name, chapter or status', klubbhus: 'Clubhouse', klubbTlf: 'Club phone', ringVanlig: 'Regular call', visKart: 'Show on map', tlfHentet: "From the club's phone list, {0}", tlfIngen: 'No matches.',
     nyKontrollDenne: 'New inspection of this bike', kontrollerSelv: 'Inspect the bike yourself', venterMerke: 'PENDING', venterGodkj: 'Waiting for approval from the Road Captain',
     godkjentAvTittel: 'Approved by', godkjenn: 'Approve', rettGodkjenn: 'Correct and approve', avvis: 'Reject', avvisGrunn: 'Why is the inspection rejected? The member will see the reason.',
@@ -985,7 +985,7 @@ function visOversikt() {
       `<p class="tom">${alle.length ? t('ingenUtvalg') : t('ingenSykler')}</p>`}`;
 }
 const sokRad = () => `<div class="sokrad"><input type="search" data-sykkelsok placeholder="${esc(t('sokSykkel'))}" autocomplete="off" autocapitalize="characters" value="${esc(S.sok || '')}">
-  <label class="skannknapp" aria-label="${esc(t('skannSkilt'))}">${svg(IKON.kamera)}<input type="file" accept="image/*" capture="environment" data-skann hidden></label></div>`;
+  <label class="skannknapp" aria-label="${esc(t('skannSkilt'))}">${svg(IKON.kamera)}<input type="file" accept="image/*" data-skann hidden></label></div>`;
 
 // ─── Bike detail ────────────────────────────────────────────
 /** Odometer per year: first and last reading (inspections + self-declarations). 0 / empty = not read. */
@@ -1347,12 +1347,13 @@ async function ocrArbeider() {
   return OCR;
 }
 /** Centre crop (where people aim), grey and contrast-stretched – plates read much better than from the whole photo. */
-function skiltBilde(fil) {
+function skiltBilde(fil, helt) {
   return new Promise((ok, avvis) => {
     const url = URL.createObjectURL(fil), img = new Image();
     img.onload = () => {
-      const W = img.naturalWidth, H = img.naturalHeight, cw = W * 0.84, ch = Math.min(H * 0.5, cw * 0.6);
-      const ut = Math.min(1400, cw), c = document.createElement('canvas'); c.width = Math.round(ut); c.height = Math.round(ch * ut / cw);
+      const W = img.naturalWidth, H = img.naturalHeight, cw = helt ? W : W * 0.84, ch = helt ? H : Math.min(H * 0.5, cw * 0.6);
+      const maks = helt ? 1800 : 1400;
+      const ut = Math.min(maks, cw), c = document.createElement('canvas'); c.width = Math.round(ut); c.height = Math.round(ch * ut / cw);
       const g = c.getContext('2d'); g.filter = 'grayscale(1) contrast(1.6)';
       g.drawImage(img, (W - cw) / 2, (H - ch) / 2, cw, ch, 0, 0, c.width, c.height);
       URL.revokeObjectURL(url); ok(c);
@@ -1362,13 +1363,15 @@ function skiltBilde(fil) {
   });
 }
 async function skannSkilt(fil) {
-  let tekster = [];
+  let tekster = [], r;
   try {
-    const bilde = await skiltBilde(fil);
     const w = await ocrArbeider(); toast(t('skannLeser'));
-    for (const psm of ['7', '11']) { await w.setParameters({ tessedit_pageseg_mode: psm }); tekster.push((await w.recognize(bilde)).data.text); }
+    const les = async (bilde, psmer) => { for (const psm of psmer) { await w.setParameters({ tessedit_pageseg_mode: psm }); tekster.push((await w.recognize(bilde)).data.text); } };
+    // first the centre (a photo taken for this), then the whole picture (a photo from the gallery may have the plate anywhere)
+    await les(await skiltBilde(fil), ['7', '11']);
+    r = finnSykkelFraTekst(tekster, S.d.sykler);
+    if (!r.sikker) { await les(await skiltBilde(fil, true), ['11', '3']); r = finnSykkelFraTekst(tekster, S.d.sykler); }
   } catch (e) { return toast(t('skannFeil'), true); }
-  const r = finnSykkelFraTekst(tekster, S.d.sykler);
   if (r.sikker) { toast(t('skannFant', r.sikker.regnr)); return apne(() => visSykkel(r.sikker.id)); }
   const inp = $('[data-sykkelsok]');
   if (r.treff.length) {
