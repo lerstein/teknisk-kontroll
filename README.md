@@ -191,7 +191,7 @@ Layout expected: column B = "BMC <chapter>" heading followed by address lines an
 "Coming up" on the overview and on "Mine" shows the next three events from the club's Google Calendars; "Full calendar"
 lists everything for the next 180 days, and each event can be added to the phone's own calendar (.ics).
 Set the calendars in `CFG.KALENDERE` in Code.gs: `id` is the Calendar ID (calendar → Settings and sharing → Integrate calendar),
-`avdelinger: []` means everyone sees it, otherwise only the chapters listed (admins and officers always see all).
+`avdelinger: []` means everyone sees it, otherwise only members of the chapters listed – whatever their role.
 The account that owns the Apps Script must have at least "See all event details" on each calendar.
 Run **Teknisk kontroll → Test kalenderne** once after updating to approve calendar access and check what the app reads.
 Nothing is ever sent to members – the calendar is read-only in the app. Results are cached for 10 minutes.
