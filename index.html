@@ -29,6 +29,10 @@ button.hvem.aktiv svg{color:var(--aksent)}
 button.tlfknapp{background:none;border:1.5px solid var(--kant,#2b3038);border-radius:50%;width:38px;height:38px;min-height:0;padding:0;display:grid;place-items:center;flex:none;color:var(--aksent)}
 button.tlfknapp svg{width:19px;height:19px}
 .tlfsok{margin-bottom:12px}
+.sokrad{display:flex;gap:8px;margin:0 0 12px}
+.sokrad input[type=search]{flex:1;min-width:0}
+.skannknapp{flex:none;width:50px;display:grid;place-items:center;border-radius:12px;background:var(--aksent);color:#1a1300;cursor:pointer}
+.skannknapp svg{width:24px;height:24px}
 .kalrad{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--kant,#2b3038);text-align:left;width:100%;background:none;border-left:0;border-right:0;border-bottom:0;border-radius:0;min-height:0;font:inherit;color:inherit}
 .kalrad:first-of-type{border-top:0}
 .kaldato{flex:none;width:52px;text-align:center;border-radius:12px;background:#1b1e23;border:1.5px solid var(--klubb);padding:6px 0 5px;line-height:1}
@@ -283,6 +287,7 @@ const TXT = {
     egenOk: 'egenerklæring ✓', egenMangler: 'egenerklæring mangler', hkUtlopt: 'helsetrygdekort utløpt', hkUtloper: 'helsetrygdekort utløper {0}',
     sesong: 'Sesong {0}',
     kalTittel: 'Kalender', kalNeste: 'Kommende', kalAlle: 'Hele kalenderen', kalHeldag: 'Hele dagen', kalLeggTil: 'Legg i min kalender', kalTom: 'Ingen kommende arrangementer.', kalFeilet: 'Fikk ikke hentet: {0}',
+    sokSykkel: 'Søk regnr, navn eller modell', skannSkilt: 'Ta bilde av skiltet', skannLeser: 'Leser skiltet…', skannLaster: 'Laster skiltleser (første gang tar litt tid)…', skannFant: 'Fant {0}', skannUsikker: 'Usikker – velg riktig sykkel i lista', skannIngen: 'Fant ikke noe skilt. Ta bildet nærmere, så skiltet fyller bildet.', skannFeil: 'Skiltleseren kunne ikke lastes. Sjekk nettet, eller skriv regnr.',
     telefonliste: 'Telefonliste', tlfSok: 'Søk på navn, avdeling eller status', klubbhus: 'Klubbhus', klubbTlf: 'Klubbtelefon', ringVanlig: 'Ring vanlig', visKart: 'Vis i kart', tlfHentet: 'Hentet fra klubbens telefonliste {0}', tlfIngen: 'Ingen treff.',
     nyKontrollDenne: 'Ny kontroll av denne sykkelen', kontrollerSelv: 'Kontroller sykkelen selv', venterMerke: 'VENTER', venterGodkj: 'Venter på godkjenning fra Road Captain',
     godkjentAvTittel: 'Godkjent av', godkjenn: 'Godkjenn', rettGodkjenn: 'Rett og godkjenn', avvis: 'Avvis', avvisGrunn: 'Hvorfor avvises kontrollen? Medlemmet ser grunnen.',
@@ -402,6 +407,7 @@ const TXT = {
     egenOk: 'self-declaration ✓', egenMangler: 'self-declaration missing', hkUtlopt: 'health card expired', hkUtloper: 'health card expires {0}',
     sesong: 'Season {0}',
     kalTittel: 'Calendar', kalNeste: 'Coming up', kalAlle: 'Full calendar', kalHeldag: 'All day', kalLeggTil: 'Add to my calendar', kalTom: 'No upcoming events.', kalFeilet: 'Could not load: {0}',
+    sokSykkel: 'Search reg. no., name or model', skannSkilt: 'Photo of the plate', skannLeser: 'Reading the plate…', skannLaster: 'Loading the plate reader (takes a moment the first time)…', skannFant: 'Found {0}', skannUsikker: 'Not sure – pick the right bike in the list', skannIngen: 'No plate found. Take the photo closer, so the plate fills the picture.', skannFeil: 'Could not load the plate reader. Check your connection, or type the reg. no.',
     telefonliste: 'Phone list', tlfSok: 'Search name, chapter or status', klubbhus: 'Clubhouse', klubbTlf: 'Club phone', ringVanlig: 'Regular call', visKart: 'Show on map', tlfHentet: "From the club's phone list, {0}", tlfIngen: 'No matches.',
     nyKontrollDenne: 'New inspection of this bike', kontrollerSelv: 'Inspect the bike yourself', venterMerke: 'PENDING', venterGodkj: 'Waiting for approval from the Road Captain',
     godkjentAvTittel: 'Approved by', godkjenn: 'Approve', rettGodkjenn: 'Correct and approve', avvis: 'Reject', avvisGrunn: 'Why is the inspection rejected? The member will see the reason.',
@@ -911,6 +917,7 @@ function render() {
   if (S.fane === 'kontroll') oppdaterStatus();
   if (S.fane === 'wolfpack') lastWolfpack();
   if (S.fane === 'oversikt' || S.fane === 'mine') lastKalender();
+  if (S.fane === 'oversikt' && S.sok) filtrerSykler(S.sok);
   fyllBilder($('#app'));
 }
 
@@ -947,7 +954,7 @@ function sykkelKort(i, visAvd) {
   const hk = e && e.helsetrygdekort_utloper;
   const egen = e ? (hk && hk < omDager(60) ? `<span class="oransje">${hk < idag() ? t('hkUtlopt') : t('hkUtloper', fmtDato(hk))}</span>` : t('egenOk'))
                  : `<span class="dempet">${t('egenMangler')}</span>`;
-  return `<button class="kort" data-sykkel="${esc(s.id)}">
+  return `<button class="kort" data-sykkel="${esc(s.id)}" data-sok="${esc((s.regnr + ' ' + s.regnr.replace(/\s/g, '') + ' ' + s.eier + ' ' + (s.modell || '')).toLowerCase())}">
     <div class="linje1"><span style="display:flex;align-items:center">${(() => { const mb = sisteBilde('sykkel', s.id); return mb ? `<img class="mcmini" data-bilde-id="${esc(mb.id)}" alt="">` : ''; })()}<b>${esc(s.eier)}</b></span>${i.forbud ? `<span class="merke">${t('forbudMerke')}</span>` : ''}</div>
     <div class="dempet">${esc(s.regnr)}${s.modell ? ' · ' + esc(s.modell) : ''}${visAvd ? ' · ' + esc(s.avdeling) : ''}</div>
     ${sesongStripe(s)}
@@ -973,9 +980,12 @@ function visOversikt() {
     <div class="knapperad" style="margin:-4px 0 14px">${(() => { const n = oppfolgingPunkter().length; return `<button type="button" data-a="oppfolging" class="${n ? 'primar' : ''}">${n ? t('oppfolgingN', n) : t('oppfolging')}</button>`; })()}
       <button type="button" data-a="statistikk">${t('statistikk')}</button></div>
     <div class="forklaring"><span><i style="background:var(--s0)"></i>${t('s0')}</span><span><i style="background:var(--s1)"></i>${t('s1')}</span><span><i style="background:var(--s2)"></i>${t('s2')}</span><span>${esc(t('sesong', aar()))}: ${esc(mndNavn(SESONG[0]))}–${esc(mndNavn(SESONG[SESONG.length - 1]))}</span></div>
+    ${alle.length ? sokRad() : ''}
     ${liste.length ? liste.map(i => sykkelKort(i, S.avd === 'Alle')).join('') :
       `<p class="tom">${alle.length ? t('ingenUtvalg') : t('ingenSykler')}</p>`}`;
 }
+const sokRad = () => `<div class="sokrad"><input type="search" data-sykkelsok placeholder="${esc(t('sokSykkel'))}" autocomplete="off" autocapitalize="characters" value="${esc(S.sok || '')}">
+  <label class="skannknapp" aria-label="${esc(t('skannSkilt'))}">${svg(IKON.kamera)}<input type="file" accept="image/*" capture="environment" data-skann hidden></label></div>`;
 
 // ─── Bike detail ────────────────────────────────────────────
 /** Odometer per year: first and last reading (inspections + self-declarations). 0 / empty = not read. */
@@ -1284,6 +1294,94 @@ function visWolfpack() {
     <p class="dempet">${t('wp_merk')}</p>
     ${hbAlleKap().some(k => k.wolfpack) ? `<button class="bred" data-hb-kapittel="${hbAlleKap().findIndex(k => k.wolfpack)}">📜 ${t('wp_regler')}</button>` : ''}`;
 }
+// ─── Search and plate photo → bike ───
+function filtrerSykler(q) {
+  S.sok = q; const n = q.trim().toLowerCase().replace(/\s+/g, ' ');
+  $$('main [data-sykkel][data-sok]').forEach(el => { el.hidden = !!n && !el.dataset.sok.includes(n) && !el.dataset.sok.includes(n.replace(/\s/g, '')); });
+}
+// Finds the registered bike that best matches OCR text from a photo of a Norwegian plate (2 letters + 4–5 digits).
+const TIL_SIFFER = { O: '0', Q: '0', D: '0', U: '0', I: '1', L: '1', J: '1', T: '7', Z: '2', S: '5', B: '8', G: '6', A: '4' };
+const TIL_BOKSTAV = { 0: 'O', 1: 'I', 2: 'Z', 4: 'A', 5: 'S', 6: 'G', 8: 'B', 7: 'T' };
+function lev(a, b) {
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++)
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+function skiltKandidater(tekster) {
+  const ut = new Set();
+  tekster.forEach(t => {
+    const s = String(t || '').toUpperCase().replace(/[^A-Z0-9\s]/g, ' ');
+    const re = /([A-Z0-9]{2})\s?([0-9A-Z]{4,5})(?![0-9A-Z])/g; let m;
+    while ((m = re.exec(s))) {
+      const L = m[1].split('').map(c => TIL_BOKSTAV[c] || c).join(''), D = m[2].split('').map(c => TIL_SIFFER[c] || c).join('');
+      if (/^[A-Z]{2}$/.test(L) && /^\d{4,5}$/.test(D)) ut.add(L + D);
+      re.lastIndex = m.index + 1;
+    }
+    // digits alone (letters often misread or lost)
+    (s.replace(/\s+/g, ' ').match(/[0-9OQDILJTZSBG]{4,5}/g) || []).forEach(x => { const D = x.split('').map(c => TIL_SIFFER[c] || c).join(''); if (/^\d{4,5}$/.test(D) && /\d{3}/.test(x)) ut.add('??' + D); });
+  });
+  return [...ut];
+}
+function finnSykkelFraTekst(tekster, sykler) {
+  const kand = skiltKandidater(tekster);
+  const res = sykler.map(s => {
+    const r = String(s.regnr).toUpperCase().replace(/[^A-Z0-9]/g, ''), L = r.slice(0, 2), D = r.slice(2);
+    let best = 99;
+    kand.forEach(k => { const kl = k.slice(0, 2), kd = k.slice(2);
+      const dist = lev(kd, D) * 1.0 + (kl === '??' ? 1.5 : lev(kl, L) * 0.6); if (dist < best) best = dist; });
+    return { s, dist: best };
+  }).filter(x => x.dist <= 2.6).sort((a, b) => a.dist - b.dist);
+  const sikker = res.length && (res.length === 1 || res[1].dist - res[0].dist >= 1) && res[0].dist <= 1.6;
+  return { kandidater: kand, treff: res.slice(0, 4), sikker: sikker ? res[0].s : null };
+}
+
+let OCR = null;
+function lastSkript(url) { return new Promise((ok, feil) => { const s = document.createElement('script'); s.src = url; s.onload = ok; s.onerror = feil; document.head.appendChild(s); }); }
+async function ocrArbeider() {
+  if (OCR) return OCR;
+  toast(t('skannLaster'));
+  if (!window.Tesseract) await lastSkript('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js');
+  OCR = await window.Tesseract.createWorker('eng');
+  return OCR;
+}
+/** Centre crop (where people aim), grey and contrast-stretched – plates read much better than from the whole photo. */
+function skiltBilde(fil) {
+  return new Promise((ok, avvis) => {
+    const url = URL.createObjectURL(fil), img = new Image();
+    img.onload = () => {
+      const W = img.naturalWidth, H = img.naturalHeight, cw = W * 0.84, ch = Math.min(H * 0.5, cw * 0.6);
+      const ut = Math.min(1400, cw), c = document.createElement('canvas'); c.width = Math.round(ut); c.height = Math.round(ch * ut / cw);
+      const g = c.getContext('2d'); g.filter = 'grayscale(1) contrast(1.6)';
+      g.drawImage(img, (W - cw) / 2, (H - ch) / 2, cw, ch, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); ok(c);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); avvis(new Error('image')); };
+    img.src = url;
+  });
+}
+async function skannSkilt(fil) {
+  let tekster = [];
+  try {
+    const bilde = await skiltBilde(fil);
+    const w = await ocrArbeider(); toast(t('skannLeser'));
+    for (const psm of ['7', '11']) { await w.setParameters({ tessedit_pageseg_mode: psm }); tekster.push((await w.recognize(bilde)).data.text); }
+  } catch (e) { return toast(t('skannFeil'), true); }
+  const r = finnSykkelFraTekst(tekster, S.d.sykler);
+  if (r.sikker) { toast(t('skannFant', r.sikker.regnr)); return apne(() => visSykkel(r.sikker.id)); }
+  const inp = $('[data-sykkelsok]');
+  if (r.treff.length) {
+    const q = r.treff.length === 1 ? r.treff[0].s.regnr : '';
+    if (inp) { inp.value = q; filtrerSykler(q); }
+    if (!q) { const ids = r.treff.map(x => x.s.id); $$('main [data-sykkel][data-sok]').forEach(el => { el.hidden = !ids.includes(el.dataset.sykkel); }); }
+    return toast(t('skannUsikker'), true);
+  }
+  const gjett = (r.kandidater.find(k => !k.startsWith('??')) || '');
+  if (inp && gjett) { inp.value = gjett; filtrerSykler(gjett); }
+  toast(t('skannIngen'), true);
+}
+
 // ─── Calendar (Google Calendar, read via the backend) ───
 let KAL = null, KAL_HENTER = null;
 const kalD = s => new Date(String(s).replace(' ', 'T'));
@@ -1996,6 +2094,8 @@ document.addEventListener('click', ev => {
 function feltEndret(ev) {
   const el = ev.target;
   if (el.matches('input[data-bilde]')) { if (ev.type === 'change') velgBilder(el); return; }
+  if (el.matches('[data-sykkelsok]')) { if (ev.type === 'input') filtrerSykler(el.value); return; }
+  if (el.matches('input[data-skann]')) { if (ev.type === 'change' && el.files[0]) { const f = el.files[0]; el.value = ''; skannSkilt(f); } return; }
   if (el.matches('[data-avd]')) { S.avd = el.value; lagre('tk_avd', S.avd); if (S.fane === 'kontroll' && F) F.sykkel_id = ''; return render(); }
   if (!el.matches('[data-f]')) return;
   const sk = skjemaFor(el); if (!sk || !sk.obj) return;
