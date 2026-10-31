@@ -29,6 +29,19 @@ button.hvem.aktiv svg{color:var(--aksent)}
 button.tlfknapp{background:none;border:1.5px solid var(--kant,#2b3038);border-radius:50%;width:38px;height:38px;min-height:0;padding:0;display:grid;place-items:center;flex:none;color:var(--aksent)}
 button.tlfknapp svg{width:19px;height:19px}
 .tlfsok{margin-bottom:12px}
+.kalrad{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--kant,#2b3038);text-align:left;width:100%;background:none;border-left:0;border-right:0;border-bottom:0;border-radius:0;min-height:0;font:inherit;color:inherit}
+.kalrad:first-of-type{border-top:0}
+.kaldato{flex:none;width:52px;text-align:center;border-radius:12px;background:#1b1e23;border:1.5px solid var(--klubb);padding:6px 0 5px;line-height:1}
+.kaldato b{display:block;font-size:22px;font-weight:800}
+.kaldato small{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--aksent);margin-top:3px}
+.kalinfo{flex:1;min-width:0}
+.kalinfo b{display:block;font-weight:650;line-height:1.3}
+.kalinfo .dempet{font-size:13px;margin-top:2px}
+.kaltag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#1a1300;background:var(--aksent);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+.kalknapp{display:flex;align-items:center;justify-content:center;gap:8px}
+.kalknapp svg{width:19px;height:19px;flex:none}
+.kalsted a{color:var(--aksent)}
+.kalbesk{white-space:pre-wrap;font-size:13.5px;color:var(--dempet);margin:8px 0 0}
 .tlfavd h3{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .tlfadr{font-size:13.5px;color:var(--dempet);margin:-4px 0 8px;line-height:1.4}
 .tlfadr a{color:var(--aksent)}
@@ -269,6 +282,7 @@ const TXT = {
     kontrollert: 'Kontrollert {0}', aldri: 'Aldri kontrollert', manglerMnd: '{0} mangler', frist: 'frist {0}', passert: ' – passert',
     egenOk: 'egenerklæring ✓', egenMangler: 'egenerklæring mangler', hkUtlopt: 'helsetrygdekort utløpt', hkUtloper: 'helsetrygdekort utløper {0}',
     sesong: 'Sesong {0}',
+    kalTittel: 'Kalender', kalNeste: 'Kommende', kalAlle: 'Hele kalenderen', kalHeldag: 'Hele dagen', kalLeggTil: 'Legg i min kalender', kalTom: 'Ingen kommende arrangementer.', kalFeilet: 'Fikk ikke hentet: {0}',
     telefonliste: 'Telefonliste', tlfSok: 'Søk på navn, avdeling eller status', klubbhus: 'Klubbhus', klubbTlf: 'Klubbtelefon', ringVanlig: 'Ring vanlig', visKart: 'Vis i kart', tlfHentet: 'Hentet fra klubbens telefonliste {0}', tlfIngen: 'Ingen treff.',
     nyKontrollDenne: 'Ny kontroll av denne sykkelen', kontrollerSelv: 'Kontroller sykkelen selv', venterMerke: 'VENTER', venterGodkj: 'Venter på godkjenning fra Road Captain',
     godkjentAvTittel: 'Godkjent av', godkjenn: 'Godkjenn', rettGodkjenn: 'Rett og godkjenn', avvis: 'Avvis', avvisGrunn: 'Hvorfor avvises kontrollen? Medlemmet ser grunnen.',
@@ -387,6 +401,7 @@ const TXT = {
     kontrollert: 'Inspected {0}', aldri: 'Never inspected', manglerMnd: '{0} missing', frist: 'deadline {0}', passert: ' – overdue',
     egenOk: 'self-declaration ✓', egenMangler: 'self-declaration missing', hkUtlopt: 'health card expired', hkUtloper: 'health card expires {0}',
     sesong: 'Season {0}',
+    kalTittel: 'Calendar', kalNeste: 'Coming up', kalAlle: 'Full calendar', kalHeldag: 'All day', kalLeggTil: 'Add to my calendar', kalTom: 'No upcoming events.', kalFeilet: 'Could not load: {0}',
     telefonliste: 'Phone list', tlfSok: 'Search name, chapter or status', klubbhus: 'Clubhouse', klubbTlf: 'Club phone', ringVanlig: 'Regular call', visKart: 'Show on map', tlfHentet: "From the club's phone list, {0}", tlfIngen: 'No matches.',
     nyKontrollDenne: 'New inspection of this bike', kontrollerSelv: 'Inspect the bike yourself', venterMerke: 'PENDING', venterGodkj: 'Waiting for approval from the Road Captain',
     godkjentAvTittel: 'Approved by', godkjenn: 'Approve', rettGodkjenn: 'Correct and approve', avvis: 'Reject', avvisGrunn: 'Why is the inspection rejected? The member will see the reason.',
@@ -559,6 +574,7 @@ const IKON = {
   skjema: '<path d="M9 3.5h6v3H9z"/><path d="M15 5h3.5v16h-13V5H9"/><path d="m9 13.5 2 2 4-4.5"/>',
   sykkel: '<circle cx="5.5" cy="16" r="3.5"/><circle cx="18.5" cy="16" r="3.5"/><path d="M5.5 16 9.5 9h4.5l4.5 7"/><path d="M14 9l-1.6-3.5H15.5M9.5 9 8 6.5H5.5"/>',
   folk: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c1.8.7 3 2.4 3.5 5.2"/>',
+  kal: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
   telefon: '<path d="M5 4h3.5l1.8 4.6-2.3 1.6a11.5 11.5 0 0 0 5.8 5.8l1.6-2.3L20 15.5V19a1.5 1.5 0 0 1-1.6 1.5A16.5 16.5 0 0 1 3.5 5.6 1.5 1.5 0 0 1 5 4z"/>',
   person: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.2 4-6.5 8-6.5s7 2.3 8 6.5"/>',
   pokal: '<path d="M8 4h8v4.5a4 4 0 0 1-8 0z"/><path d="M8 5.5H5v1a3 3 0 0 0 3 3M16 5.5h3v1a3 3 0 0 1-3 3"/><path d="M12 12.5V16M9 20h6l-.6-4h-4.8z"/>',
@@ -622,7 +638,7 @@ async function oppdaterAlt() {
 
 function loggUt(melding) {
   S.token = ''; S.d = null; S.fane = ''; S.filter = 'alle'; S.midlPw = ''; S.avd = hent('tk_avd') || 'Alle';
-  F = G = B = null; TLF = null; TLF_SOK = ""; lagre('tk_token', null); lagre('tk_utkast', null);
+  F = G = B = null; TLF = null; TLF_SOK = ""; KAL = null; KAL_HENTER = null; lagre('tk_token', null); lagre('tk_utkast', null);
   lukkAlle(); visLogin('login');
   if (melding) toast(typeof melding === 'string' ? melding : t('loggInnPaNytt'), true);
 }
@@ -894,6 +910,7 @@ function render() {
     <nav class="bunn">${faner().map(([id, ik]) => `<button data-fane="${id}" class="${S.fane === id ? 'aktiv' : ''}">${svg(ik)}${t('f_' + id)}</button>`).join('')}</nav>`;
   if (S.fane === 'kontroll') oppdaterStatus();
   if (S.fane === 'wolfpack') lastWolfpack();
+  if (S.fane === 'oversikt' || S.fane === 'mine') lastKalender();
   fyllBilder($('#app'));
 }
 
@@ -946,7 +963,7 @@ function visOversikt() {
   const vekt = i => (i.forbud ? 0 : i.frist ? 1 : i.manglerNa ? 2 : 3);
   const liste = alle.filter(filtre[S.filter] || filtre.alle).sort((a, b) => vekt(a) - vekt(b) || a.s.eier.localeCompare(b.s.eier, 'nb'));
   const statKnapp = (id, tall, tekst) => `<button data-filter="${id}" class="${S.filter === id ? 'aktiv' : ''}"><b>${tall}</b><span>${tekst}</span></button>`;
-  return `<h2>${t('oversikt')}${S.avd !== 'Alle' ? ' – ' + esc(S.avd) : ''}</h2>
+  return `<div id="kalNeste"></div><h2>${t('oversikt')}${S.avd !== 'Alle' ? ' – ' + esc(S.avd) : ''}</h2>
     ${avdVelger()}
     <div class="stat">${statKnapp('alle', ant.alle, t('st_sykler'))}${am ? statKnapp('mangler', ant.mangler, t('st_mangler', mndNavn(am))) : statKnapp('alle', '–', t('st_utenfor'))}${statKnapp('avvik', ant.avvik, t('st_avvik'))}${statKnapp('forbud', ant.forbud, t('st_forbud'))}</div>
     ${(() => { const v = S.d.kontroller.filter(k => kanGodkjenne(k) && iAvd(k));
@@ -1267,6 +1284,58 @@ function visWolfpack() {
     <p class="dempet">${t('wp_merk')}</p>
     ${hbAlleKap().some(k => k.wolfpack) ? `<button class="bred" data-hb-kapittel="${hbAlleKap().findIndex(k => k.wolfpack)}">📜 ${t('wp_regler')}</button>` : ''}`;
 }
+// ─── Calendar (Google Calendar, read via the backend) ───
+let KAL = null, KAL_HENTER = null;
+const kalD = s => new Date(String(s).replace(' ', 'T'));
+const kalDag = h => `<div class="kaldato"><b>${kalD(h.start).getDate()}</b><small>${esc(mndKort(kalD(h.start).getMonth() + 1))}</small></div>`;
+function kalTid(h) {
+  const d0 = kalD(h.start), d1 = kalD(h.slutt);
+  const ukedag = d => d.toLocaleDateString(LANG === 'en' ? 'en-GB' : 'nb-NO', { weekday: 'short' });
+  const klokke = d => String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  const flere = h.start.slice(0, 10) !== h.slutt.slice(0, 10);
+  if (h.heldag) return flere ? `${ukedag(d0)} ${d0.getDate()}.–${ukedag(d1)} ${d1.getDate()}. ${mndKort(d1.getMonth() + 1)}` : `${ukedag(d0)} · ${t('kalHeldag')}`;
+  return flere ? `${ukedag(d0)} ${klokke(d0)} – ${ukedag(d1)} ${d1.getDate()}. ${klokke(d1)}` : `${ukedag(d0)} ${klokke(d0)}–${klokke(d1)}`;
+}
+const kalFlere = () => KAL && KAL.kalendere.length > 1;
+const kalRad = (h, i) => `<button type="button" class="kalrad" data-kal="${i}">${kalDag(h)}<div class="kalinfo"><b>${esc(h.tittel)}${kalFlere() ? `<span class="kaltag">${esc(h.kalender)}</span>` : ''}</b>
+  <div class="dempet">${esc(kalTid(h))}${h.sted ? ' · ' + esc(h.sted) : ''}</div></div></button>`;
+async function lastKalender() {
+  try {
+    if (!KAL) KAL = await (KAL_HENTER = KAL_HENTER || api('kalender'));
+  } catch (e) { KAL_HENTER = null; return; }
+  const el = $('#kalNeste');
+  if (!el || !KAL.kalendere.length) return;
+  const neste = KAL.hendelser.slice(0, 3);
+  el.innerHTML = `<div class="kort"><h3>${t('kalNeste')}</h3>${neste.length ? neste.map((h, i) => kalRad(h, i)).join('') : `<p class="tom" style="margin:0">${t('kalTom')}</p>`}
+    ${KAL.hendelser.length > 3 || KAL.feilet.length ? `<button type="button" class="bred kalknapp" style="margin:10px 0 0" data-a="kalender">${svg(IKON.kal)} ${t('kalAlle')} (${KAL.hendelser.length})</button>` : ''}</div>`;
+}
+function visKalender() {
+  let mnd = '';
+  const html = KAL.hendelser.map((h, i) => { const m = h.start.slice(0, 7); const ny = m !== mnd; mnd = m;
+    return (ny ? `<h3 style="margin:18px 0 4px">${esc(Mnd(Number(m.slice(5))))} ${m.slice(0, 4)}</h3>` : '') + kalRad(h, i); }).join('');
+  tegnLag(t('kalTittel'), `${KAL.feilet.length ? `<div class="banner v1">${esc(t('kalFeilet', KAL.feilet.join(', ')))}</div>` : ''}
+    <div class="kort">${html || `<p class="tom" style="margin:0">${t('kalTom')}</p>`}</div>`);
+}
+function visHendelse(i) {
+  const h = KAL.hendelser[i]; if (!h) return tilbake();
+  tegnLag(h.tittel, `<div class="kort"><div class="kalrad" style="padding-top:0">${kalDag(h)}<div class="kalinfo"><b>${esc(h.tittel)}</b>
+      <div class="dempet">${esc(kalTid(h))}</div>${kalFlere() ? `<div class="dempet">${esc(h.kalender)}</div>` : ''}</div></div>
+    ${h.sted ? `<p class="kalsted" style="margin:10px 0 0">📍 ${esc(h.sted)} · <a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.sted)}">${t('visKart')}</a></p>` : ''}
+    ${h.beskrivelse ? `<p class="kalbesk">${esc(h.beskrivelse)}</p>` : ''}</div>
+    <button type="button" class="primar bred kalknapp" data-a="kalIcs" data-i="${i}">${svg(IKON.kal)} ${t('kalLeggTil')}</button>`);
+}
+/** An .ics file for one event, so it can be added to the phone's own calendar. */
+function kalIcs(h) {
+  const d = s => s.replace(/[-: ]/g, '').slice(0, 8), dt = s => s.replace(/-/g, '').replace(' ', 'T').replace(':', '') + '00';
+  const pluss1 = s => { const x = kalD(s.slice(0, 10) + ' 12:00'); x.setDate(x.getDate() + 1); return x.getFullYear() + String(x.getMonth() + 1).padStart(2, '0') + String(x.getDate()).padStart(2, '0'); };
+  const esk = v => String(v || '').replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/([,;])/g, '\\$1');
+  return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//RC Portal//NO', 'BEGIN:VEVENT', 'UID:' + d(h.start) + '-' + encodeURIComponent(h.tittel).slice(0, 40) + '@rcportal',
+    'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z',
+    ...(h.heldag ? ['DTSTART;VALUE=DATE:' + d(h.start), 'DTEND;VALUE=DATE:' + pluss1(h.slutt)] : ['DTSTART;TZID=Europe/Oslo:' + dt(h.start), 'DTEND;TZID=Europe/Oslo:' + dt(h.slutt)]),
+    'SUMMARY:' + esk(h.tittel), ...(h.sted ? ['LOCATION:' + esk(h.sted)] : []), ...(h.beskrivelse ? ['DESCRIPTION:' + esk(h.beskrivelse)] : []),
+    'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+}
+
 // ─── Phone list (read live from the club's own sheet via the backend) ───
 let TLF = null, TLF_SOK = '';
 const e164 = n => { const d = String(n).replace(/[^\d+]/g, ''); return d.startsWith('+') ? d : d.startsWith('00') ? '+' + d.slice(2) : d.length === 8 ? '+47' + d : d; };
@@ -1338,7 +1407,7 @@ function visMine() {
   const y = String(aar());
   const iAar = egne.find(e => String(e.dato).startsWith(y));
   const avviste = (S.d.avviste || []).filter(k => k.telefon === b.telefon && alderTimer(k.godkjent_tid || k.tidspunkt) < 60 * 24);
-  return `${avviste.map(k => `<div class="banner v1">${esc(t('avvistBanner', k.regnr, Mnd(Number(kMnd(k).slice(5))), k.godkjent_av || 'RC'))}${k.avvist_grunn ? `:<br><i>${esc(k.avvist_grunn)}</i>` : ''}</div>`).join('')}
+  return `<div id="kalNeste"></div>${avviste.map(k => `<div class="banner v1">${esc(t('avvistBanner', k.regnr, Mnd(Number(kMnd(k).slice(5))), k.godkjent_av || 'RC'))}${k.avvist_grunn ? `:<br><i>${esc(k.avvist_grunn)}</i>` : ''}</div>`).join('')}
     ${profilKort(b.telefon)}
     <h2>${t('mineSykler')}</h2>
     ${mine.length ? mine.map(i => sykkelKort(i, false)).join('') : `<p class="tom">${t('ingenMine')}</p>`}
@@ -1840,6 +1909,13 @@ const A = {
   loggUt() { loggUt(); },
   oppfolging() { apne(visOppfolging); },
   telefonliste() { apne(visTelefonliste); },
+  kalender() { apne(visKalender); },
+  kalIcs(btn) {
+    const h = KAL && KAL.hendelser[Number(btn.dataset.i)]; if (!h) return;
+    const url = URL.createObjectURL(new Blob([kalIcs(h)], { type: 'text/calendar' }));
+    const a = document.createElement('a'); a.href = url; a.download = (h.tittel.replace(/[^\wæøåÆØÅ -]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 40) || 'event') + '.ics';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 5000);
+  },
   async installer() {
     const ty = installType();
     if (ty === 'prompt') {
@@ -1910,6 +1986,7 @@ document.addEventListener('click', ev => {
     return;
   }
   if (ds.a && A[ds.a]) return A[ds.a](el);
+  if ('kal' in ds) return apne(() => visHendelse(Number(ds.kal)));
 });
 
 function feltEndret(ev) {
