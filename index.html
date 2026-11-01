@@ -1014,7 +1014,7 @@ function visOversikt() {
     ${liste.length ? liste.map(i => sykkelKort(i, S.avd === 'Alle')).join('') :
       `<p class="tom">${alle.length ? t('ingenUtvalg') : t('ingenSykler')}</p>`}`;
 }
-const sokRad = () => `<div class="sokrad"><input type="search" data-sykkelsok placeholder="${esc(t('sokSykkel'))}" autocomplete="off" autocapitalize="characters" value="${esc(S.sok || '')}">
+const sokRad = () => `<div class="sokrad"><input type="search" enterkeyhint="search" data-sykkelsok placeholder="${esc(t('sokSykkel'))}" autocomplete="off" autocapitalize="characters" value="${esc(S.sok || '')}">
   <label class="skannknapp" aria-label="${esc(t('skannSkilt'))}">${svg(IKON.kamera)}<input type="file" accept="image/*" data-skann hidden></label></div>`;
 
 // ─── Bike detail ────────────────────────────────────────────
@@ -1330,6 +1330,21 @@ function filtrerSykler(q) {
   S.sok = q; const n = q.trim().toLowerCase().replace(/\s+/g, ' ');
   $$('main [data-sykkel][data-sok]').forEach(el => { el.hidden = !!n && !el.dataset.sok.includes(n) && !el.dataset.sok.includes(n.replace(/\s/g, '')); });
 }
+function sokSykkelEnter(q) {
+  filtrerSykler(q);
+  const n = kompakt(q);
+  if (!n) return;
+  const eksakte = S.d.sykler.filter(s => kompakt(s.regnr) === n);
+  const synlige = $('main [data-sykkel][data-sok]').filter(el => !el.hidden);
+  if (eksakte.length === 1) return apne(() => visSykkel(eksakte[0].id));
+  if (synlige.length === 1) return apne(() => visSykkel(synlige[0].dataset.sykkel));
+  toast(t(synlige.length ? 'skannUsikker' : 'skannUkjent', q.trim()), true);
+}
+document.addEventListener('keydown', ev => {
+  if (ev.key !== 'Enter' || ev.isComposing || !ev.target.matches('[data-sykkelsok]')) return;
+  ev.preventDefault();
+  sokSykkelEnter(ev.target.value);
+});
 // Finds the registered bike that best matches OCR text from a photo of a Norwegian plate (2 letters + 4–5 digits).
 const TIL_SIFFER = { O: '0', Q: '0', D: '0', U: '0', I: '1', L: '1', J: '1', T: '7', Z: '2', S: '5', B: '8', G: '6', A: '4' };
 const TIL_BOKSTAV = { 0: 'O', 1: 'I', 2: 'Z', 4: 'A', 5: 'S', 6: 'G', 8: 'B', 7: 'T' };
@@ -1505,6 +1520,16 @@ async function skannSkilt(fil) {
       // a tilted or sideways photo: the plate is found, but the text is skewed or runs up/down (last resort, biggest plate only)
       .concat(finnSkilt(img).slice(0, 1).flatMap(b => [12, -12, 90, 78, 102, -90, -78, -102].map(gr => () =>
         les(roter(utsnitt(img, Math.max(0, b.x - b.w * 0.03), Math.max(0, b.y - b.h * 0.03), Math.min(W, b.w * 1.06), Math.min(H, b.h * 1.06), 900), gr), ['6']))));
+    // Dim, tilted plates at the edge can escape the bright-region detector.
+    // Try overlapping side regions, including the full left edge, after the normal passes.
+    for (const x of [0, W * 0.45]) {
+      const c = utsnitt(img, x, H * 0.3, W * 0.55, H * 0.55, 1200);
+      for (const gr of [0, 25, -25, 40, -40]) forsok.push(async () => {
+        const v = gr ? roter(c, gr) : c;
+        await les(v, ['11']);
+        if (gr) await lesLinjer(w, v, tekster);
+      });
+    }
     for (const f of forsok) { await f(); r = finnSykkelFraTekst(tekster, S.d.sykler); r.kandidater = skiltKandidater(tekster); if (r.sikker) break; }
   } catch (e) { return toast(t('skannFeil'), true); }
   if (r.sikker) { toast(t('skannFant', r.sikker.regnr)); return apne(() => visSykkel(r.sikker.id)); }
