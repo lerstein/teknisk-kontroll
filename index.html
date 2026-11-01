@@ -1502,6 +1502,74 @@ function finnSkilt(img) {
   }
   return ut.sort((a, b) => b.n * b.fyll * b.fyll - a.n * a.fyll * a.fyll).slice(0, 3);
 }
+
+/** Four user-selected corners, clockwise from top left; all processing stays on the phone. */
+async function markerSkilt(img) {
+  return new Promise(resolve => {
+    const en = document.documentElement.lang === 'en';
+    const dialog = document.createElement('dialog');
+    dialog.style.cssText = 'width:min(94vw,620px);max-height:94dvh;overflow:auto;padding:16px;border:1px solid #777;border-radius:14px;background:#202020;color:white';
+    dialog.innerHTML = `<h3 style="margin:0 0 8px">${en ? 'Mark the plate' : 'Marker skiltet'}</h3>
+      <p data-hjelp></p><canvas style="display:block;width:100%;touch-action:manipulation;cursor:crosshair"></canvas>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button type="button" data-reset>${en ? 'Start again' : 'Start på nytt'}</button>
+      <button type="button" data-read disabled>${en ? 'Read plate' : 'Les skilt'}</button>
+      <button type="button" data-cancel>${en ? 'Type instead' : 'Skriv regnr i stedet'}</button></div>`;
+    document.body.appendChild(dialog);
+    const c = dialog.querySelector('canvas'), g = c.getContext('2d');
+    const scale = Math.min(1, 800 / img.naturalWidth, 1000 / img.naturalHeight);
+    c.width = Math.round(img.naturalWidth * scale); c.height = Math.round(img.naturalHeight * scale);
+    const points = [], labels = en ? ['top left', 'top right', 'bottom right', 'bottom left'] : ['øverst til venstre', 'øverst til høyre', 'nederst til høyre', 'nederst til venstre'];
+    const read = dialog.querySelector('[data-read]'), help = dialog.querySelector('[data-hjelp]');
+    const draw = () => {
+      g.drawImage(img, 0, 0, c.width, c.height);
+      if (points.length) {
+        g.strokeStyle = '#ffcf00'; g.lineWidth = 3; g.beginPath();
+        points.forEach((p,i) => i ? g.lineTo(p.x,p.y) : g.moveTo(p.x,p.y));
+        if (points.length === 4) g.closePath(); g.stroke();
+        points.forEach((p,i) => { g.fillStyle='#ffcf00';g.beginPath();g.arc(p.x,p.y,7,0,Math.PI*2);g.fill();g.fillStyle='#000';g.font='bold 12px sans-serif';g.fillText(String(i+1),p.x-3,p.y+4); });
+      }
+      read.disabled = points.length !== 4;
+      help.textContent = points.length < 4
+        ? (en ? 'Tap the plate corner: ' : 'Trykk på skiltets hjørne: ') + labels[points.length]
+        : (en ? 'Check the outline, then read the plate.' : 'Sjekk at rammen følger skiltet, og trykk Les skilt.');
+    };
+    let done = false;
+    const finish = value => { if(done)return;done=true;dialog.close();dialog.remove();resolve(value); };
+    dialog.addEventListener('cancel',ev => {ev.preventDefault();finish(null);});
+    dialog.querySelector('[data-cancel]').onclick = () => finish(null);
+    dialog.querySelector('[data-reset]').onclick = () => { points.length=0;draw(); };
+    c.onclick = ev => {
+      if(points.length===4)return;
+      const b=c.getBoundingClientRect();points.push({x:(ev.clientX-b.left)*c.width/b.width,y:(ev.clientY-b.top)*c.height/b.height});draw();
+    };
+    read.onclick = () => {
+      if(points.length!==4)return;
+      // Reject crossed/degenerate selections before allocating image buffers.
+      const crosses = points.map((p,i) => {const q=points[(i+1)%4],r=points[(i+2)%4];return(q.x-p.x)*(r.y-q.y)-(q.y-p.y)*(r.x-q.x);});
+      if(!crosses.every(v=>v>2)) { help.textContent=en?'Mark all four corners clockwise, starting at top left.':'Marker alle fire hjørnene med klokka, fra øverst til venstre.';return; }
+      const p=points.map(v=>({x:v.x/c.width*img.naturalWidth,y:v.y/c.height*img.naturalHeight}));
+      const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+      const width=(dist(p[0],p[1])+dist(p[3],p[2]))/2, height=(dist(p[0],p[3])+dist(p[1],p[2]))/2;
+      const out=document.createElement('canvas');out.width=800;out.height=Math.max(120,Math.min(1000,Math.round(800*height/width)));
+      const source=document.createElement('canvas');source.width=img.naturalWidth;source.height=img.naturalHeight;
+      const sg=source.getContext('2d');sg.drawImage(img,0,0);const pixels=sg.getImageData(0,0,source.width,source.height).data;
+      const og=out.getContext('2d'), data=og.createImageData(out.width,out.height);
+      for(let y=0;y<out.height;y++)for(let x=0;x<out.width;x++){
+        const u=x/(out.width-1),v=y/(out.height-1);
+        const sx=(1-v)*((1-u)*p[0].x+u*p[1].x)+v*((1-u)*p[3].x+u*p[2].x);
+        const sy=(1-v)*((1-u)*p[0].y+u*p[1].y)+v*((1-u)*p[3].y+u*p[2].y);
+        const ix=Math.max(0,Math.min(source.width-1,Math.round(sx))),iy=Math.max(0,Math.min(source.height-1,Math.round(sy)));
+        const j=(iy*source.width+ix)*4,k=(y*out.width+x)*4;
+        const gray=Math.round(0.299*pixels[j]+0.587*pixels[j+1]+0.114*pixels[j+2]);
+        data.data[k]=data.data[k+1]=data.data[k+2]=gray;data.data[k+3]=255;
+      }
+      og.putImageData(data,0,0);finish(out);
+    };
+    dialog.showModal();draw();
+  });
+}
+
 async function skannSkilt(fil) {
   let tekster = [], r;
   try {
@@ -1531,6 +1599,17 @@ async function skannSkilt(fil) {
       });
     }
     for (const f of forsok) { await f(); r = finnSykkelFraTekst(tekster, S.d.sykler); r.kandidater = skiltKandidater(tekster); if (r.sikker) break; }
+    if (!r || !r.sikker) {
+      const valgt = await markerSkilt(img);
+      if (valgt) {
+        toast(t('skannLeser'));
+        // Read the rectified plate and each row with an appropriate character set.
+        await les(valgt, ['6', '11']);
+        await lesLinjer(w, utsnitt(valgt, 0, 0, valgt.width, valgt.height, 800), tekster);
+        r = finnSykkelFraTekst(tekster, S.d.sykler);
+        r.kandidater = skiltKandidater(tekster);
+      }
+    }
   } catch (e) { return toast(t('skannFeil'), true); }
   if (r.sikker) { toast(t('skannFant', r.sikker.regnr)); return apne(() => visSykkel(r.sikker.id)); }
   const inp = $('[data-sykkelsok]');
