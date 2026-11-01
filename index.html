@@ -406,7 +406,7 @@ const TXT = {
     fjernBilde: 'Fjern bilde', kunneIkkeLese: 'Kunne ikke lese bildet «{0}»', kunneIkkeLaste: 'Kunne ikke laste bildet', ingenBilder: 'Ingen bilder.',
     lasterOppAv: 'Laster opp bilde {0} av {1}…', lasterOppFlere: 'Laster opp {0} bilder…', lasterOpp1: 'Laster opp bilde…',
     bildeFeil: '{0} av {1} bilder ble ikke lagret: {2}', bildeLagret: 'Bilde lagret', lastetOppAv: 'Lastet opp av {0} {1}',
-    slettBilde: 'Slett bilde', slettBildeSp: 'Slette bildet?', bildeSlettet: 'Bilde slettet',
+    bildeKommentar: 'Kommentar til bildet', bildeKommentarLagret: 'Kommentar lagret', lagreBildeKommentar: 'Lagre kommentar', sykkelBilder: 'Bilder av sykkelen', slettBilde: 'Slett bilde', slettBildeSp: 'Slette bildet?', bildeSlettet: 'Bilde slettet',
     utkastBilder: 'Bildene er med, men tåler ikke omstart av appen før du lagrer',
     slettKontrollSp: 'Slette denne kontrollen for godt?', kontrollSlettet: 'Kontroll slettet'
   },
@@ -528,7 +528,7 @@ const TXT = {
     fjernBilde: 'Remove photo', kunneIkkeLese: 'Could not read the image "{0}"', kunneIkkeLaste: 'Could not load the photo', ingenBilder: 'No photos.',
     lasterOppAv: 'Uploading photo {0} of {1}…', lasterOppFlere: 'Uploading {0} photos…', lasterOpp1: 'Uploading photo…',
     bildeFeil: '{0} of {1} photos were not saved: {2}', bildeLagret: 'Photo saved', lastetOppAv: 'Uploaded by {0} {1}',
-    slettBilde: 'Delete photo', slettBildeSp: 'Delete the photo?', bildeSlettet: 'Photo deleted',
+    bildeKommentar: 'Photo comment', bildeKommentarLagret: 'Comment saved', lagreBildeKommentar: 'Save comment', sykkelBilder: 'Bike photos', slettBilde: 'Delete photo', slettBildeSp: 'Delete the photo?', bildeSlettet: 'Photo deleted',
     utkastBilder: "Photos are kept, but won't survive an app restart until you save",
     slettKontrollSp: 'Delete this inspection permanently?', kontrollSlettet: 'Inspection deleted'
   }
@@ -784,7 +784,7 @@ function bildeGalleri(refType, refId) {
   const liste = bilderFor(refType, refId);
   if (!liste.length) return '';
   return `<div class="bilderad">${liste.map(b => `<button type="button" class="tommel" data-vis-bilde="${esc(b.id)}">
-    <img data-bilde-id="${esc(b.id)}" alt="${esc(t('bt_' + b.type))}"><span>${esc(t('bt_' + b.type))}</span></button>`).join('')}</div>`;
+    <img data-bilde-id="${esc(b.id)}" alt="${esc(t('bt_' + b.type))}"><span>${esc(b.kommentar || t('bt_' + b.type))}</span></button>`).join('')}</div>`;
 }
 function fyllBilder(rot) {
   $$('img[data-bilde-id]', rot).forEach(async img => {
@@ -798,9 +798,13 @@ function fyllBilder(rot) {
 }
 function kanLeggeTilBilde(refType, ref) {
   if (rolle() === 'admin') return true;
+  if (refType === 'sykkelgalleri') return kanSykkelbilde(ref);
   const tilgang = (erRcLik() && ref.avdeling === meg().avdeling) || (refType === 'egen' && ref.telefon === meg().telefon);
   return tilgang && alderTimer(ref.tidspunkt) < S.d.innstillinger.bildeDager * 24;
 }
+const kanKommentereBilde = b => rolle() === 'admin' || b.lastet_opp_av_tlf === meg().telefon ||
+  (erRcLik() && b.avdeling === meg().avdeling) ||
+  (['profil', 'sykkel', 'sykkelgalleri'].includes(b.ref_type) && b.telefon === meg().telefon);
 const kanSletteBilde = b => rolle() === 'admin' || (['profil', 'sykkel'].includes(b.type) && (b.telefon === meg().telefon || (erRcLik() && b.avdeling === meg().avdeling))) ||
   (b.lastet_opp_av_tlf === meg().telefon && alderTimer(b.tidspunkt) < S.d.innstillinger.bildeDager * 24);
 const sisteBilde = (refType, refId) => bilderFor(refType, refId).slice(-1)[0];
@@ -816,14 +820,14 @@ function bildeKort(refType, ref, typer) {
   const galleri = bildeGalleri(refType, ref.id);
   const kan = kanLeggeTilBilde(refType, ref);
   if (!galleri && !kan) return '';
-  return `<div class="kort"><h3>${t('bilderTittel')}</h3>${galleri || `<p class="tom" style="margin:0">${t('ingenBilder')}</p>`}
+  return `<div class="kort"><h3>${t(refType === 'sykkelgalleri' ? 'sykkelBilder' : 'bilderTittel')}</h3>${galleri || `<p class="tom" style="margin:0">${t('ingenBilder')}</p>`}
     ${kan ? bildeKnapper(typer, `data-direkte="${refType}:${esc(ref.id)}"`) : ''}</div>`;
 }
 async function lastOppBilder(liste, refType, refId, btn) {
   let feil = 0, melding = '';
   for (let i = 0; i < liste.length; i++) {
     if (btn) btn.innerHTML = t('lasterOppAv', i + 1, liste.length);
-    try { await api('lastOppBilde', { ref_type: refType, ref_id: refId, type: liste[i].type, data: liste[i].data }); }
+    try { await api('lastOppBilde', { ref_type: refType, ref_id: refId, type: liste[i].type, data: liste[i].data, kommentar: liste[i].kommentar || '' }); }
     catch (e) { feil++; melding = e.message; }
   }
   return feil ? t('bildeFeil', feil, liste.length, melding) : '';
@@ -851,11 +855,27 @@ async function velgBilder(el) {
   if (sk.navn === 'K') { if (type === 'avis') F.bilde_avis = 'Ja'; lagreUtkast(); render(); }
   else visEgenSkjema();
 }
+async function lagreBildeKommentar(btn) {
+  const id = btn.dataset.lagreBildeKommentar;
+  const felt = $$('[data-bilde-kommentar]').find(el => el.dataset.bildeKommentar === id);
+  if (!felt) return;
+  btn.disabled = true;
+  try {
+    await api('lagreBildeKommentar', { id, kommentar: felt.value });
+    await lastData();
+    render(); if (LAG.length) LAG[LAG.length - 1]();
+    toast(t('bildeKommentarLagret'));
+  } catch (e) { toast(e.message, true); }
+  finally { btn.disabled = false; }
+}
+
 function visBilde(id) {
   const b = (S.d.bilder || []).find(x => x.id === id);
   if (!b) return tilbake();
   tegnLag(t('bt_' + b.type), `<img class="stor" data-bilde-id="${esc(b.id)}" alt="${esc(t('bt_' + b.type))}">
     <p class="dempet" style="margin-top:10px">${esc(t('lastetOppAv', b.lastet_opp_av, b.tidspunkt))}</p>
+    ${kanKommentereBilde(b) ? `<label class="felt"><span>${t('bildeKommentar')}</span><textarea data-bilde-kommentar="${esc(b.id)}" maxlength="1000" rows="3">${esc(b.kommentar || '')}</textarea></label>
+    <button type="button" class="primar bred" data-lagre-bilde-kommentar="${esc(b.id)}">${t('lagreBildeKommentar')}</button>` : b.kommentar ? `<p style="white-space:pre-wrap">${esc(b.kommentar)}</p>` : ''}
     ${kanSletteBilde(b) ? `<button class="fare bred" data-slett-bilde="${esc(b.id)}">${t('slettBilde')}</button>` : ''}`);
 }
 
@@ -1084,6 +1104,7 @@ function visSykkel(id) {
     ${kanEndreAvd(s.avdeling) || s.telefon === meg().telefon ? `<button class="bred" data-egen-ny="${esc(id)}">${t('fyllEgen')}</button>` : ''}
     ${kanEndreAvd(s.avdeling) || s.telefon === meg().telefon ? `<button class="bred" data-sykkel-skjema="${esc(id)}">${t('redigerSykkel')}</button>` : ''}
     ${kanEndreAvd(s.avdeling) && s.telefon && s.telefon !== meg().telefon ? eierMeldingKort(s) : ''}
+    ${bildeKort('sykkelgalleri', s, ['annet'])}
     <h3>${t('kontroller', ks.length)}</h3>
     ${ks.length ? ks.map(k => `<button class="kort" data-kontroll="${esc(k.id)}">
         <div class="linje1"><b>${esc(Mnd(Number(kMnd(k).slice(5))))} · ${t('sk_' + kSkjema(k))}</b>${venterMerke(k)}${k.kjoreforbud === 'Ja' ? `<span class="merke">${t('forbudMerke')}</span>` : chip(k.sum_allmenn, skalaNavn(k.sum_allmenn))}</div>
@@ -2409,6 +2430,7 @@ document.addEventListener('click', ev => {
   if ('bruker' in ds) { B = null; const tlf = ds.bruker; return apne(() => visBruker(tlf)); }
   if ('purret' in ds) { el.classList.add('sendt'); el.textContent = t('smsSendt'); PURRET[ds.purret] = true; return; }
   if ('slettKontroll' in ds) return A.slettKontroll(el);
+  if ('lagreBildeKommentar' in ds) return lagreBildeKommentar(el);
   if ('slettBilde' in ds) return A.slettBilde(el);
   if ('visBilde' in ds) return apne(() => visBilde(ds.visBilde));
   if ('fjernBilde' in ds) {
