@@ -1335,7 +1335,7 @@ function sokSykkelEnter(q) {
   const n = kompakt(q);
   if (!n) return;
   const eksakte = S.d.sykler.filter(s => kompakt(s.regnr) === n);
-  const synlige = $('main [data-sykkel][data-sok]').filter(el => !el.hidden);
+  const synlige = $$('main [data-sykkel][data-sok]').filter(el => !el.hidden);
   if (eksakte.length === 1) return apne(() => visSykkel(eksakte[0].id));
   if (synlige.length === 1) return apne(() => visSykkel(synlige[0].dataset.sykkel));
   toast(t(synlige.length ? 'skannUsikker' : 'skannUkjent', q.trim()), true);
