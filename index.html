@@ -358,7 +358,7 @@ const TXT = {
     bokTittel: 'RC-bok', bokKortInfo: 'Månedlig aktivitetslogg – {0}', bokForrigeAar: 'Forrige år', bokNesteAar: 'Neste år',
     bokLevert: 'Levert av {0} {1}', bokIkkeLevert: 'Ikke levert ennå', bokVenter: '{0} innlevering(er) venter på deg – ta dem med i boka eller rett dem først.',
     bokTom: 'Ingen hendelser denne måneden ennå.', bokOppsummering: 'Oppsummering', bokNy: 'Ny hendelse', bokLeverInn: 'Lever inn hendelse til RC',
-    bokForslag: 'Fra kalenderen', bokForslagInfo: 'Arrangementer denne måneden som ikke er i boka ennå.', bokLeggTil: 'Legg til',
+    bokForslag: 'Fra kalenderen', bokForslagInfo: 'Arrangementer fra de siste ukene som ikke er i boka ennå.', bokLeggTil: 'Legg til',
     bokRc: 'For Road Captain', bokTekster: 'Innledning og oppsummering', bokMarkerLevert: 'Marker måneden som levert', bokApneIgjen: 'Åpne måneden igjen',
     bokImporter: 'Importer Word-fil', bokImportInfo: 'Last opp boka som Word-fil (.docx), så legges hendelsene inn automatisk. Måneder må ha overskrift som «Januar 2026».',
     bokSkrivUt: 'Skriv ut / lagre PDF – {0} {1}', bokInnlevertAv: 'Innlevert av {0} – venter på RC', bokTaMed: 'Ta med i boka', bokEndre: 'Endre',
@@ -367,7 +367,7 @@ const TXT = {
     bokTekstPh: 'Skriv kort hva som skjedde og hvem som var med.', bokTekstHjelp: 'Tom linje gir nytt avsnitt. Start en linje med «- » for punktliste.',
     bokBilderEtter: 'Bilder kan legges til etter at hendelsen er lagret.', bokLagreNy: 'Lagre i boka', bokSendInn: 'Send inn til RC', bokLagreTaMed: 'Lagre og ta med i boka',
     bokSlett: 'Slett hendelsen', bokSlettSp: 'Slette hendelsen og bildene på den?', bokSlettet: 'Hendelsen er slettet', bokInnledning: 'Innledning',
-    bokTittelMangler: 'Skriv en tittel', bokDatoMnd: 'Datoen må være i {0}', bokSendt: 'Sendt inn til RC – du kan legge til bilder nå',
+    bokTittelMangler: 'Skriv en tittel', bokDatoMnd: 'Datoen må være i {0}', bokDatoMangler: 'Velg en dato', bokSendt: 'Sendt inn til RC – du kan legge til bilder nå',
     bokLagretBilder: 'Lagret – du kan legge til bilder nå', bokLagret: 'Lagret', bokTattMed: 'Tatt med i boka',
     bokLeverSp: 'Markere {0} som levert?', bokLevertOk: 'Måneden er markert som levert', bokApnet: 'Måneden er åpnet igjen',
     bokIkkeWord: 'Fant ikke innhold i filen – er det en Word-fil (.docx)?', bokForGammel: 'Telefonen er for gammel til å lese Word-filer – prøv fra en PC eller oppdater iOS.',
@@ -501,7 +501,7 @@ const TXT = {
     bokTittel: 'RC book', bokKortInfo: 'Monthly activity log – {0}', bokForrigeAar: 'Previous year', bokNesteAar: 'Next year',
     bokLevert: 'Delivered by {0} {1}', bokIkkeLevert: 'Not delivered yet', bokVenter: '{0} contribution(s) waiting for you – take them into the book or edit them first.',
     bokTom: 'No entries this month yet.', bokOppsummering: 'Summary', bokNy: 'New entry', bokLeverInn: 'Hand in an entry to your RC',
-    bokForslag: 'From the calendar', bokForslagInfo: 'Events this month that are not in the book yet.', bokLeggTil: 'Add',
+    bokForslag: 'From the calendar', bokForslagInfo: 'Events from the last few weeks that are not in the book yet.', bokLeggTil: 'Add',
     bokRc: 'For the Road Captain', bokTekster: 'Introduction and summary', bokMarkerLevert: 'Mark the month as delivered', bokApneIgjen: 'Reopen the month',
     bokImporter: 'Import Word file', bokImportInfo: 'Upload the book as a Word file (.docx) and the entries are added automatically. Months need a heading like "January 2026".',
     bokSkrivUt: 'Print / save PDF – {0} {1}', bokInnlevertAv: 'Handed in by {0} – waiting for RC', bokTaMed: 'Take into the book', bokEndre: 'Edit',
@@ -510,7 +510,7 @@ const TXT = {
     bokTekstPh: 'Briefly what happened and who took part.', bokTekstHjelp: 'An empty line starts a new paragraph. Start a line with "- " for a list.',
     bokBilderEtter: 'Photos can be added once the entry is saved.', bokLagreNy: 'Save in the book', bokSendInn: 'Send to RC', bokLagreTaMed: 'Save and take into the book',
     bokSlett: 'Delete entry', bokSlettSp: 'Delete the entry and its photos?', bokSlettet: 'Entry deleted', bokInnledning: 'Introduction',
-    bokTittelMangler: 'Enter a title', bokDatoMnd: 'The date must be in {0}', bokSendt: 'Sent to your RC – you can add photos now',
+    bokTittelMangler: 'Enter a title', bokDatoMnd: 'The date must be in {0}', bokDatoMangler: 'Choose a date', bokSendt: 'Sent to your RC – you can add photos now',
     bokLagretBilder: 'Saved – you can add photos now', bokLagret: 'Saved', bokTattMed: 'Taken into the book',
     bokLeverSp: 'Mark {0} as delivered?', bokLevertOk: 'The month is marked as delivered', bokApnet: 'The month is reopened',
     bokIkkeWord: 'No content found – is it a Word file (.docx)?', bokForGammel: 'This phone is too old to read Word files – try from a computer or update iOS.',
@@ -2695,7 +2695,7 @@ function visBokPost() {
   tegnLag(ny ? t('bokNy') : t('bokEndre'), `
     ${!skriv && ny ? `<p class="dempet">${t('bokLeverInnInfo')}</p>` : ''}
     <div class="kort">
-      <label class="felt"><span>${t('dato')}</span><input type="date" data-bp="dato" value="${esc(p.dato)}" min="${p.maaned}-01" max="${p.maaned}-31"></label>
+      <label class="felt"><span>${t('dato')}</span><input type="date" data-bp="dato" value="${esc(p.dato)}"></label>
       <label class="felt"><span>${t('bokNarFelt')}</span><input data-bp="nar" value="${esc(p.nar)}" placeholder="${esc(p.dato ? bokNar(Object.assign({}, p, { nar: '' })) : '')}" maxlength="120"></label>
       <label class="felt"><span>${t('bokTittelFelt')}</span><input data-bp="tittel" value="${esc(p.tittel)}" maxlength="200" required></label>
       <label class="felt"><span>${t('bokTekstFelt')}</span><textarea data-bp="tekst" rows="9" placeholder="${esc(t('bokTekstPh'))}">${esc(p.tekst)}</textarea></label>
@@ -2839,7 +2839,7 @@ Object.assign(A, {
     const h = BOK.forslag[Number(el.dataset.i)]; if (!h) return;
     const til = h.til && h.til !== h.dato ? h.til : '';
     const nar = til ? `${stor(bokUkedag(h.dato))} ${Number(h.dato.slice(8))}. – ${bokUkedag(til)} ${Number(til.slice(8))}. ${mndNavn(Number(til.slice(5, 7)))}` : '';
-    BOK_P = { id: '', maaned: BOKV.mnd, dato: h.dato, nar, tittel: h.tittel, tekst: '', status: '', hendelse: h.hendelse };
+    BOK_P = { id: '', maaned: h.dato.slice(0, 7), dato: h.dato, nar, tittel: h.tittel, tekst: '', status: '', hendelse: h.hendelse };
     apne(visBokPost);
   },
   bokEndre(el) { const p = BOK.poster.find(x => x.id === el.dataset.id); if (!p) return; BOK_P = Object.assign({}, p); apne(visBokPost); },
@@ -2851,10 +2851,12 @@ Object.assign(A, {
     const p = BOK_P; if (!p) return;
     $$('[data-bp]').forEach(f => { p[f.dataset.bp] = f.value; });
     if (!p.tittel.trim()) return toast(t('bokTittelMangler'), true);
-    if (!p.dato || p.dato.slice(0, 7) !== p.maaned) return toast(t('bokDatoMnd', Mnd(Number(p.maaned.slice(5)))), true);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(p.dato || '')) return toast(t('bokDatoMangler'), true);
+    p.maaned = p.dato.slice(0, 7);   // the date decides which month the entry belongs to
     await medKnapp(el, async () => {
       const ny = !p.id;
       const r = await api('lagreRcBokPost', { post: Object.assign({ avdeling: BOKV.avd }, p, { godkjenn: !!el.dataset.godkjenn }) });
+      if (r.maaned !== BOKV.mnd) { BOKV.mnd = r.maaned; BOKV.aar = r.maaned.slice(0, 4); }   // show the month the entry landed in
       await lastBok(true);
       if (ny) { BOK_P = Object.assign({}, r); LAG[LAG.length - 1] = visBokPost; visBokPost(); toast(t(r.status === 'innlevert' ? 'bokSendt' : 'bokLagretBilder')); }
       else { tilbake(); toast(t('bokLagret')); }
