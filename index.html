@@ -279,6 +279,7 @@ details.kort p{font-size:14.5px;color:#cfd3d9}
 .sprak button{min-height:36px;padding:6px 14px;font-size:14px}
 .sprak button.aktiv{border-color:var(--aksent);color:var(--aksent)}
 @media (min-width:600px){.stat span{font-size:12.5px}}
+.kmbyttet{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--dempet);margin:-4px 0 10px}.kmbyttet input{width:auto;min-height:0}
 .forrigeinfo{background:#1f1a10;border-left:3px solid var(--aksent);border-radius:0 8px 8px 0;padding:8px 10px;margin:-4px 0 12px;font-size:14px;line-height:1.4}
 .bokknapp{display:flex;align-items:center;gap:12px;cursor:pointer}
 .bokknapp svg{width:26px;height:26px;color:var(--aksent);flex:none}
@@ -402,7 +403,7 @@ const TXT = {
     bildeAvisLevert: 'Bilde m/avis levert', levert: 'Levert', ikkeLevert: 'Ikke levert',
     bilderTittel: 'Bilder', bilderHint: 'Bilde av begge dekkene er påkrevd (*). Ellers gjerne kilometerstand, bilde m/avis, skader …',
     alleOk: 'Sett alle punkter til «OK»', alleOkToast: 'Alle umerkede punkter satt til OK', oljeByttet: 'Olje og væsker – byttet',
-    status: 'Status', fiksesInnen: 'Må fikses innen', merknadPh: 'F.eks. hva som må gjøres', forrigeAvvik: 'Avvik sist', lagreNeste: 'Lagre og neste sykkel ({0} igjen)', lagretNeste: 'Lagret – neste: {0} ({1} igjen etter denne)', vDobbel: 'Sykkelen har allerede en kontroll for {0}.', vKmLav: 'Km-standen ({0}) er lavere enn sist ({1}). Er kilometertelleren byttet, eller er det en skrivefeil?', vKmHopp: 'Det er {0} siden forrige kontroll. Stemmer det?', vLagreLikevel: 'Trykk OK for å lagre likevel, eller Avbryt for å rette.', lagreKontroll: 'Lagre kontroll', tomSkjema: 'Tøm skjemaet',
+    status: 'Status', fiksesInnen: 'Må fikses innen', merknadPh: 'F.eks. hva som må gjøres', forrigeAvvik: 'Avvik sist', feilenUtbedret: 'Feilen er utbedret', utbedretBanner: 'Melding om at feilen er utbedret. Vurder sykkelen som den er nå, og legg ved bilde av det som er rettet. Road Captain godkjenner før avviket forsvinner.', utbedretBildeKrav: 'Legg ved bilde av det som er rettet (Andre bilder).', utbedretMerknad: 'Utbedret: {0}. ', utbedretMelding: 'Melding om at avvik fra kontrollen {0} er utbedret: {1}', kmByttet: 'Kilometertelleren er byttet', kmByttetKort: 'ny teller', rettetAv: 'Rettet av {0} – dette er endret fra det medlemmet registrerte', lagreNeste: 'Lagre og neste sykkel ({0} igjen)', lagretNeste: 'Lagret – neste: {0} ({1} igjen etter denne)', vDobbel: 'Sykkelen har allerede en kontroll for {0}.', vKmLav: 'Km-standen ({0}) er lavere enn sist ({1}). Er kilometertelleren byttet, eller er det en skrivefeil?', vKmHopp: 'Det er {0} siden forrige kontroll. Stemmer det?', vLagreLikevel: 'Trykk OK for å lagre likevel, eller Avbryt for å rette.', lagreKontroll: 'Lagre kontroll', tomSkjema: 'Tøm skjemaet',
     autoLagret: 'Skjemaet lagres automatisk på telefonen mens du fyller ut. Signeres med ditt navn.',
     stForbud: 'Kjøreforbud – minst ett punkt er satt til kjøreforbud. Sett frist og skriv hva som må gjøres.',
     stForbudManuelt: 'Kjøreforbud. Sett frist og skriv hva som må gjøres.', stBor: 'Bør utbedres – sett gjerne en frist.',
@@ -545,7 +546,7 @@ const TXT = {
     bildeAvisLevert: 'Photo with newspaper delivered', levert: 'Delivered', ikkeLevert: 'Not delivered',
     bilderTittel: 'Photos', bilderHint: 'A photo of both tyres is required (*). Also useful: odometer, photo with newspaper, damage …',
     alleOk: 'Set all items to "OK"', alleOkToast: 'All unrated items set to OK', oljeByttet: 'Oil and fluids – changed',
-    status: 'Status', fiksesInnen: 'Fix by', merknadPh: 'E.g. what needs to be done', forrigeAvvik: 'Issues last time', lagreNeste: 'Save and next bike ({0} left)', lagretNeste: 'Saved – next: {0} ({1} left after this one)', vDobbel: 'This bike already has an inspection for {0}.', vKmLav: 'The odometer ({0}) is lower than last time ({1}). Was the odometer replaced, or is it a typo?', vKmHopp: 'That is {0} since the last inspection. Is that right?', vLagreLikevel: 'Press OK to save anyway, or Cancel to correct it.', lagreKontroll: 'Save inspection', tomSkjema: 'Clear form',
+    status: 'Status', fiksesInnen: 'Fix by', merknadPh: 'E.g. what needs to be done', forrigeAvvik: 'Issues last time', feilenUtbedret: 'The fault is fixed', utbedretBanner: 'Report that the fault is fixed. Rate the bike as it is now, and add a photo of what was fixed. The Road Captain approves before the issue is cleared.', utbedretBildeKrav: 'Add a photo of what was fixed (Other photos).', utbedretMerknad: 'Fixed: {0}. ', utbedretMelding: 'Report that issues from the inspection {0} are fixed: {1}', kmByttet: 'The odometer has been replaced', kmByttetKort: 'new odometer', rettetAv: 'Corrected by {0} – changed from what the member registered', lagreNeste: 'Save and next bike ({0} left)', lagretNeste: 'Saved – next: {0} ({1} left after this one)', vDobbel: 'This bike already has an inspection for {0}.', vKmLav: 'The odometer ({0}) is lower than last time ({1}). Was the odometer replaced, or is it a typo?', vKmHopp: 'That is {0} since the last inspection. Is that right?', vLagreLikevel: 'Press OK to save anyway, or Cancel to correct it.', lagreKontroll: 'Save inspection', tomSkjema: 'Clear form',
     autoLagret: 'The form is saved on your phone as you go. It is signed with your name.',
     stForbud: 'Do not ride – at least one item is rated "do not ride". Set a deadline and describe what needs fixing.',
     stForbudManuelt: 'Do not ride. Set a deadline and describe what needs fixing.', stBor: 'Fix soon – consider setting a deadline.',
@@ -1192,6 +1193,8 @@ function visSykkel(id) {
       ${s.vin ? `<div class="dempet" style="font-size:12.5px;margin-top:6px">${t('vinKort')}: <span style="font-family:ui-monospace,Menlo,monospace">${esc(s.vin)}</span></div>` : ''}
       ${s.modell ? `<a class="knapp bred" style="margin:10px 0 0" target="_blank" rel="noopener" href="${esc(handbokUrl(s))}">📘 ${t('handbok')}</a>` : ''}</div>
     ${(() => { const v = varslerFor(id); return v.length ? `<div class="banner v1"><div style="font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${t('varsler')}</div>${v.map(x => esc(x.tekst)).join('<br>')}</div>` : ''; })()}
+    ${s.telefon === meg().telefon && (() => { const g = gjeldendeKontroll(id); return g && g.status !== 'venter' && Number(g.sum_allmenn) >= 1 && sisteKontroll(id).status !== 'venter'; })()
+      ? `<button class="primar bred" data-a="utbedret" data-id="${esc(id)}">✔ ${t('feilenUtbedret')}</button>` : ''}
     ${kanEndreAvd(s.avdeling) ? `<button class="primar bred" data-ny-kontroll="${esc(id)}">${t('nyKontrollDenne')}</button>`
       : s.telefon === meg().telefon ? `<button class="primar bred" data-ny-kontroll="${esc(id)}">${t('kontrollerSelv')}</button>` : ''}
     ${kanEndreAvd(s.avdeling) || s.telefon === meg().telefon ? `<button class="bred" data-egen-ny="${esc(id)}">${t('fyllEgen')}</button>` : ''}
@@ -1218,6 +1221,18 @@ function kanSlette(k) {
 const okChip = v => v === 'OK' ? `<span class="chip v0">${t('ok')}</span>` : v === 'Ikke OK' ? `<span class="chip v2">${t('ikkeOk')}</span>` : '<span class="chip">–</span>';
 const jaNei = v => v === 'Ja' ? t('ja') : v === 'Nei' ? t('nei') : '–';
 
+/** What the Road Captain changed in a self-inspection when he corrected and approved it. */
+function endretFraHtml(k) {
+  let fra; try { fra = JSON.parse(k.endret_fra || ''); } catch (e) { return ''; }
+  if (!fra || typeof fra !== 'object') return '';
+  const navn = {}; ENKEL.forEach(([id, n]) => { navn[id] = t(n); });
+  SEKSJONER.forEach(sk => sk.r.forEach(p => { navn[p.id] = t(sk.t) + ' – ' + t(p.n).toLowerCase(); }));
+  Object.assign(navn, { km: t('km'), merknad: t('merknad'), frist: t('fiksesInnen'), kjoreforbud: t('s2') });
+  const skala = f => /^(sum_|allmenn_tilstand$)/.test(f) || PUNKTER.includes(f);
+  const vis = (f, v) => v === '' ? '–' : skala(f) ? skalaNavn(v) : f === 'km' ? fmtKm(v) : f === 'frist' ? fmtDato(v) : v;
+  const rader = Object.keys(fra).filter(f => navn[f] && !(f === 'sum_allmenn')).map(f => `<li>${esc(navn[f])}: ${esc(vis(f, fra[f][0]))} → <b>${esc(vis(f, fra[f][1]))}</b></li>`);
+  return rader.length ? `<div class="kort"><h3>${esc(t('rettetAv', k.godkjent_av || 'RC'))}</h3><ul style="margin:0;padding-left:18px">${rader.join('')}</ul></div>` : '';
+}
 function visKontroll(id) {
   const k = S.d.kontroller.find(x => x.id === id);
   if (!k) return tilbake();
@@ -1230,13 +1245,16 @@ function visKontroll(id) {
         <button type="button" class="primar" data-a="godkjenn" data-id="${esc(k.id)}">${t('godkjenn')}</button>
         <button type="button" data-a="rettKontroll" data-id="${esc(k.id)}">${t('rettGodkjenn')}</button>
         <button type="button" class="fare" data-a="avvis" data-id="${esc(k.id)}">${t('avvis')}</button></div>` : ''}</div>` : ''}
+    ${k.utbedret_for ? (() => { const o = S.d.kontroller.find(x => x.id === k.utbedret_for);
+      return `<div class="banner info">${esc(t('utbedretMelding', o ? fmtDato(o.dato) : '', o ? avvikTekst(o).join(', ') : ''))}</div>`; })() : ''}
+    ${endretFraHtml(k)}
     ${k.kjoreforbud === 'Ja' ? `<div class="banner v2">${k.frist ? t('forbudFrist', fmtDato(k.frist)) : t('forbudUten')}</div>` :
       sum >= 1 ? `<div class="banner v1">${k.frist ? t('borFrist', fmtDato(k.frist)) : t('bor')}</div>` : ''}
     <div class="kort"><dl class="info">
       <dt>${t('eier')}</dt><dd>${esc(k.navn)}</dd><dt>${t('sykkel')}</dt><dd>${esc(k.regnr)} ${esc(k.modell)}</dd>
       <dt>${t('avdeling')}</dt><dd>${esc(k.avdeling)}</dd>
       <dt>${t('maaned')}</dt><dd>${esc(Mnd(Number(kMnd(k).slice(5))))} ${esc(kMnd(k).slice(0, 4))}</dd><dt>${t('skjema')}</dt><dd>${t('sk_' + sk)}</dd>
-      <dt>${t('km')}</dt><dd>${k.km !== '' ? fmtKm(k.km) : '–'}</dd>
+      <dt>${t('km')}</dt><dd>${k.km !== '' ? fmtKm(k.km) : '–'}${k.km_byttet === 'Ja' ? ` <small>(${t('kmByttetKort')})</small>` : ''}</dd>
       ${sk === 'stor' ? `<dt>${t('bildeAvis')}</dt><dd>${jaNei(k.bilde_avis)}</dd>` : ''}
       <dt>${t('kontrollor')}</dt><dd>${esc(k.kontrollor)}</dd><dt>${t('registrert')}</dt><dd>${esc(k.tidspunkt)}</dd>
       ${!venter(k) && k.godkjent_av ? `<dt>${t('godkjentAvTittel')}</dt><dd>${esc(k.godkjent_av)}</dd>` : ''}</dl>${sk === 'stor' ? chips(k) : ''}</div>
@@ -1354,6 +1372,7 @@ function visKontrollSkjema() {
         ${Object.keys(grupper).length > 1 ? Object.entries(grupper).map(([a, l]) => `<optgroup label="${esc(a)}">${l.map(opt).join('')}</optgroup>`).join('') : sykler.map(opt).join('')}
       </select></label>
       ${forrige ? `<p class="dempet">${t('forrigeKontroll', fmtDato(forrige.dato))}${forrige.km !== '' ? ', ' + fmtKm(forrige.km) : ''}${forrige.kjoreforbud === 'Ja' ? ` – <span class="rodt">${t('forbudUten').toLowerCase()}</span>` : ''}</p>
+      ${F.utbedret_for ? `<div class="banner info">${esc(t('utbedretBanner'))}</div>` : ''}
       ${avvikTekst(forrige).length || forrige.merknad ? `<div class="forrigeinfo">${avvikTekst(forrige).length ? `<b>${t('forrigeAvvik')}:</b> ${esc(avvikTekst(forrige).join(', '))}` : ''}${forrige.merknad ? `${avvikTekst(forrige).length ? '<br>' : ''}<b>${t('merknad')}:</b> ${esc(forrige.merknad)}` : ''}</div>` : ''}` : ''}
       ${forrige && forrige.merknad ? `<div class="banner ${Number(forrige.sum_allmenn) >= 1 ? 'v1' : 'info'}" style="font-weight:550">${esc(t('forrigeMerknad', fmtDato(forrige.dato), forrige.merknad))}</div>` : ''}
       <label class="felt"><span>${t('maaned')}</span><select data-f="maaned">
@@ -1364,6 +1383,7 @@ function visKontrollSkjema() {
       ${sammeMnd ? `<div class="banner info" style="margin-top:10px">${t('finnesAllerede', mndNavn(fm), fmtDato(sammeMnd.dato))}</div>` : ''}
       <div class="rad2" style="margin-top:10px"><label class="felt"><span>${t('dato')}</span><input type="date" data-f="dato" value="${esc(F.dato)}"></label>
         <label class="felt"><span>${t('km')}</span><input data-f="km" inputmode="numeric" value="${esc(F.km)}" placeholder="${FORRIGE.km ? esc(t('sist', FORRIGE.km)) : ''}"></label></div>
+      ${FORRIGE.km ? `<label class="kmbyttet"><input type="checkbox" data-f="km_byttet"${F.km_byttet ? ' checked' : ''}> ${t('kmByttet')}</label>` : ''}
       ${stor ? `<span class="felt-tittel">${t('bildeAvisLevert')}</span>${knapp2('bilde_avis', [['Ja', t('levert')], ['Nei', t('ikkeLevert'), true]], F.bilde_avis)}` : ''}
     </div>
     <div class="kort"><h3>${t('bilderTittel')}</h3>
@@ -2359,14 +2379,19 @@ const A = {
       const kort = $('main .bildeknapper'); if (kort) kort.closest('.kort').scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
+    if (F.utbedret_for && !(F.bilder || []).some(b => b.type === 'annet')) {
+      toast(t('utbedretBildeKrav'), true);
+      const kort = $('main .bildeknapper'); if (kort) kort.closest('.kort').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
     // warnings, not stops: double inspection, odometer lower than before or an unlikely jump (a replaced odometer is a legitimate exception)
     if (!F._retter) {
-      const tidl = S.d.kontroller.filter(k => k.sykkel_id === F.sykkel_id);
+      const tidl = S.d.kontroller.filter(k => k.sykkel_id === F.sykkel_id && !(F.utbedret_for && k.id === F.utbedret_for));
       const sistKm = Math.max(0, ...tidl.map(k => Number(k.km) || 0));
       const km = Number(String(F.km || '').replace(/\s/g, '').replace(',', '.')) || 0;
       const varsler = [];
       if (tidl.some(k => k.maaned === F.maaned)) varsler.push(t('vDobbel', Mnd(Number(F.maaned.slice(5)))));
-      if (km && sistKm && km < sistKm) varsler.push(t('vKmLav', fmtKm(km), fmtKm(sistKm)));
+      if (km && sistKm && km < sistKm && !F.km_byttet) varsler.push(t('vKmLav', fmtKm(km), fmtKm(sistKm)));
       else if (km && sistKm && km - sistKm > 15000) varsler.push(t('vKmHopp', fmtKm(km - sistKm)));
       if (varsler.length && !confirm(varsler.join('\n\n') + '\n\n' + t('vLagreLikevel'))) return;
     }
@@ -2394,6 +2419,14 @@ const A = {
       if (feil) { apne(() => visKontroll(r.id)); toast(feil + t('provHer'), true); }
       else toast(retter ? t('godkjentToast') : r.status === 'venter' ? t('sendtTilGodkj') : t('lagret'));
     });
+  },
+  utbedret(el) {
+    const id = el.dataset.id, g = gjeldendeKontroll(id); if (!g) return;
+    startKontroll(id);
+    if (!F || F.sykkel_id !== id) return;
+    F.utbedret_for = g.id;
+    if (!F.merknad) F.merknad = t('utbedretMerknad', avvikTekst(g).join(', '));
+    lagreUtkast(); render();
   },
   async godkjenn(btn) {
     await medKnapp(btn, async () => {
