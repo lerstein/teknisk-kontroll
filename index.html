@@ -279,6 +279,7 @@ details.kort p{font-size:14.5px;color:#cfd3d9}
 .sprak button{min-height:36px;padding:6px 14px;font-size:14px}
 .sprak button.aktiv{border-color:var(--aksent);color:var(--aksent)}
 @media (min-width:600px){.stat span{font-size:12.5px}}
+.forrigeinfo{background:#1f1a10;border-left:3px solid var(--aksent);border-radius:0 8px 8px 0;padding:8px 10px;margin:-4px 0 12px;font-size:14px;line-height:1.4}
 .bokknapp{display:flex;align-items:center;gap:12px;cursor:pointer}
 .bokknapp svg{width:26px;height:26px;color:var(--aksent);flex:none}
 .bokknapp span:first-of-type{flex:1;display:flex;flex-direction:column}
@@ -401,7 +402,7 @@ const TXT = {
     bildeAvisLevert: 'Bilde m/avis levert', levert: 'Levert', ikkeLevert: 'Ikke levert',
     bilderTittel: 'Bilder', bilderHint: 'Bilde av begge dekkene er påkrevd (*). Ellers gjerne kilometerstand, bilde m/avis, skader …',
     alleOk: 'Sett alle punkter til «OK»', alleOkToast: 'Alle umerkede punkter satt til OK', oljeByttet: 'Olje og væsker – byttet',
-    status: 'Status', fiksesInnen: 'Må fikses innen', merknadPh: 'F.eks. hva som må gjøres', lagreKontroll: 'Lagre kontroll', tomSkjema: 'Tøm skjemaet',
+    status: 'Status', fiksesInnen: 'Må fikses innen', merknadPh: 'F.eks. hva som må gjøres', forrigeAvvik: 'Avvik sist', lagreNeste: 'Lagre og neste sykkel ({0} igjen)', lagretNeste: 'Lagret – neste: {0} ({1} igjen etter denne)', vDobbel: 'Sykkelen har allerede en kontroll for {0}.', vKmLav: 'Km-standen ({0}) er lavere enn sist ({1}). Er kilometertelleren byttet, eller er det en skrivefeil?', vKmHopp: 'Det er {0} siden forrige kontroll. Stemmer det?', vLagreLikevel: 'Trykk OK for å lagre likevel, eller Avbryt for å rette.', lagreKontroll: 'Lagre kontroll', tomSkjema: 'Tøm skjemaet',
     autoLagret: 'Skjemaet lagres automatisk på telefonen mens du fyller ut. Signeres med ditt navn.',
     stForbud: 'Kjøreforbud – minst ett punkt er satt til kjøreforbud. Sett frist og skriv hva som må gjøres.',
     stForbudManuelt: 'Kjøreforbud. Sett frist og skriv hva som må gjøres.', stBor: 'Bør utbedres – sett gjerne en frist.',
@@ -544,7 +545,7 @@ const TXT = {
     bildeAvisLevert: 'Photo with newspaper delivered', levert: 'Delivered', ikkeLevert: 'Not delivered',
     bilderTittel: 'Photos', bilderHint: 'A photo of both tyres is required (*). Also useful: odometer, photo with newspaper, damage …',
     alleOk: 'Set all items to "OK"', alleOkToast: 'All unrated items set to OK', oljeByttet: 'Oil and fluids – changed',
-    status: 'Status', fiksesInnen: 'Fix by', merknadPh: 'E.g. what needs to be done', lagreKontroll: 'Save inspection', tomSkjema: 'Clear form',
+    status: 'Status', fiksesInnen: 'Fix by', merknadPh: 'E.g. what needs to be done', forrigeAvvik: 'Issues last time', lagreNeste: 'Save and next bike ({0} left)', lagretNeste: 'Saved – next: {0} ({1} left after this one)', vDobbel: 'This bike already has an inspection for {0}.', vKmLav: 'The odometer ({0}) is lower than last time ({1}). Was the odometer replaced, or is it a typo?', vKmHopp: 'That is {0} since the last inspection. Is that right?', vLagreLikevel: 'Press OK to save anyway, or Cancel to correct it.', lagreKontroll: 'Save inspection', tomSkjema: 'Clear form',
     autoLagret: 'The form is saved on your phone as you go. It is signed with your name.',
     stForbud: 'Do not ride – at least one item is rated "do not ride". Set a deadline and describe what needs fixing.',
     stForbudManuelt: 'Do not ride. Set a deadline and describe what needs fixing.', stBor: 'Fix soon – consider setting a deadline.',
@@ -792,6 +793,12 @@ const venterMerke = k => venter(k) ? `<span class="merke gul">${t('venterMerke')
 const finnSykkel = id => S.d.sykler.find(s => s.id === id);
 const kontrollerFor = id => S.d.kontroller.filter(k => k.sykkel_id === id);
 const sisteKontroll = id => S.d.kontroller.find(k => k.sykkel_id === id);
+// A self-inspection waiting for approval must not make a bike look better than the last approved one – e.g. lift a riding ban.
+const gjeldendeKontroll = id => {
+  const k = sisteKontroll(id); if (!k || k.status !== 'venter') return k;
+  const g = S.d.kontroller.find(x => x.sykkel_id === id && x.status !== 'venter');
+  return g && (g.kjoreforbud === 'Ja' || Number(g.sum_allmenn) > Number(k.sum_allmenn)) ? g : k;
+};
 const egenFor = tlf => S.d.egenerklaeringer.filter(e => e.telefon === tlf);
 const iAvd = x => S.avd === 'Alle' || x.avdeling === S.avd;
 const fristPassert = k => k && k.frist && k.frist < idag() && Number(k.sum_allmenn) >= 1;
@@ -1074,7 +1081,7 @@ function tegnLag(tittel, html) {
 
 // ─── Overview ───────────────────────────────────────────────
 function sykkelInfo(s) {
-  const k = sisteKontroll(s.id);
+  const k = gjeldendeKontroll(s.id);
   const am = aktivMnd();
   const y = String(aar());
   const e = egenFor(s.telefon).find(x => String(x.dato).startsWith(y));
@@ -1294,6 +1301,12 @@ function hentUtkast() {
 }
 const harInnhold = f => f && [...PUNKTER, ...ENKEL.map(([id]) => id)].some(p => f[p] !== undefined && f[p] !== '');
 
+/** Bikes in the RC's own chapter(s) still missing an inspection in the month of the open form – the queue for an inspection evening. */
+function nesteSykler() {
+  if (!F || !F.maaned) return [];
+  return S.d.sykler.filter(s => s.id !== F.sykkel_id && kanEndreAvd(s.avdeling) && iAvd(s) && !S.d.kontroller.some(k => k.sykkel_id === s.id && k.maaned === F.maaned))
+    .sort((a, b) => String(a.eier).localeCompare(String(b.eier), 'nb'));
+}
 function startKontroll(id) {
   if (!F) F = hentUtkast();
   if (F && F._retter) F = null;
@@ -1340,7 +1353,8 @@ function visKontrollSkjema() {
       <label class="felt"><span>${t('sykkel')}</span><select data-f="sykkel_id"><option value="">${t('velgSykkel')}</option>
         ${Object.keys(grupper).length > 1 ? Object.entries(grupper).map(([a, l]) => `<optgroup label="${esc(a)}">${l.map(opt).join('')}</optgroup>`).join('') : sykler.map(opt).join('')}
       </select></label>
-      ${forrige ? `<p class="dempet">${t('forrigeKontroll', fmtDato(forrige.dato))}${forrige.km !== '' ? ', ' + fmtKm(forrige.km) : ''}${forrige.kjoreforbud === 'Ja' ? ` – <span class="rodt">${t('forbudUten').toLowerCase()}</span>` : ''}</p>` : ''}
+      ${forrige ? `<p class="dempet">${t('forrigeKontroll', fmtDato(forrige.dato))}${forrige.km !== '' ? ', ' + fmtKm(forrige.km) : ''}${forrige.kjoreforbud === 'Ja' ? ` – <span class="rodt">${t('forbudUten').toLowerCase()}</span>` : ''}</p>
+      ${avvikTekst(forrige).length || forrige.merknad ? `<div class="forrigeinfo">${avvikTekst(forrige).length ? `<b>${t('forrigeAvvik')}:</b> ${esc(avvikTekst(forrige).join(', '))}` : ''}${forrige.merknad ? `${avvikTekst(forrige).length ? '<br>' : ''}<b>${t('merknad')}:</b> ${esc(forrige.merknad)}` : ''}</div>` : ''}` : ''}
       ${forrige && forrige.merknad ? `<div class="banner ${Number(forrige.sum_allmenn) >= 1 ? 'v1' : 'info'}" style="font-weight:550">${esc(t('forrigeMerknad', fmtDato(forrige.dato), forrige.merknad))}</div>` : ''}
       <label class="felt"><span>${t('maaned')}</span><select data-f="maaned">
         ${SESONG.map(m => `<option value="${mndKey(y, m)}"${mndKey(y, m) === F.maaned ? ' selected' : ''}>${Mnd(m)} – ${t('sk_' + skjemaForMnd(m))}</option>`).join('')}
@@ -1371,6 +1385,7 @@ function visKontrollSkjema() {
       <label class="felt"><span>${t('merknad')}</span><textarea data-f="merknad" placeholder="${esc(t('merknadPh'))}">${esc(F.merknad)}</textarea></label>
     </div>
     <button type="button" class="primar bred" data-a="lagreKontroll">${t('lagreKontroll')}</button>
+    ${!F._retter && kanEndreNoe() && nesteSykler().length ? `<button type="button" class="bred" data-a="lagreKontroll" data-neste="1">${t('lagreNeste', nesteSykler().length)}</button>` : ''}
     <button type="button" class="bred fare" data-a="forkastKontroll">${t('tomSkjema')}</button>
     <p class="dempet" style="text-align:center">${t('autoLagret')}</p>
   </div>`;
@@ -2344,6 +2359,19 @@ const A = {
       const kort = $('main .bildeknapper'); if (kort) kort.closest('.kort').scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
+    // warnings, not stops: double inspection, odometer lower than before or an unlikely jump (a replaced odometer is a legitimate exception)
+    if (!F._retter) {
+      const tidl = S.d.kontroller.filter(k => k.sykkel_id === F.sykkel_id);
+      const sistKm = Math.max(0, ...tidl.map(k => Number(k.km) || 0));
+      const km = Number(String(F.km || '').replace(/\s/g, '').replace(',', '.')) || 0;
+      const varsler = [];
+      if (tidl.some(k => k.maaned === F.maaned)) varsler.push(t('vDobbel', Mnd(Number(F.maaned.slice(5)))));
+      if (km && sistKm && km < sistKm) varsler.push(t('vKmLav', fmtKm(km), fmtKm(sistKm)));
+      else if (km && sistKm && km - sistKm > 15000) varsler.push(t('vKmHopp', fmtKm(km - sistKm)));
+      if (varsler.length && !confirm(varsler.join('\n\n') + '\n\n' + t('vLagreLikevel'))) return;
+    }
+    const neste = btn.dataset.neste ? nesteSykler() : [];
+    const nesteMnd = F.maaned;
     const maks = Math.max(...ider.map(p => Number(F[p])));
     if ((maks === 2 || F.kjoreforbud) && !F.frist && !confirm(t('ingenFrist'))) return;
     await medKnapp(btn, async () => {
@@ -2355,7 +2383,13 @@ const A = {
                        : await api('lagreKontroll', { kontroll: data });
       F = null; lagre('tk_utkast', null);
       const feil = await lastOppBilder(bilder, 'kontroll', r.id, btn);
-      await lastData(); S.fane = kanEndreNoe() ? 'oversikt' : 'mine'; render(); scrollTo(0, 0);
+      await lastData();
+      if (neste.length && !feil) {   // inspection evening: straight on to the next bike missing this month
+        F = nyttSkjema(neste[0].id); F.maaned = nesteMnd; F.skjema = skjemaForMnd(Number(nesteMnd.slice(5))); forhandsutfyll(); lagreUtkast();
+        S.fane = 'kontroll'; lukkAlle(); render(); scrollTo(0, 0);
+        return toast(t('lagretNeste', neste[0].eier, neste.length - 1));
+      }
+      S.fane = kanEndreNoe() ? 'oversikt' : 'mine'; render(); scrollTo(0, 0);
       apne(() => visSykkel(id));
       if (feil) { apne(() => visKontroll(r.id)); toast(feil + t('provHer'), true); }
       else toast(retter ? t('godkjentToast') : r.status === 'venter' ? t('sendtTilGodkj') : t('lagret'));
