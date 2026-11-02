@@ -303,6 +303,7 @@ details.kort p{font-size:14.5px;color:#cfd3d9}
 .bokpost ul{margin:0 0 8px;padding-left:20px}
 .bokpost h4{margin:10px 0 4px}
 .bokpost.innlevert{border-left:3px solid #e0a020;padding-left:10px}
+.bokav{font-size:12.5px;color:var(--dempet);margin:-2px 0 6px}
 .bokmerke{display:inline-block;font-size:12px;background:#4a3a10;color:#f3cf6a;border-radius:999px;padding:2px 9px;margin-bottom:6px}
 .bokvalg{margin:2px 0 4px;justify-content:flex-end;align-items:center}.bokvalg button{min-height:36px;font-size:14px;padding:6px 14px}.bokvalg .lenkeknapp{padding:4px 2px}
 .bokoppsum{margin:16px 0 6px}
@@ -361,7 +362,7 @@ const TXT = {
     bokRc: 'For Road Captain', bokTekster: 'Innledning og oppsummering', bokMarkerLevert: 'Marker måneden som levert', bokApneIgjen: 'Åpne måneden igjen',
     bokImporter: 'Importer Word-fil', bokImportInfo: 'Last opp boka som Word-fil (.docx), så legges hendelsene inn automatisk. Måneder må ha overskrift som «Januar 2026».',
     bokSkrivUt: 'Skriv ut / lagre PDF – {0} {1}', bokInnlevertAv: 'Innlevert av {0} – venter på RC', bokTaMed: 'Ta med i boka', bokEndre: 'Endre',
-    bokLeverInnInfo: 'Hendelsen går til Road Captain, som tar den med i boka. Du kan endre den til den er tatt med.',
+    bokLeverInnInfo: 'Hendelsen blir synlig for alle i avdelingen med en gang. Du kan endre og slette det du selv har skrevet.', bokSkrevetAv: 'Skrevet av {0}', bokApenTest: '{0} sin RC-bok er åpen for alle som eksempel til {1}.', bokSeAnnen: 'Se RC-boka til {0}',
     bokNarFelt: 'Tidspunkt (valgfritt – står ellers dag og dato)', bokTittelFelt: 'Tittel', bokTekstFelt: 'Hva skjedde?',
     bokTekstPh: 'Skriv kort hva som skjedde og hvem som var med.', bokTekstHjelp: 'Tom linje gir nytt avsnitt. Start en linje med «- » for punktliste.',
     bokBilderEtter: 'Bilder kan legges til etter at hendelsen er lagret.', bokLagreNy: 'Lagre i boka', bokSendInn: 'Send inn til RC', bokLagreTaMed: 'Lagre og ta med i boka',
@@ -504,7 +505,7 @@ const TXT = {
     bokRc: 'For the Road Captain', bokTekster: 'Introduction and summary', bokMarkerLevert: 'Mark the month as delivered', bokApneIgjen: 'Reopen the month',
     bokImporter: 'Import Word file', bokImportInfo: 'Upload the book as a Word file (.docx) and the entries are added automatically. Months need a heading like "January 2026".',
     bokSkrivUt: 'Print / save PDF – {0} {1}', bokInnlevertAv: 'Handed in by {0} – waiting for RC', bokTaMed: 'Take into the book', bokEndre: 'Edit',
-    bokLeverInnInfo: 'The entry goes to your Road Captain, who takes it into the book. You can edit it until then.',
+    bokLeverInnInfo: 'The entry is visible to everyone in the chapter right away. You can edit and delete what you wrote yourself.', bokSkrevetAv: 'Written by {0}', bokApenTest: 'The RC book of {0} is open to everyone as an example until {1}.', bokSeAnnen: 'See the RC book of {0}',
     bokNarFelt: 'When (optional – otherwise day and date)', bokTittelFelt: 'Title', bokTekstFelt: 'What happened?',
     bokTekstPh: 'Briefly what happened and who took part.', bokTekstHjelp: 'An empty line starts a new paragraph. Start a line with "- " for a list.',
     bokBilderEtter: 'Photos can be added once the entry is saved.', bokLagreNy: 'Save in the book', bokSendInn: 'Send to RC', bokLagreTaMed: 'Save and take into the book',
@@ -2630,13 +2631,13 @@ function bokTekst(s) {
 const bokPosterMnd = mnd => (BOK ? BOK.poster.filter(p => p.maaned === mnd) : []).map((p, i) => [p, i]).sort((a, c) => a[0].dato.localeCompare(c[0].dato) || a[1] - c[1]).map(x => x[0]);
 const bokMndInfo = mnd => (BOK && BOK.maaneder.find(x => x.maaned === mnd)) || { innledning: '', oppsummering: '', levert: '' };
 const bokBilder = id => (BOK ? BOK.bilder.filter(b => b.ref_id === id) : []);
-const kanEndrePost = p => BOK && (BOK.kanSkrive || (p.status === 'innlevert' && p.telefon === meg().telefon));
+const kanEndrePost = p => BOK && (BOK.kanSkrive || (p.telefon === meg().telefon && BOK.avdeling === meg().avdeling));
 
 function bokPostHtml(p, iBok) {
   const bilder = bokBilder(p.id);
   return `<article class="bokpost${p.status === 'innlevert' ? ' innlevert' : ''}">
     <h3>${esc(bokNar(p))} – ${esc(p.tittel)}</h3>
-    ${p.status === 'innlevert' ? `<div class="bokmerke">${esc(t('bokInnlevertAv', p.navn))}</div>` : ''}
+    ${p.status === 'innlevert' ? `<div class="bokmerke">${esc(t('bokInnlevertAv', p.navn))}</div>` : p.kilde && p.kilde !== 'import' && p.navn ? `<div class="bokav">${esc(t('bokSkrevetAv', p.navn))}</div>` : ''}
     ${bokTekst(p.tekst)}
     ${bilder.length ? `<div class="bilderad">${bilder.map(b => `<button type="button" class="tommel" data-vis-bilde="${esc(b.id)}"><img data-bilde-id="${esc(b.id)}" alt=""><span>${esc(b.kommentar || '')}</span></button>`).join('')}</div>` : ''}
     ${iBok && kanEndrePost(p) ? `<div class="knapperad bokvalg">${p.status === 'innlevert' && BOK.kanSkrive ? `<button type="button" class="primar" data-a="bokGodkjenn" data-id="${esc(p.id)}">${t('bokTaMed')}</button>` : ''}
@@ -2661,12 +2662,14 @@ async function visRcBok() {
   const forslag = (BOK.forslag || []);
   tegnLag(tittel, `
     <div class="bokvelg">
-      ${kanLeseAlleBoker() ? `<select data-bok-avd aria-label="${esc(t('avdeling'))}">${S.d.avdelinger.map(a => `<option${a === BOKV.avd ? ' selected' : ''}>${esc(a)}</option>`).join('')}</select>` : `<b>${esc(BOKV.avd)}</b>`}
+      ${(BOK.lesbare || []).length > 1 ? `<select data-bok-avd aria-label="${esc(t('avdeling'))}">${BOK.lesbare.map(a => `<option${a === BOKV.avd ? ' selected' : ''}>${esc(a)}</option>`).join('')}</select>` : `<b>${esc(BOKV.avd)}</b>`}
       <div class="aarvelg"><button type="button" data-a="bokAar" data-d="-1" aria-label="${esc(t('bokForrigeAar'))}">‹</button><b>${BOKV.aar}</b><button type="button" data-a="bokAar" data-d="1" aria-label="${esc(t('bokNesteAar'))}">›</button></div>
     </div>
     <div class="bokmnder">${Array.from({ length: 12 }, (_, i) => i + 1).map(n => { const m = iAar(n), lev = bokMndInfo(m).levert === 'Ja';
       return `<button type="button" class="${m === mnd ? 'aktiv' : ''}${m > naaMnd ? ' fremtid' : ''}" data-a="bokMnd" data-m="${m}">${esc(mndKort(n))}${tall(n) ? `<small>${tall(n)}${lev ? ' ✓' : ''}</small>` : lev ? '<small>✓</small>' : ''}</button>`; }).join('')}</div>
     <div class="bokside">
+      ${BOK.apenTil ? `<div class="banner">${esc(t('bokApenTest', BOK.avdeling, Number(BOK.apenTil.slice(8)) + '. ' + mndNavn(Number(BOK.apenTil.slice(5, 7)))))}</div>` : ''}
+      ${!BOK.poster.length && BOK.avdeling === meg().avdeling ? (BOK.lesbare || []).filter(a => a !== BOK.avdeling).slice(0, rolle() === 'medlem' ? 3 : 0).map(a => `<button type="button" class="bred" data-a="bokSe" data-avd="${esc(a)}">${esc(t('bokSeAnnen', a))}</button>`).join('') : ''}
       <h2>${esc(Mnd(Number(mnd.slice(5))))} ${mnd.slice(0, 4)}</h2>
       <p class="dempet bokstatus">${info.levert === 'Ja' ? `✓ ${esc(t('bokLevert', info.levert_av, info.levert_tid))}` : esc(t('bokIkkeLevert'))}</p>
       ${info.innledning ? `<div class="bokinnl">${bokTekst(info.innledning)}</div>` : ''}
@@ -2674,7 +2677,7 @@ async function visRcBok() {
       ${poster.map(p => bokPostHtml(p, true)).join('') || `<p class="tom">${t('bokTom')}</p>`}
       ${info.oppsummering ? `<h3 class="bokoppsum">${esc(t('bokOppsummering'))}</h3>${bokTekst(info.oppsummering)}` : ''}
     </div>
-    ${BOK.kanBidra || BOK.kanSkrive ? `<button type="button" class="primar bred" data-a="bokNy">＋ ${t(BOK.kanSkrive ? 'bokNy' : 'bokLeverInn')}</button>` : ''}
+    ${BOK.kanBidra || BOK.kanSkrive ? `<button type="button" class="primar bred" data-a="bokNy">＋ ${t('bokNy')}</button>` : ''}
     ${(BOK.kanBidra || BOK.kanSkrive) && forslag.length ? `<div class="kort"><h3>${t('bokForslag')}</h3><p class="dempet" style="margin-top:0">${t('bokForslagInfo')}</p>
       ${forslag.map((h, i) => `<div class="bokforslag"><div><b>${esc(h.tittel)}</b><small>${esc(stor(bokUkedag(h.dato)))} ${Number(h.dato.slice(8))}. ${esc(mndNavn(Number(h.dato.slice(5, 7))))}${h.sted ? ' · ' + esc(h.sted) : ''}</small></div>
         <button type="button" data-a="bokFraKal" data-i="${i}">${t('bokLeggTil')}</button></div>`).join('')}</div>` : ''}
@@ -2689,7 +2692,7 @@ async function visRcBok() {
 function visBokPost() {
   const p = BOK_P; if (!p) return tilbake();
   const ny = !p.id, skriv = BOK.kanSkrive;
-  tegnLag(ny ? t(skriv ? 'bokNy' : 'bokLeverInn') : t('bokEndre'), `
+  tegnLag(ny ? t('bokNy') : t('bokEndre'), `
     ${!skriv && ny ? `<p class="dempet">${t('bokLeverInnInfo')}</p>` : ''}
     <div class="kort">
       <label class="felt"><span>${t('dato')}</span><input type="date" data-bp="dato" value="${esc(p.dato)}" min="${p.maaned}-01" max="${p.maaned}-31"></label>
@@ -2700,7 +2703,7 @@ function visBokPost() {
     </div>
     ${p.id ? `<div class="kort"><h3>${t('bilderTittel')}</h3>${bokBilder(p.id).length ? `<div class="bilderad">${bokBilder(p.id).map(b => `<button type="button" class="tommel" data-vis-bilde="${esc(b.id)}"><img data-bilde-id="${esc(b.id)}" alt=""><span>${esc(b.kommentar || '')}</span></button>`).join('')}</div>` : `<p class="tom" style="margin:0">${t('ingenBilder')}</p>`}
       ${bildeKnapper(['annet'], `data-direkte="rcbok:${esc(p.id)}"`)}</div>` : `<p class="dempet">${t('bokBilderEtter')}</p>`}
-    <button type="button" class="primar bred" data-a="bokLagre">${t(ny ? (skriv ? 'bokLagreNy' : 'bokSendInn') : 'lagre')}</button>
+    <button type="button" class="primar bred" data-a="bokLagre">${t(ny ? 'bokLagreNy' : 'lagre')}</button>
     ${!ny && skriv && p.status === 'innlevert' ? `<button type="button" class="bred" data-a="bokLagre" data-godkjenn="1">${t('bokLagreTaMed')}</button>` : ''}
     ${!ny ? `<button type="button" class="fare bred" data-a="bokSlett">${t('bokSlett')}</button>` : ''}`);
 }
@@ -2825,6 +2828,7 @@ async function bokSkrivUt() {
 Object.assign(A, {
   rcBok() { bokStart(); BOKV.avd = BOKV.avd || meg().avdeling; apne(visRcBok); },
   bokMnd(el) { BOKV.mnd = el.dataset.m; visRcBok(); },
+  bokSe(el) { BOKV.avd = el.dataset.avd; visRcBok(); },
   bokAar(el) { const a = Number(BOKV.aar) + Number(el.dataset.d); BOKV.aar = String(a); BOKV.mnd = a + BOKV.mnd.slice(4); visRcBok(); },
   bokNy() {
     const idag = new Date(), m = BOKV.mnd, iMnd = idag.getFullYear() + '-' + String(idag.getMonth() + 1).padStart(2, '0') === m;
