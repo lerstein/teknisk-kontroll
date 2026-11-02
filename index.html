@@ -1858,7 +1858,9 @@ async function visTelefonliste() {
     catch (e) { return tegnLag(t('telefonliste'), `<div class="banner v1">${esc(e.message)}</div>`); }
   }
   const egen = avdNokkel(meg().avdeling);
-  const avd = [...TLF.avdelinger].sort((a, b) => (avdNokkel(b.navn) === egen) - (avdNokkel(a.navn) === egen));
+  // National/Nomad always first, then your own chapter, then the rest in the order of the club's list
+  const vekt = a => /^national/i.test(a.navn) ? 0 : avdNokkel(a.navn) === egen ? 1 : 2;
+  const avd = [...TLF.avdelinger].sort((a, b) => vekt(a) - vekt(b));
   tegnLag(t('telefonliste'), `<input class="tlfsok" type="search" data-tlfsok placeholder="${esc(t('tlfSok'))}" value="${esc(TLF_SOK)}" autocomplete="off">
     <div id="tlfListe"></div><p class="dempet" style="font-size:12.5px">${esc(t('tlfHentet', fmtAktiv(TLF.hentet)))}</p>`);
   const tegn = () => {
