@@ -279,7 +279,45 @@ details.kort p{font-size:14.5px;color:#cfd3d9}
 .sprak button{min-height:36px;padding:6px 14px;font-size:14px}
 .sprak button.aktiv{border-color:var(--aksent);color:var(--aksent)}
 @media (min-width:600px){.stat span{font-size:12.5px}}
-@media print{nav.bunn,header.topp,#toast{display:none}body{background:#fff;color:#000}}
+.bokknapp{display:flex;align-items:center;gap:12px;cursor:pointer}
+.bokknapp svg{width:26px;height:26px;color:var(--aksent);flex:none}
+.bokknapp span:first-of-type{flex:1;display:flex;flex-direction:column}
+.bokknapp small{color:var(--dempet);font-size:13px}
+.bokknapp .pil{font-size:24px;color:var(--dempet)}
+.bokvelg{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.bokvelg select{width:auto;flex:1;max-width:60%}
+.aarvelg{display:flex;align-items:center;gap:6px}
+.aarvelg button{min-height:40px;width:40px;padding:0;font-size:20px}
+.bokmnder{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:14px}
+.bokmnder button{min-height:44px;padding:4px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13.5px;line-height:1.15}
+.bokmnder button small{font-size:11px;color:var(--dempet)}
+.bokmnder button.aktiv{background:var(--aksent);color:#111;border-color:var(--aksent)}
+.bokmnder button.aktiv small{color:#111}
+.bokmnder button.fremtid{opacity:.55}
+.bokside h2{margin:4px 0 2px}
+.bokstatus{margin:0 0 12px;font-size:13.5px}
+.bokinnl{font-style:italic;color:var(--dempet)}
+.bokpost{border-top:1px solid var(--linje);padding:12px 0 6px}
+.bokpost h3{margin:0 0 6px;font-size:16px;line-height:1.3;text-transform:none;letter-spacing:0;color:var(--tekst)}
+.bokpost p,.bokside>p,.bokinnl p{margin:0 0 8px;line-height:1.5}
+.bokpost ul{margin:0 0 8px;padding-left:20px}
+.bokpost h4{margin:10px 0 4px}
+.bokpost.innlevert{border-left:3px solid #e0a020;padding-left:10px}
+.bokmerke{display:inline-block;font-size:12px;background:#4a3a10;color:#f3cf6a;border-radius:999px;padding:2px 9px;margin-bottom:6px}
+.bokvalg{margin:2px 0 4px;justify-content:flex-end;align-items:center}.bokvalg button{min-height:36px;font-size:14px;padding:6px 14px}.bokvalg .lenkeknapp{padding:4px 2px}
+.bokoppsum{margin:16px 0 6px}
+.bokforslag{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--linje)}
+.bokforslag div{flex:1;min-width:0}.bokforslag b{display:block}.bokforslag small{color:var(--dempet);font-size:12.5px}
+.bokforslag button{min-height:38px;font-size:14px;flex:none}
+.bokimprad{display:flex;justify-content:space-between;padding:5px 0;border-top:1px solid var(--linje)}
+.bokimprad span{color:var(--dempet)}
+#utskrift{display:none}
+@media print{nav.bunn,header.topp,#toast{display:none}body{background:#fff;color:#000}
+  body.skriver>*:not(#utskrift){display:none!important}
+  body.skriver #utskrift{display:block;font:11pt/1.45 Georgia,serif;color:#000}
+  #utskrift h1{font-size:20pt}#utskrift h2{font-size:16pt;margin-top:22pt;page-break-before:always}#utskrift section:first-of-type h2{page-break-before:auto}
+  #utskrift h3{text-transform:none;letter-spacing:0;color:#000;font-weight:700;font-size:12pt;margin:12pt 0 3pt;page-break-after:avoid}#utskrift article{page-break-inside:auto}
+  #utskrift figure{display:inline-block;margin:4pt 6pt 4pt 0;max-width:48%;vertical-align:top}#utskrift img{max-width:100%;max-height:7cm}#utskrift figcaption{font-size:9pt}}
 </style>
 </head>
 <body>
@@ -316,6 +354,27 @@ const TXT = {
     kontrollert: 'Kontrollert {0}', aldri: 'Aldri kontrollert', manglerMnd: '{0} mangler', frist: 'frist {0}', passert: ' – passert',
     egenOk: 'egenerklæring ✓', egenMangler: 'egenerklæring mangler', hkUtlopt: 'helsetrygdekort utløpt', hkUtloper: 'helsetrygdekort utløper {0}',
     sesong: 'Sesong {0}',
+    bokTittel: 'RC-bok', bokKortInfo: 'Månedlig aktivitetslogg – {0}', bokForrigeAar: 'Forrige år', bokNesteAar: 'Neste år',
+    bokLevert: 'Levert av {0} {1}', bokIkkeLevert: 'Ikke levert ennå', bokVenter: '{0} innlevering(er) venter på deg – ta dem med i boka eller rett dem først.',
+    bokTom: 'Ingen hendelser denne måneden ennå.', bokOppsummering: 'Oppsummering', bokNy: 'Ny hendelse', bokLeverInn: 'Lever inn hendelse til RC',
+    bokForslag: 'Fra kalenderen', bokForslagInfo: 'Arrangementer denne måneden som ikke er i boka ennå.', bokLeggTil: 'Legg til',
+    bokRc: 'For Road Captain', bokTekster: 'Innledning og oppsummering', bokMarkerLevert: 'Marker måneden som levert', bokApneIgjen: 'Åpne måneden igjen',
+    bokImporter: 'Importer Word-fil', bokImportInfo: 'Last opp boka som Word-fil (.docx), så legges hendelsene inn automatisk. Måneder må ha overskrift som «Januar 2026».',
+    bokSkrivUt: 'Skriv ut / lagre PDF – {0} {1}', bokInnlevertAv: 'Innlevert av {0} – venter på RC', bokTaMed: 'Ta med i boka', bokEndre: 'Endre',
+    bokLeverInnInfo: 'Hendelsen går til Road Captain, som tar den med i boka. Du kan endre den til den er tatt med.',
+    bokNarFelt: 'Tidspunkt (valgfritt – står ellers dag og dato)', bokTittelFelt: 'Tittel', bokTekstFelt: 'Hva skjedde?',
+    bokTekstPh: 'Skriv kort hva som skjedde og hvem som var med.', bokTekstHjelp: 'Tom linje gir nytt avsnitt. Start en linje med «- » for punktliste.',
+    bokBilderEtter: 'Bilder kan legges til etter at hendelsen er lagret.', bokLagreNy: 'Lagre i boka', bokSendInn: 'Send inn til RC', bokLagreTaMed: 'Lagre og ta med i boka',
+    bokSlett: 'Slett hendelsen', bokSlettSp: 'Slette hendelsen og bildene på den?', bokSlettet: 'Hendelsen er slettet', bokInnledning: 'Innledning',
+    bokTittelMangler: 'Skriv en tittel', bokDatoMnd: 'Datoen må være i {0}', bokSendt: 'Sendt inn til RC – du kan legge til bilder nå',
+    bokLagretBilder: 'Lagret – du kan legge til bilder nå', bokLagret: 'Lagret', bokTattMed: 'Tatt med i boka',
+    bokLeverSp: 'Markere {0} som levert?', bokLevertOk: 'Måneden er markert som levert', bokApnet: 'Måneden er åpnet igjen',
+    bokIkkeWord: 'Fant ikke innhold i filen – er det en Word-fil (.docx)?', bokForGammel: 'Telefonen er for gammel til å lese Word-filer – prøv fra en PC eller oppdater iOS.',
+    bokImportIngen: 'Fant ingen måneder. Månedene må ha overskrift som «Januar 2026».', bokImportFant: 'Fant {0} måneder med til sammen {1} hendelser:',
+    bokImportHendelser: '{0} hendelser', bokImportErstatter: 'Disse månedene er importert før, og den forrige importen erstattes: {0}.',
+    bokImportBeholder: 'Hendelser som er skrevet direkte i appen, blir ikke rørt. Innledning og oppsummering fra filen erstatter de gamle.',
+    bokForhandsvis: 'Forhåndsvisning', bokImportTil: 'Importer til RC-boka for {0}', bokImportOk: '{0} hendelser i {1} måneder er lagt inn',
+    bokForbereder: 'Gjør klar utskrift …',
     kalTittel: 'Kalender', kalVisKalendere: 'Vis kalendere', kalIngenValgt: 'Ingen kalendere valgt. Kryss av kalenderne du vil se.', kalDittSvar: 'Ditt svar: {0}', kalIkkeSvart: 'Ikke svart', svarJa: 'Deltar', svarKanskje: 'Kanskje', svarNei: 'Avslår', svarIngen: 'Ingen svar ennå.', svarLagret: 'Svar lagret', svarFjernet: 'Svar fjernet', kalNeste: 'Kommende', kalAlle: 'Hele kalenderen', kalHeldag: 'Hele dagen', kalLeggTil: 'Legg i min kalender', kalTom: 'Ingen kommende arrangementer.', kalFeilet: 'Fikk ikke hentet: {0}',
     sokSykkel: 'Søk regnr, navn eller modell', skannSkilt: 'Ta bilde av skiltet eller velg fra bilder', skannLeser: 'Leser skiltet…', skannLaster: 'Laster skiltleser (første gang tar litt tid)…', skannFant: 'Fant {0}', skannUsikker: 'Usikker – velg riktig sykkel i lista', skannUkjentNaer: 'Leste {0} – den er ikke registrert. Lista viser de som ligner.', skannUkjent: 'Leste {0}, men den sykkelen er ikke registrert i appen (eller hører til en annen avdeling).', skannIngen: 'Fant ikke noe skilt. Ta bildet nærmere, så skiltet fyller bildet.', skannFeil: 'Skiltleseren kunne ikke lastes. Sjekk nettet, eller skriv regnr.',
     eierMeldTittel: 'Melding til eieren', sendSmsKort: 'Send SMS', eierMeldHint: 'Åpner meldingen på din telefon, så du kan endre teksten før du sender. For Signal kopieres teksten – lim den inn i chatten.', meldingKopiert: 'Teksten er kopiert – lim den inn i Signal',
@@ -438,6 +497,27 @@ const TXT = {
     kontrollert: 'Inspected {0}', aldri: 'Never inspected', manglerMnd: '{0} missing', frist: 'deadline {0}', passert: ' – overdue',
     egenOk: 'self-declaration ✓', egenMangler: 'self-declaration missing', hkUtlopt: 'health card expired', hkUtloper: 'health card expires {0}',
     sesong: 'Season {0}',
+    bokTittel: 'RC book', bokKortInfo: 'Monthly activity log – {0}', bokForrigeAar: 'Previous year', bokNesteAar: 'Next year',
+    bokLevert: 'Delivered by {0} {1}', bokIkkeLevert: 'Not delivered yet', bokVenter: '{0} contribution(s) waiting for you – take them into the book or edit them first.',
+    bokTom: 'No entries this month yet.', bokOppsummering: 'Summary', bokNy: 'New entry', bokLeverInn: 'Hand in an entry to your RC',
+    bokForslag: 'From the calendar', bokForslagInfo: 'Events this month that are not in the book yet.', bokLeggTil: 'Add',
+    bokRc: 'For the Road Captain', bokTekster: 'Introduction and summary', bokMarkerLevert: 'Mark the month as delivered', bokApneIgjen: 'Reopen the month',
+    bokImporter: 'Import Word file', bokImportInfo: 'Upload the book as a Word file (.docx) and the entries are added automatically. Months need a heading like "January 2026".',
+    bokSkrivUt: 'Print / save PDF – {0} {1}', bokInnlevertAv: 'Handed in by {0} – waiting for RC', bokTaMed: 'Take into the book', bokEndre: 'Edit',
+    bokLeverInnInfo: 'The entry goes to your Road Captain, who takes it into the book. You can edit it until then.',
+    bokNarFelt: 'When (optional – otherwise day and date)', bokTittelFelt: 'Title', bokTekstFelt: 'What happened?',
+    bokTekstPh: 'Briefly what happened and who took part.', bokTekstHjelp: 'An empty line starts a new paragraph. Start a line with "- " for a list.',
+    bokBilderEtter: 'Photos can be added once the entry is saved.', bokLagreNy: 'Save in the book', bokSendInn: 'Send to RC', bokLagreTaMed: 'Save and take into the book',
+    bokSlett: 'Delete entry', bokSlettSp: 'Delete the entry and its photos?', bokSlettet: 'Entry deleted', bokInnledning: 'Introduction',
+    bokTittelMangler: 'Enter a title', bokDatoMnd: 'The date must be in {0}', bokSendt: 'Sent to your RC – you can add photos now',
+    bokLagretBilder: 'Saved – you can add photos now', bokLagret: 'Saved', bokTattMed: 'Taken into the book',
+    bokLeverSp: 'Mark {0} as delivered?', bokLevertOk: 'The month is marked as delivered', bokApnet: 'The month is reopened',
+    bokIkkeWord: 'No content found – is it a Word file (.docx)?', bokForGammel: 'This phone is too old to read Word files – try from a computer or update iOS.',
+    bokImportIngen: 'No months found. Months need a heading like "January 2026".', bokImportFant: 'Found {0} months with {1} entries in total:',
+    bokImportHendelser: '{0} entries', bokImportErstatter: 'These months were imported before; the previous import is replaced: {0}.',
+    bokImportBeholder: 'Entries written directly in the app are kept. Introduction and summary from the file replace the old ones.',
+    bokForhandsvis: 'Preview', bokImportTil: 'Import into the RC book for {0}', bokImportOk: '{0} entries in {1} months added',
+    bokForbereder: 'Preparing print …',
     kalTittel: 'Calendar', kalVisKalendere: 'Show calendars', kalIngenValgt: 'No calendars selected. Select the calendars you want to see.', kalDittSvar: 'Your answer: {0}', kalIkkeSvart: 'Not answered', svarJa: 'Going', svarKanskje: 'Maybe', svarNei: 'Not going', svarIngen: 'No answers yet.', svarLagret: 'Answer saved', svarFjernet: 'Answer removed', kalNeste: 'Coming up', kalAlle: 'Full calendar', kalHeldag: 'All day', kalLeggTil: 'Add to my calendar', kalTom: 'No upcoming events.', kalFeilet: 'Could not load: {0}',
     sokSykkel: 'Search reg. no., name or model', skannSkilt: 'Take or choose a photo of the plate', skannLeser: 'Reading the plate…', skannLaster: 'Loading the plate reader (takes a moment the first time)…', skannFant: 'Found {0}', skannUsikker: 'Not sure – pick the right bike in the list', skannUkjentNaer: 'Read {0} – not registered. The list shows similar ones.', skannUkjent: 'Read {0}, but that bike is not registered in the app (or belongs to another chapter).', skannIngen: 'No plate found. Take the photo closer, so the plate fills the picture.', skannFeil: 'Could not load the plate reader. Check your connection, or type the reg. no.',
     eierMeldTittel: 'Message to the owner', sendSmsKort: 'Send SMS', eierMeldHint: 'Opens the message on your phone, so you can edit it before sending. For Signal the text is copied – paste it into the chat.', meldingKopiert: 'Text copied – paste it into Signal',
@@ -678,7 +758,7 @@ async function oppdaterAlt() {
 
 function loggUt(melding) {
   S.token = ''; S.d = null; S.fane = ''; S.filter = 'alle'; S.midlPw = ''; S.avd = hent('tk_avd') || 'Alle';
-  F = G = B = null; TLF = null; TLF_SOK = ""; KAL = null; KAL_HENTER = null; lagre('tk_token', null); lagre('tk_utkast', null);
+  F = G = B = null; TLF = null; TLF_SOK = ""; KAL = null; KAL_HENTER = null; BOK = null; BOKV = null; BOK_P = null; BOK_IMPORT = null; lagre('tk_token', null); lagre('tk_utkast', null);
   lukkAlle(); visLogin('login');
   if (melding) toast(typeof melding === 'string' ? melding : t('loggInnPaNytt'), true);
 }
@@ -810,7 +890,7 @@ function kanLeggeTilBilde(refType, ref) {
 const kanKommentereBilde = b => rolle() === 'admin' || b.lastet_opp_av_tlf === meg().telefon ||
   (erRcLik() && b.avdeling === meg().avdeling) ||
   (['profil', 'sykkel', 'sykkelgalleri'].includes(b.ref_type) && b.telefon === meg().telefon);
-const kanSletteBilde = b => rolle() === 'admin' || (['profil', 'sykkel'].includes(b.type) && (b.telefon === meg().telefon || (erRcLik() && b.avdeling === meg().avdeling))) ||
+const kanSletteBilde = b => rolle() === 'admin' || (b.ref_type === 'rcbok' && BOK && BOK.kanSkrive) || (['profil', 'sykkel'].includes(b.type) && (b.telefon === meg().telefon || (erRcLik() && b.avdeling === meg().avdeling))) ||
   (b.lastet_opp_av_tlf === meg().telefon && alderTimer(b.tidspunkt) < S.d.innstillinger.bildeDager * 24);
 const sisteBilde = (refType, refId) => bilderFor(refType, refId).slice(-1)[0];
 const kanProfilbilde = u => rolle() === 'admin' || u.telefon === meg().telefon || (erRcLik() && u.avdeling === meg().avdeling);
@@ -850,7 +930,7 @@ async function velgBilder(el) {
     const [refType, refId] = el.dataset.direkte.split(':');
     toast(nye.length > 1 ? t('lasterOppFlere', nye.length) : t('lasterOpp1'));
     const feil = await lastOppBilder(nye, refType, refId);
-    try { await lastData(); } catch (e) { /* toast below */ }
+    try { await lastData(); if (refType === 'rcbok') await lastBok(true); } catch (e) { /* toast below */ }
     render(); if (LAG.length) LAG[LAG.length - 1]();
     return toast(feil || t('bildeLagret'), !!feil);
   }
@@ -867,7 +947,7 @@ async function lagreBildeKommentar(btn) {
   btn.disabled = true;
   try {
     await api('lagreBildeKommentar', { id, kommentar: felt.value });
-    await lastData();
+    await lastData(); if (BOK) await lastBok(true);
     render(); if (LAG.length) LAG[LAG.length - 1]();
     toast(t('bildeKommentarLagret'));
   } catch (e) { toast(e.message, true); }
@@ -875,7 +955,7 @@ async function lagreBildeKommentar(btn) {
 }
 
 function visBilde(id) {
-  const b = (S.d.bilder || []).find(x => x.id === id);
+  const b = (S.d.bilder || []).find(x => x.id === id) || (BOK && BOK.bilder.find(x => x.id === id));
   if (!b) return tilbake();
   tegnLag(t('bt_' + b.type), `<img class="stor" data-bilde-id="${esc(b.id)}" alt="${esc(t('bt_' + b.type))}">
     <p class="dempet" style="margin-top:10px">${esc(t('lastetOppAv', b.lastet_opp_av, b.tidspunkt))}</p>
@@ -1025,7 +1105,7 @@ function visOversikt() {
   const vekt = i => (i.forbud ? 0 : i.frist ? 1 : i.manglerNa ? 2 : 3);
   const liste = alle.filter(filtre[S.filter] || filtre.alle).sort((a, b) => vekt(a) - vekt(b) || a.s.eier.localeCompare(b.s.eier, 'nb'));
   const statKnapp = (id, tall, tekst) => `<button data-filter="${id}" class="${S.filter === id ? 'aktiv' : ''}"><b>${tall}</b><span>${tekst}</span></button>`;
-  return `<div id="kalNeste"></div><h2>${t('oversikt')}${S.avd !== 'Alle' ? ' – ' + esc(S.avd) : ''}</h2>
+  return `<div id="kalNeste"></div>${bokKnapp()}<h2>${t('oversikt')}${S.avd !== 'Alle' ? ' – ' + esc(S.avd) : ''}</h2>
     ${avdVelger()}
     <div class="stat">${statKnapp('alle', ant.alle, t('st_sykler'))}${am ? statKnapp('mangler', ant.mangler, t('st_mangler', mndNavn(am))) : statKnapp('alle', '–', t('st_utenfor'))}${statKnapp('avvik', ant.avvik, t('st_avvik'))}${statKnapp('forbud', ant.forbud, t('st_forbud'))}</div>
     ${(() => { const v = S.d.kontroller.filter(k => kanGodkjenne(k) && iAvd(k));
@@ -1835,7 +1915,7 @@ function visMine() {
   const y = String(aar());
   const iAar = egne.find(e => String(e.dato).startsWith(y));
   const avviste = (S.d.avviste || []).filter(k => k.telefon === b.telefon && alderTimer(k.godkjent_tid || k.tidspunkt) < 60 * 24);
-  return `<div id="kalNeste"></div>${avviste.map(k => `<div class="banner v1">${esc(t('avvistBanner', k.regnr, Mnd(Number(kMnd(k).slice(5))), k.godkjent_av || 'RC'))}${k.avvist_grunn ? `:<br><i>${esc(k.avvist_grunn)}</i>` : ''}</div>`).join('')}
+  return `<div id="kalNeste"></div>${bokKnapp()}${avviste.map(k => `<div class="banner v1">${esc(t('avvistBanner', k.regnr, Mnd(Number(kMnd(k).slice(5))), k.godkjent_av || 'RC'))}${k.avvist_grunn ? `:<br><i>${esc(k.avvist_grunn)}</i>` : ''}</div>`).join('')}
     ${profilKort(b.telefon)}
     <h2>${t('mineSykler')}</h2>
     ${mine.length ? mine.map(i => sykkelKort(i, false)).join('') : `<p class="tom">${t('ingenMine')}</p>`}
@@ -2409,7 +2489,7 @@ const A = {
     if (!confirm(t('slettBildeSp'))) return;
     await medKnapp(btn, async () => {
       await api('slettBilde', { id: btn.dataset.slettBilde });
-      await lastData(); tilbake(); render(); toast(t('bildeSlettet'));
+      await lastData(); if (BOK) await lastBok(true); tilbake(); render(); toast(t('bildeSlettet'));
     });
   },
   async slettKontroll(btn) {
@@ -2509,6 +2589,308 @@ document.addEventListener('submit', async ev => {
     const r = await api('byttPassord', { gammelt: f.gammelt, nytt: f.nytt });
     S.token = r.token; lagre('tk_token', r.token); ev.target.reset(); toast(t('passordByttet'));
   });
+});
+
+const bokKnapp = () => `<button type="button" class="kort bokknapp" data-a="rcBok">${svg(IKON.bok)}<span><b>${t('bokTittel')}</b><small>${esc(t('bokKortInfo', meg().avdeling))}</small></span><span class="pil">›</span></button>`;
+// ─── RC-bok (the chapter's monthly activity log) ───────────────
+// Read: own chapter for everyone; every chapter for RC, president, officer and admin.
+// Write: RC/officer of the chapter and admin. Members hand in entries that their RC takes into the book.
+let BOK = null, BOKV = null, BOK_IMPORT = null, BOK_P = null;
+const kanLeseAlleBoker = () => ['rc', 'president', 'officer', 'admin'].includes(rolle());
+function bokStart() {
+  const d = new Date();
+  BOKV = BOKV || { avd: meg().avdeling, aar: String(d.getFullYear()), mnd: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') };
+}
+async function lastBok(tving) {
+  bokStart();
+  if (!tving && BOK && BOK.avdeling === BOKV.avd && BOK.aar === BOKV.aar && BOK._forslag === BOKV.mnd) return BOK;
+  const d = await api('rcBok', { avdeling: BOKV.avd, aar: BOKV.aar, forslag: BOKV.mnd });
+  d._forslag = BOKV.mnd;
+  BOK = d; return d;
+}
+const bokUkedag = ds => { const d = new Date(ds + 'T12:00'); return d.toLocaleDateString(LANG === 'en' ? 'en-GB' : 'nb-NO', { weekday: 'long' }); };
+const stor = s => s.charAt(0).toUpperCase() + s.slice(1);
+const bokNar = p => p.nar || `${stor(bokUkedag(p.dato))} ${Number(p.dato.slice(8))}. ${mndNavn(Number(p.dato.slice(5, 7)))}`;
+/** Plain text with light markup: blank line = new paragraph, "- " = list item, "### " = subheading. */
+function bokTekst(s) {
+  const ut = []; let liste = [], avsnitt = [];
+  const tomAvsnitt = () => { if (avsnitt.length) ut.push(`<p>${avsnitt.map(esc).join('<br>')}</p>`); avsnitt = []; };
+  const tomListe = () => { if (liste.length) ut.push(`<ul>${liste.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`); liste = []; };
+  String(s || '').split(/\r?\n/).forEach(l => {
+    const r = l.trim();
+    if (/^[-•*]\s+/.test(r)) { tomAvsnitt(); liste.push(r.replace(/^[-•*]\s+/, '')); return; }
+    tomListe();
+    if (!r) return tomAvsnitt();
+    if (/^#{1,4}\s+/.test(r)) { tomAvsnitt(); ut.push(`<h4>${esc(r.replace(/^#+\s+/, ''))}</h4>`); return; }
+    avsnitt.push(r);
+  });
+  tomListe(); tomAvsnitt();
+  return ut.join('');
+}
+const bokPosterMnd = mnd => (BOK ? BOK.poster.filter(p => p.maaned === mnd) : []).map((p, i) => [p, i]).sort((a, c) => a[0].dato.localeCompare(c[0].dato) || a[1] - c[1]).map(x => x[0]);
+const bokMndInfo = mnd => (BOK && BOK.maaneder.find(x => x.maaned === mnd)) || { innledning: '', oppsummering: '', levert: '' };
+const bokBilder = id => (BOK ? BOK.bilder.filter(b => b.ref_id === id) : []);
+const kanEndrePost = p => BOK && (BOK.kanSkrive || (p.status === 'innlevert' && p.telefon === meg().telefon));
+
+function bokPostHtml(p, iBok) {
+  const bilder = bokBilder(p.id);
+  return `<article class="bokpost${p.status === 'innlevert' ? ' innlevert' : ''}">
+    <h3>${esc(bokNar(p))} – ${esc(p.tittel)}</h3>
+    ${p.status === 'innlevert' ? `<div class="bokmerke">${esc(t('bokInnlevertAv', p.navn))}</div>` : ''}
+    ${bokTekst(p.tekst)}
+    ${bilder.length ? `<div class="bilderad">${bilder.map(b => `<button type="button" class="tommel" data-vis-bilde="${esc(b.id)}"><img data-bilde-id="${esc(b.id)}" alt=""><span>${esc(b.kommentar || '')}</span></button>`).join('')}</div>` : ''}
+    ${iBok && kanEndrePost(p) ? `<div class="knapperad bokvalg">${p.status === 'innlevert' && BOK.kanSkrive ? `<button type="button" class="primar" data-a="bokGodkjenn" data-id="${esc(p.id)}">${t('bokTaMed')}</button>` : ''}
+      <button type="button" class="lenkeknapp" data-a="bokEndre" data-id="${esc(p.id)}">${t('bokEndre')}</button></div>` : ''}
+  </article>`;
+}
+
+async function visRcBok() {
+  bokStart();
+  const tittel = t('bokTittel');
+  if (!BOK || BOK.avdeling !== BOKV.avd || BOK.aar !== BOKV.aar || BOK._forslag !== BOKV.mnd) {
+    tegnLag(tittel, `<p class="dempet">${t('laster')}</p>`);
+    try { await lastBok(true); }
+    catch (e) { return tegnLag(tittel, `<div class="banner v1">${esc(e.message)}</div>`); }
+    if (!LAG.length || LAG[LAG.length - 1] !== visRcBok) return;   // the user went elsewhere while loading
+  }
+  const mnd = BOKV.mnd, info = bokMndInfo(mnd), poster = bokPosterMnd(mnd);
+  const iAar = n => BOKV.aar + '-' + String(n).padStart(2, '0');
+  const tall = n => BOK.poster.filter(p => p.maaned === iAar(n)).length;
+  const naaMnd = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0');
+  const ventende = poster.filter(p => p.status === 'innlevert');
+  const forslag = (BOK.forslag || []);
+  tegnLag(tittel, `
+    <div class="bokvelg">
+      ${kanLeseAlleBoker() ? `<select data-bok-avd aria-label="${esc(t('avdeling'))}">${S.d.avdelinger.map(a => `<option${a === BOKV.avd ? ' selected' : ''}>${esc(a)}</option>`).join('')}</select>` : `<b>${esc(BOKV.avd)}</b>`}
+      <div class="aarvelg"><button type="button" data-a="bokAar" data-d="-1" aria-label="${esc(t('bokForrigeAar'))}">‹</button><b>${BOKV.aar}</b><button type="button" data-a="bokAar" data-d="1" aria-label="${esc(t('bokNesteAar'))}">›</button></div>
+    </div>
+    <div class="bokmnder">${Array.from({ length: 12 }, (_, i) => i + 1).map(n => { const m = iAar(n), lev = bokMndInfo(m).levert === 'Ja';
+      return `<button type="button" class="${m === mnd ? 'aktiv' : ''}${m > naaMnd ? ' fremtid' : ''}" data-a="bokMnd" data-m="${m}">${esc(mndKort(n))}${tall(n) ? `<small>${tall(n)}${lev ? ' ✓' : ''}</small>` : lev ? '<small>✓</small>' : ''}</button>`; }).join('')}</div>
+    <div class="bokside">
+      <h2>${esc(Mnd(Number(mnd.slice(5))))} ${mnd.slice(0, 4)}</h2>
+      <p class="dempet bokstatus">${info.levert === 'Ja' ? `✓ ${esc(t('bokLevert', info.levert_av, info.levert_tid))}` : esc(t('bokIkkeLevert'))}</p>
+      ${info.innledning ? `<div class="bokinnl">${bokTekst(info.innledning)}</div>` : ''}
+      ${BOK.kanSkrive && ventende.length ? `<div class="banner">${esc(t('bokVenter', ventende.length))}</div>` : ''}
+      ${poster.map(p => bokPostHtml(p, true)).join('') || `<p class="tom">${t('bokTom')}</p>`}
+      ${info.oppsummering ? `<h3 class="bokoppsum">${esc(t('bokOppsummering'))}</h3>${bokTekst(info.oppsummering)}` : ''}
+    </div>
+    ${BOK.kanBidra || BOK.kanSkrive ? `<button type="button" class="primar bred" data-a="bokNy">＋ ${t(BOK.kanSkrive ? 'bokNy' : 'bokLeverInn')}</button>` : ''}
+    ${(BOK.kanBidra || BOK.kanSkrive) && forslag.length ? `<div class="kort"><h3>${t('bokForslag')}</h3><p class="dempet" style="margin-top:0">${t('bokForslagInfo')}</p>
+      ${forslag.map((h, i) => `<div class="bokforslag"><div><b>${esc(h.tittel)}</b><small>${esc(stor(bokUkedag(h.dato)))} ${Number(h.dato.slice(8))}. ${esc(mndNavn(Number(h.dato.slice(5, 7))))}${h.sted ? ' · ' + esc(h.sted) : ''}</small></div>
+        <button type="button" data-a="bokFraKal" data-i="${i}">${t('bokLeggTil')}</button></div>`).join('')}</div>` : ''}
+    ${BOK.kanSkrive ? `<div class="kort"><h3>${t('bokRc')}</h3><div class="knapperad">
+      <button type="button" data-a="bokTekster">${t('bokTekster')}</button>
+      <button type="button" data-a="bokLever" data-v="${info.levert === 'Ja' ? '' : '1'}">${t(info.levert === 'Ja' ? 'bokApneIgjen' : 'bokMarkerLevert')}</button>
+      <label class="knapp">${t('bokImporter')}<input type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" data-bok-import hidden></label></div>
+      <p class="dempet" style="margin-bottom:0">${t('bokImportInfo')}</p></div>` : ''}
+    <button type="button" class="bred" data-a="bokSkrivUt">${t('bokSkrivUt', BOKV.avd, BOKV.aar)}</button>`);
+}
+
+function visBokPost() {
+  const p = BOK_P; if (!p) return tilbake();
+  const ny = !p.id, skriv = BOK.kanSkrive;
+  tegnLag(ny ? t(skriv ? 'bokNy' : 'bokLeverInn') : t('bokEndre'), `
+    ${!skriv && ny ? `<p class="dempet">${t('bokLeverInnInfo')}</p>` : ''}
+    <div class="kort">
+      <label class="felt"><span>${t('dato')}</span><input type="date" data-bp="dato" value="${esc(p.dato)}" min="${p.maaned}-01" max="${p.maaned}-31"></label>
+      <label class="felt"><span>${t('bokNarFelt')}</span><input data-bp="nar" value="${esc(p.nar)}" placeholder="${esc(p.dato ? bokNar(Object.assign({}, p, { nar: '' })) : '')}" maxlength="120"></label>
+      <label class="felt"><span>${t('bokTittelFelt')}</span><input data-bp="tittel" value="${esc(p.tittel)}" maxlength="200" required></label>
+      <label class="felt"><span>${t('bokTekstFelt')}</span><textarea data-bp="tekst" rows="9" placeholder="${esc(t('bokTekstPh'))}">${esc(p.tekst)}</textarea></label>
+      <p class="dempet" style="font-size:12.5px;margin:0">${t('bokTekstHjelp')}</p>
+    </div>
+    ${p.id ? `<div class="kort"><h3>${t('bilderTittel')}</h3>${bokBilder(p.id).length ? `<div class="bilderad">${bokBilder(p.id).map(b => `<button type="button" class="tommel" data-vis-bilde="${esc(b.id)}"><img data-bilde-id="${esc(b.id)}" alt=""><span>${esc(b.kommentar || '')}</span></button>`).join('')}</div>` : `<p class="tom" style="margin:0">${t('ingenBilder')}</p>`}
+      ${bildeKnapper(['annet'], `data-direkte="rcbok:${esc(p.id)}"`)}</div>` : `<p class="dempet">${t('bokBilderEtter')}</p>`}
+    <button type="button" class="primar bred" data-a="bokLagre">${t(ny ? (skriv ? 'bokLagreNy' : 'bokSendInn') : 'lagre')}</button>
+    ${!ny && skriv && p.status === 'innlevert' ? `<button type="button" class="bred" data-a="bokLagre" data-godkjenn="1">${t('bokLagreTaMed')}</button>` : ''}
+    ${!ny ? `<button type="button" class="fare bred" data-a="bokSlett">${t('bokSlett')}</button>` : ''}`);
+}
+
+function visBokTekster() {
+  const info = bokMndInfo(BOKV.mnd);
+  tegnLag(t('bokTekster'), `<div class="kort">
+    <label class="felt"><span>${t('bokInnledning')}</span><textarea data-bm="innledning" rows="5">${esc(info.innledning)}</textarea></label>
+    <label class="felt"><span>${t('bokOppsummering')}</span><textarea data-bm="oppsummering" rows="5">${esc(info.oppsummering)}</textarea></label></div>
+    <button type="button" class="primar bred" data-a="bokLagreTekster">${t('lagre')}</button>`);
+}
+
+// ── Word import: read the .docx in the phone, show a preview, then send the parsed months ──
+async function lesZip(buf) {
+  const v = new DataView(buf), u8 = new Uint8Array(buf), filer = {};
+  let e = u8.length - 22; while (e >= 0 && v.getUint32(e, true) !== 0x06054b50) e--;
+  if (e < 0) throw new Error(t('bokIkkeWord'));
+  let p = v.getUint32(e + 16, true);
+  const n = v.getUint16(e + 10, true);
+  for (let i = 0; i < n; i++) {
+    const metode = v.getUint16(p + 10, true), str = v.getUint32(p + 20, true), nl = v.getUint16(p + 28, true), xl = v.getUint16(p + 30, true), kl = v.getUint16(p + 32, true), lok = v.getUint32(p + 42, true);
+    const navn = new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nl));
+    filer[navn] = { metode, str, lok };
+    p += 46 + nl + xl + kl;
+  }
+  return async navn => {
+    const f = filer[navn]; if (!f) return null;
+    const start = f.lok + 30 + v.getUint16(f.lok + 26, true) + v.getUint16(f.lok + 28, true), data = u8.subarray(start, start + f.str);
+    if (f.metode === 0) return new TextDecoder().decode(data);
+    if (typeof DecompressionStream === 'undefined') throw new Error(t('bokForGammel'));
+    const s = new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+    return await new Response(s).text();
+  };
+}
+const MND_ALLE = { januar: 1, februar: 2, mars: 3, april: 4, mai: 5, juni: 6, juli: 7, august: 8, september: 9, oktober: 10, november: 11, desember: 12,
+  january: 1, february: 2, march: 3, may: 5, june: 6, july: 7, october: 10, december: 12 };
+const MND_RE = new RegExp('^(' + Object.keys(MND_ALLE).join('|') + ')\\s+(\\d{4})$', 'i');
+const NAR_RE = /^(januar|februar|mars|april|mai|juni|juli|august|september|oktober|november|desember|january|february|march|may|june|july|october|december)$|\d|uke|week|gjennom|i løpet|fra |tidlig|sent|midt|kveld|helg|mandag|tirsdag|onsdag|torsdag|fredag|lørdag|søndag|monday|tuesday|wednesday|thursday|friday|saturday|sunday|throughout|during|early|late/i;
+async function lesWord(fil) {
+  const les = await lesZip(await fil.arrayBuffer());
+  const xml = await les('word/document.xml'); if (!xml) throw new Error(t('bokIkkeWord'));
+  const stiler = {}, sx = await les('word/styles.xml');
+  const P = s => new DOMParser().parseFromString(s, 'application/xml');
+  const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+  const at = (el, n) => el && (el.getAttributeNS(W, n) || el.getAttribute('w:' + n));
+  const barn = (el, n) => Array.from(el.childNodes).filter(c => c.localName === n);
+  if (sx) Array.from(P(sx).getElementsByTagNameNS(W, 'style')).forEach(s => {
+    const id = at(s, 'styleId'), navn = at(barn(s, 'name')[0], 'val') || '', basert = at(barn(s, 'basedOn')[0], 'val') || '';
+    stiler[id] = { navn, basert };
+  });
+  const erOverskrift = id => { for (let i = 0; id && i < 6; i++) { const s = stiler[id] || { navn: id };
+    if (/^(heading|overskrift|title|tittel)/i.test(s.navn) || /^(heading|title)/i.test(id)) return true; id = s.basert; } return false; };
+  const avsnitt = Array.from(P(xml).getElementsByTagNameNS(W, 'p')).map(p => {
+    const pPr = barn(p, 'pPr')[0], stil = pPr ? at(barn(pPr, 'pStyle')[0], 'val') : '';
+    const liste = !!(pPr && barn(pPr, 'numPr').length) || /list|liste/i.test((stiler[stil] || {}).navn || '');
+    let tekst = '', fet = true, harTekst = false;
+    Array.from(p.getElementsByTagNameNS(W, '*')).forEach(el => {
+      if (el.localName === 't') { tekst += el.textContent; if (el.textContent.trim()) { harTekst = true; const rPr = el.parentNode && barn(el.parentNode, 'rPr')[0]; if (!(rPr && barn(rPr, 'b').length)) fet = false; } }
+      else if (el.localName === 'tab') tekst += ' ';
+      else if (el.localName === 'br') tekst += '\n';
+    });
+    tekst = tekst.replace(/[  ]+/g, ' ').trim();
+    return { tekst, overskrift: !!tekst && (erOverskrift(stil) || (harTekst && fet && tekst.length < 150 && !liste)), liste };
+  }).filter(a => a.tekst);
+  const mnder = []; let m = null, post = null, del = 'innl';
+  const legg = s => { if (post) post.tekst += s; else if (m) m[del === 'opp' ? 'oppsummering' : 'innledning'] += s; };
+  const avslutt = () => { if (post) { post.tekst = post.tekst.trim(); m.poster.push(post); post = null; } };
+  avsnitt.forEach(a => {
+    const mm = a.overskrift && a.tekst.match(MND_RE);
+    if (mm) { avslutt(); m = { maaned: mm[2] + '-' + String(MND_ALLE[mm[1].toLowerCase()]).padStart(2, '0'), innledning: '', oppsummering: '', poster: [] }; mnder.push(m); del = 'innl'; return; }
+    if (!m) return;   // title page and the like before the first month
+    if (a.overskrift && /^(oppsummering|summary)\b/i.test(a.tekst)) { avslutt(); del = 'opp'; return; }
+    if (a.overskrift && del !== 'opp') {
+      avslutt();
+      const deler = a.tekst.split(/\s+[–—-]{1,2}\s+/), nar = [];
+      while (deler.length > 1 && NAR_RE.test(deler[0])) nar.push(deler.shift());
+      const forrige = m.poster.length ? m.poster[m.poster.length - 1].dato : m.maaned + '-01';
+      const dag = (nar.join(' ').match(/(\d{1,2})\./) || [])[1];
+      post = { nar: nar.join(' – '), tittel: deler.join(' – '), tekst: '', dato: dag && Number(dag) <= 31 ? m.maaned + '-' + String(dag).padStart(2, '0') : forrige };
+      return;
+    }
+    legg(a.liste ? '\n- ' + a.tekst : (a.overskrift ? '\n\n### ' + a.tekst + '\n' : '\n\n' + a.tekst));
+  });
+  avslutt();
+  mnder.forEach(x => { x.innledning = x.innledning.trim(); x.oppsummering = x.oppsummering.trim(); x.poster.forEach(p => { p.tekst = p.tekst.replace(/\n{3,}/g, '\n\n').trim(); }); });
+  return mnder.filter(x => x.poster.length || x.innledning || x.oppsummering);
+}
+function visBokImport() {
+  const d = BOK_IMPORT; if (!d) return tilbake();
+  const finnes = d.mnder.filter(x => BOK && BOK.poster.some(p => p.maaned === x.maaned && p.kilde === 'import'));
+  tegnLag(t('bokImporter'), `<div class="kort"><h3>${esc(d.navn)}</h3>
+    <p>${esc(t('bokImportFant', d.mnder.length, d.mnder.reduce((s, x) => s + x.poster.length, 0)))}</p>
+    ${d.mnder.map(x => `<div class="bokimprad"><b>${esc(Mnd(Number(x.maaned.slice(5))))} ${x.maaned.slice(0, 4)}</b><span>${esc(t('bokImportHendelser', x.poster.length))}</span></div>`).join('')}</div>
+    ${finnes.length ? `<div class="banner">${esc(t('bokImportErstatter', finnes.map(x => Mnd(Number(x.maaned.slice(5)))).join(', ')))}</div>` : ''}
+    <p class="dempet">${esc(t('bokImportBeholder'))}</p>
+    ${d.mnder.slice(0, 1).map(x => `<div class="kort"><h3>${t('bokForhandsvis')}: ${esc(Mnd(Number(x.maaned.slice(5))))}</h3>${x.poster.slice(0, 3).map(p => bokPostHtml(Object.assign({ id: '', status: '' }, p), false)).join('')}</div>`).join('')}
+    <button type="button" class="primar bred" data-a="bokImportLagre">${esc(t('bokImportTil', BOKV.avd))}</button>`);
+}
+
+async function bokSkrivUt() {
+  bokStart();
+  const ut = $('#utskrift') || document.body.appendChild(Object.assign(document.createElement('div'), { id: 'utskrift' }));
+  const bildeId = BOK.bilder.map(b => b.id);
+  toast(t('bokForbereder'));
+  await Promise.all(bildeId.map(id => { if (!BILDECACHE[id]) BILDECACHE[id] = api('hentBilde', { id }).then(r => r.data).catch(() => ''); return BILDECACHE[id]; }));
+  const mnder = [...new Set(BOK.poster.map(p => p.maaned).concat(BOK.maaneder.map(x => x.maaned)))].sort();
+  ut.innerHTML = `<h1>${esc(t('bokTittel'))} – ${esc(BOKV.avd)} ${BOKV.aar}</h1>` + mnder.map(m => {
+    const info = bokMndInfo(m);
+    return `<section><h2>${esc(Mnd(Number(m.slice(5))))} ${m.slice(0, 4)}</h2>${bokTekst(info.innledning)}
+      ${bokPosterMnd(m).filter(p => p.status !== 'innlevert').map(p => `<article><h3>${esc(bokNar(p))} – ${esc(p.tittel)}</h3>${bokTekst(p.tekst)}
+        ${bokBilder(p.id).map(b => `<figure><img data-ut="${esc(b.id)}" alt="">${b.kommentar ? `<figcaption>${esc(b.kommentar)}</figcaption>` : ''}</figure>`).join('')}</article>`).join('')}
+      ${info.oppsummering ? `<h3>${esc(t('bokOppsummering'))} – ${esc(mndNavn(Number(m.slice(5))))}</h3>${bokTekst(info.oppsummering)}` : ''}</section>`;
+  }).join('');
+  await Promise.all($$('img[data-ut]', ut).map(async img => { img.src = (await BILDECACHE[img.dataset.ut]) || ''; }));
+  document.title = `${t('bokTittel')} ${BOKV.avd} ${BOKV.aar}`;
+  document.body.classList.add('skriver');
+  const ferdig = () => { document.body.classList.remove('skriver'); document.title = t('app'); window.removeEventListener('afterprint', ferdig); };
+  window.addEventListener('afterprint', ferdig);
+  setTimeout(() => window.print(), 300);
+}
+
+Object.assign(A, {
+  rcBok() { bokStart(); BOKV.avd = BOKV.avd || meg().avdeling; apne(visRcBok); },
+  bokMnd(el) { BOKV.mnd = el.dataset.m; visRcBok(); },
+  bokAar(el) { const a = Number(BOKV.aar) + Number(el.dataset.d); BOKV.aar = String(a); BOKV.mnd = a + BOKV.mnd.slice(4); visRcBok(); },
+  bokNy() {
+    const idag = new Date(), m = BOKV.mnd, iMnd = idag.getFullYear() + '-' + String(idag.getMonth() + 1).padStart(2, '0') === m;
+    BOK_P = { id: '', maaned: m, dato: iMnd ? m + '-' + String(idag.getDate()).padStart(2, '0') : m + '-01', nar: '', tittel: '', tekst: '', status: '', hendelse: '' };
+    apne(visBokPost);
+  },
+  bokFraKal(el) {
+    const h = BOK.forslag[Number(el.dataset.i)]; if (!h) return;
+    const til = h.til && h.til !== h.dato ? h.til : '';
+    const nar = til ? `${stor(bokUkedag(h.dato))} ${Number(h.dato.slice(8))}. – ${bokUkedag(til)} ${Number(til.slice(8))}. ${mndNavn(Number(til.slice(5, 7)))}` : '';
+    BOK_P = { id: '', maaned: BOKV.mnd, dato: h.dato, nar, tittel: h.tittel, tekst: '', status: '', hendelse: h.hendelse };
+    apne(visBokPost);
+  },
+  bokEndre(el) { const p = BOK.poster.find(x => x.id === el.dataset.id); if (!p) return; BOK_P = Object.assign({}, p); apne(visBokPost); },
+  async bokGodkjenn(el) {
+    const p = BOK.poster.find(x => x.id === el.dataset.id); if (!p) return;
+    await medKnapp(el, async () => { await api('lagreRcBokPost', { post: Object.assign({}, p, { godkjenn: true }) }); await lastBok(true); visRcBok(); toast(t('bokTattMed')); });
+  },
+  async bokLagre(el) {
+    const p = BOK_P; if (!p) return;
+    $$('[data-bp]').forEach(f => { p[f.dataset.bp] = f.value; });
+    if (!p.tittel.trim()) return toast(t('bokTittelMangler'), true);
+    if (!p.dato || p.dato.slice(0, 7) !== p.maaned) return toast(t('bokDatoMnd', Mnd(Number(p.maaned.slice(5)))), true);
+    await medKnapp(el, async () => {
+      const ny = !p.id;
+      const r = await api('lagreRcBokPost', { post: Object.assign({ avdeling: BOKV.avd }, p, { godkjenn: !!el.dataset.godkjenn }) });
+      await lastBok(true);
+      if (ny) { BOK_P = Object.assign({}, r); LAG[LAG.length - 1] = visBokPost; visBokPost(); toast(t(r.status === 'innlevert' ? 'bokSendt' : 'bokLagretBilder')); }
+      else { tilbake(); toast(t('bokLagret')); }
+    });
+  },
+  async bokSlett(el) {
+    if (!confirm(t('bokSlettSp'))) return;
+    await medKnapp(el, async () => { await api('slettRcBokPost', { id: BOK_P.id }); BOK_P = null; await lastBok(true); tilbake(); toast(t('bokSlettet')); });
+  },
+  bokTekster() { apne(visBokTekster); },
+  async bokLagreTekster(el) {
+    const d = { avdeling: BOKV.avd, maaned: BOKV.mnd }; $$('[data-bm]').forEach(f => { d[f.dataset.bm] = f.value; });
+    await medKnapp(el, async () => { await api('lagreRcBokMnd', d); await lastBok(true); tilbake(); toast(t('bokLagret')); });
+  },
+  async bokLever(el) {
+    const lever = !!el.dataset.v;
+    if (lever && !confirm(t('bokLeverSp', Mnd(Number(BOKV.mnd.slice(5)))))) return;
+    await medKnapp(el, async () => { await api('lagreRcBokMnd', { avdeling: BOKV.avd, maaned: BOKV.mnd, levert: lever }); await lastBok(true); visRcBok(); toast(t(lever ? 'bokLevertOk' : 'bokApnet')); });
+  },
+  async bokImportLagre(el) {
+    const d = BOK_IMPORT; if (!d) return;
+    await medKnapp(el, async () => {
+      const r = await api('importerRcBok', { avdeling: BOKV.avd, maaneder: d.mnder });
+      BOK_IMPORT = null; if (d.mnder.length) { BOKV.aar = d.mnder[0].maaned.slice(0, 4); BOKV.mnd = d.mnder[d.mnder.length - 1].maaned; }
+      await lastBok(true); tilbake(); toast(t('bokImportOk', r.poster, r.maaneder));
+    });
+  },
+  bokSkrivUt(el) { medKnapp(el, async () => { await lastBok(); await bokSkrivUt(); }); }
+});
+document.addEventListener('change', async ev => {
+  const el = ev.target;
+  if (el.matches('[data-bok-avd]')) { BOKV.avd = el.value; return visRcBok(); }
+  if (el.matches('[data-bok-import]') && el.files[0]) {
+    const fil = el.files[0]; el.value = '';
+    try {
+      const mnder = await lesWord(fil);
+      if (!mnder.length) return toast(t('bokImportIngen'), true);
+      BOK_IMPORT = { navn: fil.name, mnder }; apne(visBokImport);
+    } catch (e) { toast(e.message || t('bokIkkeWord'), true); }
+  }
 });
 
 // ─── Start ──────────────────────────────────────────────────
