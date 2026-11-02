@@ -81,6 +81,11 @@ button.tlfknapp svg{width:19px;height:19px}
 .tlfrad a.ring{display:inline-flex;align-items:center;gap:6px;color:var(--aksent);text-decoration:none;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:14.5px}
 .tlfrad a.ring svg{width:16px;height:16px}
 .tlfvalg{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.tlfrad .hvem2 a.epost{display:block;color:var(--aksent);text-decoration:none;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tlfrad .hvem2 small{display:block}
+.tlfrad .hvem2 button.vkort{display:block}
+.tlfrad .hvem2 button.vkort,.tlfavd h3 button.vkort{background:none;border:0;padding:0;margin-top:4px;color:var(--dempet);font-size:12.5px;text-decoration:underline;cursor:pointer}
+.tlfavd h3 button.vkort{margin:0;font-weight:500}
 .tlfrad a.signal{background:#3a76f0;color:#fff;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:650;text-decoration:none}
 /* handbook */
 .hbgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
@@ -315,7 +320,7 @@ const TXT = {
     sokSykkel: 'Søk regnr, navn eller modell', skannSkilt: 'Ta bilde av skiltet eller velg fra bilder', skannLeser: 'Leser skiltet…', skannLaster: 'Laster skiltleser (første gang tar litt tid)…', skannFant: 'Fant {0}', skannUsikker: 'Usikker – velg riktig sykkel i lista', skannUkjentNaer: 'Leste {0} – den er ikke registrert. Lista viser de som ligner.', skannUkjent: 'Leste {0}, men den sykkelen er ikke registrert i appen (eller hører til en annen avdeling).', skannIngen: 'Fant ikke noe skilt. Ta bildet nærmere, så skiltet fyller bildet.', skannFeil: 'Skiltleseren kunne ikke lastes. Sjekk nettet, eller skriv regnr.',
     eierMeldTittel: 'Melding til eieren', sendSmsKort: 'Send SMS', eierMeldHint: 'Åpner meldingen på din telefon, så du kan endre teksten før du sender. For Signal kopieres teksten – lim den inn i chatten.', meldingKopiert: 'Teksten er kopiert – lim den inn i Signal',
     eierMeldAvvik: 'Hei {0}! Ved kontrollen {1} av {2} ble det notert: {3}.{4} Er det utbedret? Send gjerne et bilde. Hilsen {5}', eierMeldFrist: 'Fristen er {0}.', eierMeldVanlig: 'Hei {0}! Gjelder {1}: … Hilsen {2}',
-    telefonliste: 'Telefonliste', tlfSok: 'Søk på navn, avdeling eller status', klubbhus: 'Klubbhus', klubbTlf: 'Klubbtelefon', ringVanlig: 'Ring vanlig', visKart: 'Vis i kart', tlfHentet: 'Hentet fra klubbens telefonliste {0}', tlfIngen: 'Ingen treff.',
+    telefonliste: 'Telefonliste', tlfSok: 'Søk på navn, avdeling, status eller e-post', klubbhus: 'Klubbhus', klubbTlf: 'Klubbtelefon', ringVanlig: 'Ring vanlig', visKart: 'Vis i kart', tlfHentet: 'Hentet fra klubbens telefonliste {0}', tlfIngen: 'Ingen treff.', lagreKontakt: 'Lagre kontakt', lagreAlle: 'Lagre alle ({0})',
     nyKontrollDenne: 'Ny kontroll av denne sykkelen', kontrollerSelv: 'Kontroller sykkelen selv', venterMerke: 'VENTER', venterGodkj: 'Venter på godkjenning fra Road Captain',
     godkjentAvTittel: 'Godkjent av', godkjenn: 'Godkjenn', rettGodkjenn: 'Rett og godkjenn', avvis: 'Avvis', avvisGrunn: 'Hvorfor avvises kontrollen? Medlemmet ser grunnen.',
     godkjentToast: 'Kontrollen er godkjent', avvistToast: 'Kontrollen er avvist', venterListe: 'Venter på godkjenning ({0})', sendtTilGodkj: 'Lagret – sendt til Road Captain for godkjenning',
@@ -437,7 +442,7 @@ const TXT = {
     sokSykkel: 'Search reg. no., name or model', skannSkilt: 'Take or choose a photo of the plate', skannLeser: 'Reading the plate…', skannLaster: 'Loading the plate reader (takes a moment the first time)…', skannFant: 'Found {0}', skannUsikker: 'Not sure – pick the right bike in the list', skannUkjentNaer: 'Read {0} – not registered. The list shows similar ones.', skannUkjent: 'Read {0}, but that bike is not registered in the app (or belongs to another chapter).', skannIngen: 'No plate found. Take the photo closer, so the plate fills the picture.', skannFeil: 'Could not load the plate reader. Check your connection, or type the reg. no.',
     eierMeldTittel: 'Message to the owner', sendSmsKort: 'Send SMS', eierMeldHint: 'Opens the message on your phone, so you can edit it before sending. For Signal the text is copied – paste it into the chat.', meldingKopiert: 'Text copied – paste it into Signal',
     eierMeldAvvik: 'Hi {0}! At the inspection on {1} of {2} we noted: {3}.{4} Has it been fixed? Feel free to send a photo. Regards, {5}', eierMeldFrist: 'The deadline is {0}.', eierMeldVanlig: 'Hi {0}! About {1}: … Regards, {2}',
-    telefonliste: 'Phone list', tlfSok: 'Search name, chapter or status', klubbhus: 'Clubhouse', klubbTlf: 'Club phone', ringVanlig: 'Regular call', visKart: 'Show on map', tlfHentet: "From the club's phone list, {0}", tlfIngen: 'No matches.',
+    telefonliste: 'Phone list', tlfSok: 'Search name, chapter, status or email', klubbhus: 'Clubhouse', klubbTlf: 'Club phone', ringVanlig: 'Regular call', visKart: 'Show on map', tlfHentet: "From the club's phone list, {0}", tlfIngen: 'No matches.', lagreKontakt: 'Save contact', lagreAlle: 'Save all ({0})',
     nyKontrollDenne: 'New inspection of this bike', kontrollerSelv: 'Inspect the bike yourself', venterMerke: 'PENDING', venterGodkj: 'Waiting for approval from the Road Captain',
     godkjentAvTittel: 'Approved by', godkjenn: 'Approve', rettGodkjenn: 'Correct and approve', avvis: 'Reject', avvisGrunn: 'Why is the inspection rejected? The member will see the reason.',
     godkjentToast: 'Inspection approved', avvistToast: 'Inspection rejected', venterListe: 'Waiting for approval ({0})', sendtTilGodkj: 'Saved – sent to the Road Captain for approval',
@@ -1750,6 +1755,20 @@ const e164 = n => { const d = String(n).replace(/[^\d+]/g, ''); return d.startsW
 const telLenke = n => 'tel:' + e164(n);
 // Opens a Signal chat with the number (Signal has no direct-call link); tap the call button in Signal from there.
 const signalLenke = n => 'https://signal.me/#p/' + e164(n);
+// vCard 3.0 – opens as a contact card on iPhone/Android, imports into Contacts/Outlook on a computer
+const harKontakt = p => !!p.epost || p.telefon.replace(/\D/g, '').length >= 6;
+const vEsc = v => String(v || '').replace(/\\/g, '\\\\').replace(/[,;]/g, m => '\\' + m).replace(/\r?\n/g, '\\n');
+function vKort(p, avd) {
+  const deler = p.navn.trim().split(/\s+/), etter = deler.length > 1 ? deler.pop() : '';
+  return ['BEGIN:VCARD', 'VERSION:3.0', `N:${vEsc(etter)};${vEsc(deler.join(' '))};;;`, `FN:${vEsc(p.navn)}`, `ORG:${vEsc('BMC ' + avd)}`,
+    p.status ? `TITLE:${vEsc(p.status)}` : '', p.telefon.replace(/\D/g, '').length >= 6 ? `TEL;TYPE=CELL:${e164(p.telefon)}` : '',
+    p.epost ? `EMAIL;TYPE=INTERNET:${p.epost}` : '', 'END:VCARD'].filter(Boolean).join('\r\n');
+}
+function lastNedVcf(filnavn, tekst) {
+  const url = URL.createObjectURL(new Blob([tekst + '\r\n'], { type: 'text/vcard;charset=utf-8' }));
+  const a = document.createElement('a'); a.href = url; a.download = filnavn.replace(/[æÆ]/g, 'ae').replace(/[øØ]/g, 'o').replace(/[åÅ]/g, 'aa').normalize('NFD').replace(/[^\w .-]+/g, '').trim() + '.vcf';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
 const avdNokkel = a => String(a || '').toLowerCase().replace(/[^a-zæøå]/g, '').slice(0, 6);
 async function visTelefonliste() {
   if (!TLF) {
@@ -1765,13 +1784,14 @@ async function visTelefonliste() {
     const q = TLF_SOK.trim().toLowerCase();
     const html = avd.map(a => {
       const avdTreff = !q || a.navn.toLowerCase().includes(q);
-      const p = a.personer.filter(x => avdTreff || (x.navn + ' ' + x.status).toLowerCase().includes(q) || x.telefon.replace(/\D/g, '').includes(q.replace(/\D/g, '') || '§'));
+      const p = a.personer.filter(x => avdTreff || (x.navn + ' ' + x.status + ' ' + (x.epost || '')).toLowerCase().includes(q) || x.telefon.replace(/\D/g, '').includes(q.replace(/\D/g, '') || '§'));
       if (!p.length) return '';
       const adr = a.adresse.join(', ');
-      return `<div class="kort tlfavd"><h3><span>${esc(a.navn)}</span></h3>
+      const ai = TLF.avdelinger.indexOf(a);
+      return `<div class="kort tlfavd"><h3><span>${esc(a.navn)}</span><button class="vkort" data-a="vcfAvd" data-avd="${ai}">${esc(t('lagreAlle', a.personer.filter(harKontakt).length))}</button></h3>
         ${adr || a.telefon ? `<div class="tlfadr">${adr ? `${t('klubbhus')}: ${esc(adr)} · <a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(adr)}">${t('visKart')}</a>` : ''}
           ${a.telefon ? `${adr ? '<br>' : ''}${t('klubbTlf')}: <a href="${esc(telLenke(a.telefon))}">${esc(a.telefon)}</a>` : ''}</div>` : ''}
-        ${p.map(x => `<div class="tlfrad"><div class="hvem2"><b>${esc(x.navn)}</b><small>${esc(x.status)}</small></div>
+        ${p.map(x => `<div class="tlfrad"><div class="hvem2"><b>${esc(x.navn)}</b><small>${esc(x.status)}</small>${x.epost ? `<a class="epost" href="mailto:${esc(x.epost)}">${esc(x.epost)}</a>` : ''}${harKontakt(x) ? `<button class="vkort" data-a="vcfPerson" data-avd="${ai}" data-p="${a.personer.indexOf(x)}">${esc(t('lagreKontakt'))}</button>` : ''}</div>
           ${x.telefon.replace(/\D/g, '').length >= 6 ? `<div class="tlfvalg"><a class="signal" href="${esc(signalLenke(x.telefon))}" target="_blank" rel="noopener">Signal</a>
             <a class="ring" href="${esc(telLenke(x.telefon))}" aria-label="${esc(t('ringVanlig'))}">${svg(IKON.telefon)}${esc(x.telefon.replace(/^\(\+47\)\s*/, ''))}</a></div>` : ''}</div>`).join('')}</div>`;
     }).join('');
@@ -2349,6 +2369,8 @@ const A = {
   loggUt() { loggUt(); },
   oppfolging() { apne(visOppfolging); },
   telefonliste() { apne(visTelefonliste); },
+  vcfPerson(el) { const a = TLF.avdelinger[+el.dataset.avd], p = a && a.personer[+el.dataset.p]; if (p) lastNedVcf(p.navn, vKort(p, a.navn)); },
+  vcfAvd(el) { const a = TLF.avdelinger[+el.dataset.avd]; if (a) lastNedVcf('BMC ' + a.navn, a.personer.filter(harKontakt).map(p => vKort(p, a.navn)).join('\r\n')); },
   kopierMelding(el) { try { navigator.clipboard.writeText(el.dataset.tekst).then(() => toast(t('meldingKopiert'))); } catch (e) { /* the link still opens Signal */ } },
   kalender() { apne(visKalender); },
   async svarKal(btn) {
