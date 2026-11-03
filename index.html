@@ -2809,7 +2809,9 @@ async function lesZip(buf) {
 }
 const MND_ALLE = { januar: 1, februar: 2, mars: 3, april: 4, mai: 5, juni: 6, juli: 7, august: 8, september: 9, oktober: 10, november: 11, desember: 12,
   january: 1, february: 2, march: 3, may: 5, june: 6, july: 7, october: 10, december: 12 };
-const MND_RE = new RegExp('^(' + Object.keys(MND_ALLE).join('|') + ')\\s+(\\d{4})$', 'i');
+const MND_RE = new RegExp('^(?:.{0,30}\\s)?(' + Object.keys(MND_ALLE).join('|') + ')\\s+(\\d{4})\\s*$', 'i');   // «Januar 2026», also «RC oktober 2026»
+// A paragraph that starts with a date: «02.10 Fest på huset. …» or «06.10.26 Møte …» – one entry per paragraph
+const DATO_RE = /^(\d{1,2})\.(\d{1,2})(?:\.(\d{2,4}))?\.?\s*[-–:]?\s+([\s\S]+)$/;
 const NAR_RE = /^(januar|februar|mars|april|mai|juni|juli|august|september|oktober|november|desember|january|february|march|may|june|july|october|december)$|\d|uke|week|gjennom|i løpet|fra |tidlig|sent|midt|kveld|helg|mandag|tirsdag|onsdag|torsdag|fredag|lørdag|søndag|monday|tuesday|wednesday|thursday|friday|saturday|sunday|throughout|during|early|late/i;
 async function lesWord(fil) {
   const les = await lesZip(await fil.arrayBuffer());
@@ -2840,9 +2842,27 @@ async function lesWord(fil) {
   const mnder = []; let m = null, post = null, del = 'innl';
   const legg = s => { if (post) post.tekst += s; else if (m) m[del === 'opp' ? 'oppsummering' : 'innledning'] += s; };
   const avslutt = () => { if (post) { post.tekst = post.tekst.trim(); m.poster.push(post); post = null; } };
+  const mndFor = (aar, mo) => {
+    const k = aar + '-' + String(mo).padStart(2, '0');
+    let x = mnder.find(y => y.maaned === k);
+    if (!x) { x = { maaned: k, innledning: '', oppsummering: '', poster: [] }; mnder.push(x); }
+    return x;
+  };
   avsnitt.forEach(a => {
+    const dm = !a.liste && a.tekst.match(DATO_RE);
+    if (dm && Number(dm[2]) >= 1 && Number(dm[2]) <= 12 && Number(dm[1]) >= 1 && Number(dm[1]) <= 31) {
+      avslutt();
+      let aar = dm[3] ? Number(dm[3]) : (m ? Number(m.maaned.slice(0, 4)) : new Date().getFullYear());
+      if (aar < 100) aar += 2000;
+      m = mndFor(aar, Number(dm[2])); del = 'innl';
+      // title = the first sentence when it is short; the rest is the text
+      const rest = dm[4].trim(), forste = (rest.match(/^[^.!?]{2,80}[.!?](\s|$)/) || [])[0];
+      const tittel = forste ? forste.trim().replace(/[.]$/, '') : rest.split(/\s+/).slice(0, 8).join(' ') + (rest.split(/\s+/).length > 8 ? ' …' : '');
+      post = { nar: '', tittel, tekst: forste ? rest.slice(forste.length).trim() : rest, dato: aar + '-' + String(dm[2]).padStart(2, '0') + '-' + String(dm[1]).padStart(2, '0') };
+      return;
+    }
     const mm = a.overskrift && a.tekst.match(MND_RE);
-    if (mm) { avslutt(); m = { maaned: mm[2] + '-' + String(MND_ALLE[mm[1].toLowerCase()]).padStart(2, '0'), innledning: '', oppsummering: '', poster: [] }; mnder.push(m); del = 'innl'; return; }
+    if (mm) { avslutt(); m = mndFor(Number(mm[2]), MND_ALLE[mm[1].toLowerCase()]); del = 'innl'; return; }
     if (!m) return;   // title page and the like before the first month
     if (a.overskrift && /^(oppsummering|summary)\b/i.test(a.tekst)) { avslutt(); del = 'opp'; return; }
     if (a.overskrift && del !== 'opp') {
