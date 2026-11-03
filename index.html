@@ -2811,6 +2811,9 @@ const MND_ALLE = { januar: 1, februar: 2, mars: 3, april: 4, mai: 5, juni: 6, ju
   january: 1, february: 2, march: 3, may: 5, june: 6, july: 7, october: 10, december: 12 };
 const MND_RE = new RegExp('^(?:.{0,30}\\s)?(' + Object.keys(MND_ALLE).join('|') + ')\\s+(\\d{4})\\s*$', 'i');   // «Januar 2026», also «RC oktober 2026»
 // A paragraph that starts with a date: «02.10 Fest på huset. …» or «06.10.26 Møte …» – one entry per paragraph
+const MND_ORD = Object.keys(MND_ALLE).join('|');
+// «1. oktober 2026Årsavslutningen …», «2. til 4. oktober Det er …» – day and month name, optionally a range and a year
+const DATO_NAVN_RE = new RegExp('^(\\d{1,2})\\.\\s*(?:(?:til|-|–)\\s*(\\d{1,2})\\.\\s*)?(' + MND_ORD + ')(?:\\s+(\\d{4}))?\\s*[-–:]?\\s*([\\s\\S]+)$', 'i');
 const DATO_RE = /^(\d{1,2})\.(\d{1,2})(?:\.(\d{2,4}))?\.?\s*[-–:]?\s+([\s\S]+)$/;
 const NAR_RE = /^(januar|februar|mars|april|mai|juni|juli|august|september|oktober|november|desember|january|february|march|may|june|july|october|december)$|\d|uke|week|gjennom|i løpet|fra |tidlig|sent|midt|kveld|helg|mandag|tirsdag|onsdag|torsdag|fredag|lørdag|søndag|monday|tuesday|wednesday|thursday|friday|saturday|sunday|throughout|during|early|late/i;
 async function lesWord(fil) {
@@ -2829,7 +2832,7 @@ async function lesWord(fil) {
     if (/^(heading|overskrift|title|tittel)/i.test(s.navn) || /^(heading|title)/i.test(id)) return true; id = s.basert; } return false; };
   const avsnitt = Array.from(P(xml).getElementsByTagNameNS(W, 'p')).map(p => {
     const pPr = barn(p, 'pPr')[0], stil = pPr ? at(barn(pPr, 'pStyle')[0], 'val') : '';
-    const liste = !!(pPr && barn(pPr, 'numPr').length) || /list|liste/i.test((stiler[stil] || {}).navn || '');
+    const liste = !!(pPr && barn(pPr, 'numPr').length);
     let tekst = '', fet = true, harTekst = false;
     Array.from(p.getElementsByTagNameNS(W, '*')).forEach(el => {
       if (el.localName === 't') { tekst += el.textContent; if (el.textContent.trim()) { harTekst = true; const rPr = el.parentNode && barn(el.parentNode, 'rPr')[0]; if (!(rPr && barn(rPr, 'b').length)) fet = false; } }
@@ -2838,7 +2841,10 @@ async function lesWord(fil) {
     });
     tekst = tekst.replace(/[  ]+/g, ' ').trim();
     return { tekst, overskrift: !!tekst && (erOverskrift(stil) || (harTekst && fet && tekst.length < 150 && !liste)), liste };
-  }).filter(a => a.tekst);
+  }).filter(a => a.tekst).flatMap(a => {
+    const deler = a.tekst.split(new RegExp('(?<=[.!?])\\s*(?=\\d{1,2}\\.\\s*(?:(?:til|-|–)\\s*\\d{1,2}\\.\\s*)?(?:' + MND_ORD + ')\\b)', 'i'));
+    return deler.length > 1 ? deler.map(t => Object.assign({}, a, { tekst: t.trim(), overskrift: false })) : [a];
+  });
   const mnder = []; let m = null, post = null, del = 'innl';
   const legg = s => { if (post) post.tekst += s; else if (m) m[del === 'opp' ? 'oppsummering' : 'innledning'] += s; };
   const avslutt = () => { if (post) { post.tekst = post.tekst.trim(); m.poster.push(post); post = null; } };
@@ -2849,6 +2855,18 @@ async function lesWord(fil) {
     return x;
   };
   avsnitt.forEach(a => {
+    const dn = a.tekst.match(DATO_NAVN_RE);
+    if (dn && Number(dn[1]) >= 1 && Number(dn[1]) <= 31) {
+      avslutt();
+      const mo = MND_ALLE[dn[3].toLowerCase()];
+      const aar = dn[4] ? Number(dn[4]) : (m ? Number(m.maaned.slice(0, 4)) : new Date().getFullYear());
+      m = mndFor(aar, mo); del = 'innl';
+      const rest = dn[5].trim(), forste = (rest.match(/^[^.!?]{2,80}[.!?](\s|$)/) || [])[0];
+      const tittel = forste ? forste.trim().replace(/[.]$/, '') : rest.split(/\s+/).slice(0, 8).join(' ') + (rest.split(/\s+/).length > 8 ? ' …' : '');
+      post = { nar: dn[2] ? `${Number(dn[1])}.–${Number(dn[2])}. ${dn[3].toLowerCase()}` : '', tittel, tekst: forste ? rest.slice(forste.length).trim() : rest,
+               dato: aar + '-' + String(mo).padStart(2, '0') + '-' + String(dn[1]).padStart(2, '0') };
+      return;
+    }
     const dm = !a.liste && a.tekst.match(DATO_RE);
     if (dm && Number(dm[2]) >= 1 && Number(dm[2]) <= 12 && Number(dm[1]) >= 1 && Number(dm[1]) <= 31) {
       avslutt();
@@ -2861,7 +2879,7 @@ async function lesWord(fil) {
       post = { nar: '', tittel, tekst: forste ? rest.slice(forste.length).trim() : rest, dato: aar + '-' + String(dm[2]).padStart(2, '0') + '-' + String(dm[1]).padStart(2, '0') };
       return;
     }
-    const mm = a.overskrift && a.tekst.match(MND_RE);
+    const mm = (a.overskrift || a.tekst.length < 40) && a.tekst.match(MND_RE);
     if (mm) { avslutt(); m = mndFor(Number(mm[2]), MND_ALLE[mm[1].toLowerCase()]); del = 'innl'; return; }
     if (!m) return;   // title page and the like before the first month
     if (a.overskrift && /^(oppsummering|summary)\b/i.test(a.tekst)) { avslutt(); del = 'opp'; return; }
