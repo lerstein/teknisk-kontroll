@@ -459,7 +459,7 @@ const TXT = {
     medlemmer: 'Medlemmer', leggTilMedlem: '+ Legg til medlem', ingenMedlemmer: 'Ingen medlemmer.', b_deaktivert: 'DEAKTIVERT', b_venter: 'VENTER', b_midl: 'IKKE LOGGET INN',
     sykkel1: '1 sykkel', syklerN: '{0} sykler', kode: 'kode {0}', nyttMedlem: 'Nytt medlem', aktivering: 'Aktivering',
     ikkeLagetPassord: '{0} har ikke laget passord ennå. Gi denne koden:', gjelderTil: 'gjelder til {0}', sendSms: 'Send kode på SMS',
-    brukernavn: ' (brukernavn)', rolle: 'Rolle', rolleAdminHint: ' (tilgang til alt)', rolleOfficerHint: ' (ser alt, endrer egen avdeling)', rolePresidentHint: ' (ser egen avdeling, kan ikke endre)', rolleRcHint: ' (egen avdeling)', aktivCb: 'Aktiv (kan logge inn)',
+    brukernavn: ' (brukernavn)', tlfEndreSporsmal: 'Endre telefonnummeret til {0} fra {1} til {2}?\n\nDette er også brukernavnet. {0} blir logget ut og logger inn igjen med det nye nummeret og samme passord. Telefonlisten oppdateres.', deaktiverSporsmal: 'Deaktivere {0}?\n\n{0} blir logget ut og fjernet fra klubbens telefonliste.', tlfListeHint: 'Endringer i navn, telefonnummer og «Medlem siden» oppdaterer også klubbens telefonliste.', rolle: 'Rolle', rolleAdminHint: ' (tilgang til alt)', rolleOfficerHint: ' (ser alt, endrer egen avdeling)', rolePresidentHint: ' (ser egen avdeling, kan ikke endre)', rolleRcHint: ' (egen avdeling)', aktivCb: 'Aktiv (kan logge inn)',
     lagreEndringer: 'Lagre endringer', leggTilKode: 'Legg til og lag kode',
     barAdminEndre: 'Bare administrator kan endre Road Captains og administratorer.', sykler: 'Sykler', ingenSyklerKort: 'Ingen sykler.',
     passordTittel: 'Passord', glemtKode: 'Glemt passord – lag ny kode', lagNyKode: 'Lag ny kode',
@@ -602,7 +602,7 @@ const TXT = {
     medlemmer: 'Members', leggTilMedlem: '+ Add member', ingenMedlemmer: 'No members.', b_deaktivert: 'DEACTIVATED', b_venter: 'PENDING', b_midl: 'NOT LOGGED IN',
     sykkel1: '1 bike', syklerN: '{0} bikes', kode: 'code {0}', nyttMedlem: 'New member', aktivering: 'Activation',
     ikkeLagetPassord: "{0} hasn't created a password yet. Give them this code:", gjelderTil: 'valid until {0}', sendSms: 'Send code by SMS',
-    brukernavn: ' (username)', rolle: 'Role', rolleAdminHint: ' (full access)', rolleOfficerHint: ' (sees all, edits own chapter)', rolePresidentHint: ' (sees own chapter, read-only)', rolleRcHint: ' (own chapter)', aktivCb: 'Active (can log in)',
+    brukernavn: ' (username)', tlfEndreSporsmal: "Change {0}'s phone number from {1} to {2}?\n\nThis is also the username. {0} is logged out and logs in again with the new number and the same password. The phone list is updated.", deaktiverSporsmal: 'Deactivate {0}?\n\n{0} is logged out and removed from the club phone list.', tlfListeHint: "Changes to name, phone number and «Member since» also update the club's phone list.", rolle: 'Role', rolleAdminHint: ' (full access)', rolleOfficerHint: ' (sees all, edits own chapter)', rolePresidentHint: ' (sees own chapter, read-only)', rolleRcHint: ' (own chapter)', aktivCb: 'Active (can log in)',
     lagreEndringer: 'Save changes', leggTilKode: 'Add and create code',
     barAdminEndre: 'Only administrators can edit Road Captains and administrators.', sykler: 'Bikes', ingenSyklerKort: 'No bikes.',
     passordTittel: 'Password', glemtKode: 'Forgot password – create new code', lagNyKode: 'Create new code',
@@ -2321,13 +2321,14 @@ function visBruker(tlf) {
       <dt>${t('sistInnlogget')}</dt><dd>${u.sistInnlogget ? esc(fmtAktiv(u.sistInnlogget)) : '–'}</dd></dl></div>` : ''}
     <div class="kort">
       <label class="felt"><span>${t('navn')}</span><input data-f="navn" value="${esc(B.navn)}" ${kanEndre ? '' : 'readonly'} autocomplete="off"></label>
-      <label class="felt"><span>${t('telefon')}${u ? t('brukernavn') : ''}</span><input data-f="telefon" type="tel" inputmode="tel" value="${esc(B.telefon)}" ${u ? 'readonly' : ''} autocomplete="off"></label>
+      <label class="felt"><span>${t('telefon')}${u ? t('brukernavn') : ''}</span><input data-f="telefon" type="tel" inputmode="tel" value="${esc(B.telefon)}" ${u && (!kanEndre || erMeg || !(S.d.innstillinger || {}).telefonliste) ? 'readonly' : ''} autocomplete="off"></label>
       ${admin ? `<label class="felt"><span>${t('avdeling')}</span><select data-f="avdeling">${S.d.avdelinger.map(a => `<option value="${esc(a)}"${a === B.avdeling ? ' selected' : ''}>${esc(a)}</option>`).join('')}</select></label>
         <label class="felt"><span>${t('rolle')}</span><select data-f="rolle" ${erMeg ? 'disabled' : ''}>${['medlem', 'president', 'rc', 'officer', 'admin'].map(r => `<option value="${r}"${r === B.rolle ? ' selected' : ''}>${t('r_' + r)}${r === 'admin' ? t('rolleAdminHint') : r === 'officer' ? t('rolleOfficerHint') : r === 'president' ? t('rolePresidentHint') : r === 'rc' ? t('rolleRcHint') : ''}</option>`).join('')}</select></label>`
       : `<p class="dempet">${t('avdeling')}: ${esc(B.avdeling)} · ${t('rolle')}: ${t('r_' + B.rolle)}</p>`}
       ${kanEndre ? `<label class="felt"><span>${t('medlemSiden')}</span><input type="date" data-f="medlem_siden" value="${esc(B.medlem_siden || '')}"></label>` : ''}
       ${u && !erMeg && kanEndre ? `<label class="sjekk"><input type="checkbox" data-f="aktiv" ${B.aktiv ? 'checked' : ''}> ${t('aktivCb')}</label>` : ''}
     </div>
+    ${kanEndre && (S.d.innstillinger || {}).telefonliste ? `<p class="dempet" style="margin:0 0 8px">${t('tlfListeHint')}</p>` : ''}
     ${kanEndre ? `<button type="button" class="primar bred" data-a="lagreBruker">${u ? t('lagreEndringer') : t('leggTilKode')}</button>` : kanEndreNoe() ? `<p class="dempet">${t('barAdminEndre')}</p>` : ''}
     ${u ? `<h3>${t('sykler')}</h3>
       ${sykler.map(s => `<button class="kort" data-sykkel="${esc(s.id)}"><b>${esc(s.regnr)}</b> <span class="dempet">${esc(s.modell)}</span></button>`).join('') || `<p class="tom">${t('ingenSyklerKort')}</p>`}
@@ -2500,10 +2501,18 @@ const A = {
   },
   async lagreBruker(btn) {
     const ny = B._for === 'ny';
+    const u = ny ? null : S.d.brukere.find(x => x.telefon === B._for);
+    const normNr = v => { let x = String(v || '').replace(/[\s\-().]/g, ''); if (x.indexOf('00') === 0) x = '+' + x.slice(2); return x.indexOf('+47') === 0 && x.length === 11 ? x.slice(3) : x; };
+    const nyttNr = u && normNr(B.telefon) !== u.telefon;
+    if (nyttNr && !confirm(t('tlfEndreSporsmal', B.navn, u.telefon, B.telefon))) return;
+    if (u && u.aktiv && !B.aktiv && (S.d.innstillinger || {}).telefonliste && !confirm(t('deaktiverSporsmal', B.navn))) return;
     await medKnapp(btn, async () => {
-      const r = await api('lagreBruker', { bruker: { telefon: B.telefon, navn: B.navn, avdeling: B.avdeling, rolle: B.rolle, aktiv: B.aktiv, medlem_siden: B.medlem_siden || '', nytt: ny } });
+      const r = await api('lagreBruker', { bruker: { telefon: B.telefon, forrigeTelefon: u ? u.telefon : '', navn: B.navn, avdeling: B.avdeling, rolle: B.rolle, aktiv: B.aktiv, medlem_siden: B.medlem_siden || '', nytt: ny } });
       await lastData();
-      if (ny) {
+      if (nyttNr && r && r.telefon) {
+        // the member now lives under the new number – reopen him there
+        B = null; LAG.pop(); apne(() => visBruker(r.telefon)); toast(t('lagretToast'));
+      } else if (ny) {
         const u = S.d.brukere.find(x => r.kode && x.kode === r.kode);
         B = null; LAG.pop();
         if (u) apne(() => visBruker(u.telefon)); else lukkAlle();
