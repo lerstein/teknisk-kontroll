@@ -1810,6 +1810,8 @@ function kalTid(h) {
   if (h.heldag) return flere ? `${ukedag(d0)} ${d0.getDate()}.–${ukedag(d1)} ${d1.getDate()}. ${mndKort(d1.getMonth() + 1)}` : `${ukedag(d0)} · ${t('kalHeldag')}`;
   return flere ? `${ukedag(d0)} ${klokke(d0)} – ${ukedag(d1)} ${d1.getDate()}. ${klokke(d1)}` : `${ukedag(d0)} ${klokke(d0)}–${klokke(d1)}`;
 }
+// Anniversaries and birthdays are markers, not events – no attendance answers for them
+const kalMarkering = h => h.type === 'bursdag' || /^(jub|bursdag)\|/.test(String(h.id || ''));
 const kalFlere = () => KAL && KAL.kalendere.length > 1;
 const SVAR_FARGE = { ja: '#2f9e55', kanskje: '#e0b011', nei: '#d64545' };
 const kalMittSvar = h => {
@@ -1820,7 +1822,7 @@ const kalMittSvar = h => {
 const svarTall = h => { const s = h.svar || { ja: [], kanskje: [], nei: [] };
   return `<div class="svartall">${['ja', 'kanskje', 'nei'].map(k => `<span class="${h.mittSvar === k ? 'mitt' : ''}"><i style="background:${SVAR_FARGE[k]}"></i>${s[k].length}</span>`).join('')}</div>`; };
 const kalRad = (h, i) => `<button type="button" class="kalrad" data-kal="${i}">${kalDag(h)}<div class="kalinfo"><b>${esc(h.tittel)}${kalFlere() ? `<span class="kaltag">${esc(h.kalender)}</span>` : ''}</b>
-  <div class="dempet">${esc(kalTid(h))}${h.sted ? ' · ' + esc(h.sted) : ''}</div>${kalMittSvar(h)}${svarTall(h)}</div></button>`;
+  <div class="dempet">${esc(kalTid(h))}${h.sted ? ' · ' + esc(h.sted) : ''}</div>${kalMarkering(h) ? '' : kalMittSvar(h) + svarTall(h)}</div></button>`;
 async function lastKalender() {
   try {
     if (!KAL) {
@@ -1849,12 +1851,12 @@ function visKalender() {
 function visHendelse(i) {
   const h = KAL.hendelser[i]; if (!h) return tilbake();
   tegnLag(h.tittel, `<div class="kort"><div class="kalrad" style="padding-top:0">${kalDag(h)}<div class="kalinfo"><b>${esc(h.tittel)}</b>
-      <div class="dempet">${esc(kalTid(h))}</div>${kalFlere() ? `<div class="dempet">${esc(h.kalender)}</div>` : ''}${kalMittSvar(h)}</div></div>
+      <div class="dempet">${esc(kalTid(h))}</div>${kalFlere() ? `<div class="dempet">${esc(h.kalender)}</div>` : ''}${kalMarkering(h) ? '' : kalMittSvar(h)}</div></div>
     ${h.sted ? `<p class="kalsted" style="margin:10px 0 0">📍 ${esc(h.sted)} · <a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.sted)}">${t('visKart')}</a></p>` : ''}
     ${h.beskrivelse ? `<p class="kalbesk">${esc(h.beskrivelse)}</p>` : ''}</div>
-    <div class="svarknapper">${['ja', 'kanskje', 'nei'].map(k => `<button type="button" class="${k}${h.mittSvar === k ? ' valgt' : ''}" data-a="svarKal" data-i="${i}" data-svar="${k}">${t({ ja: 'svarJa', kanskje: 'svarKanskje', nei: 'svarNei' }[k])}</button>`).join('')}</div>
+    ${kalMarkering(h) ? '' : `<div class="svarknapper">${['ja', 'kanskje', 'nei'].map(k => `<button type="button" class="${k}${h.mittSvar === k ? ' valgt' : ''}" data-a="svarKal" data-i="${i}" data-svar="${k}">${t({ ja: 'svarJa', kanskje: 'svarKanskje', nei: 'svarNei' }[k])}</button>`).join('')}</div>
     <div class="kort svarliste">${(() => { const s = h.svar || { ja: [], kanskje: [], nei: [] }; const n = s.ja.length + s.kanskje.length + s.nei.length;
-      return n ? ['ja', 'kanskje', 'nei'].filter(k => s[k].length).map(k => `<h4 style="color:${SVAR_FARGE[k]}">${t({ ja: 'svarJa', kanskje: 'svarKanskje', nei: 'svarNei' }[k])} (${s[k].length})</h4><p>${s[k].map(esc).join(', ')}</p>`).join('') : `<p class="dempet">${t('svarIngen')}</p>`; })()}</div>
+      return n ? ['ja', 'kanskje', 'nei'].filter(k => s[k].length).map(k => `<h4 style="color:${SVAR_FARGE[k]}">${t({ ja: 'svarJa', kanskje: 'svarKanskje', nei: 'svarNei' }[k])} (${s[k].length})</h4><p>${s[k].map(esc).join(', ')}</p>`).join('') : `<p class="dempet">${t('svarIngen')}</p>`; })()}</div>`}
     <button type="button" class="bred kalknapp" data-a="kalIcs" data-i="${i}">${svg(IKON.kal)} ${t('kalLeggTil')}</button>`);
 }
 /** An .ics file for one event, so it can be added to the phone's own calendar. */
