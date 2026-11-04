@@ -63,6 +63,7 @@ button.tlfknapp svg{width:19px;height:19px}
 .svartall{display:flex;gap:7px;align-items:center;font-size:12px;color:var(--dempet);margin-top:4px}
 .svartall i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:3px;vertical-align:0}
 .svartall .mitt{font-weight:700;color:var(--tekst)}
+.kalmerke{display:inline-flex;align-items:center;gap:5px;max-width:100%;margin-top:6px;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:650;line-height:1.4;background:rgba(120,140,255,.12);color:#aab6ff;border:1px dashed rgba(120,140,255,.5)}
 .kalmittsvar{display:inline-flex;align-items:center;gap:5px;max-width:100%;margin-top:6px;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:650;line-height:1.4;background:#252930;color:var(--dempet);border:1px solid var(--linje)}
 .kalmittsvar.ja{background:rgba(52,168,83,.15);color:#7fd99a;border-color:rgba(52,168,83,.5)}
 .kalmittsvar.kanskje{background:rgba(234,179,8,.14);color:#f3cf5a;border-color:rgba(234,179,8,.5)}
@@ -378,7 +379,7 @@ const TXT = {
     bokImportBeholder: 'Hendelser som er skrevet direkte i appen, blir ikke rørt. Innledning og oppsummering fra filen erstatter de gamle.',
     bokForhandsvis: 'Forhåndsvisning', bokImportTil: 'Importer til RC-boka for {0}', bokImportOk: '{0} hendelser i {1} måneder er lagt inn',
     bokForbereder: 'Gjør klar utskrift …',
-    kalTittel: 'Kalender', kalVisKalendere: 'Vis kalendere', kalIngenValgt: 'Ingen kalendere valgt. Kryss av kalenderne du vil se.', kalDittSvar: 'Ditt svar: {0}', kalIkkeSvart: 'Ikke svart', svarJa: 'Deltar', svarKanskje: 'Kanskje', svarNei: 'Avslår', svarIngen: 'Ingen svar ennå.', svarLagret: 'Svar lagret', svarFjernet: 'Svar fjernet', kalNeste: 'Kommende', kalAlle: 'Hele kalenderen', kalHeldag: 'Hele dagen', kalLeggTil: 'Legg i min kalender', kalTom: 'Ingen kommende arrangementer.', kalFeilet: 'Fikk ikke hentet: {0}',
+    kalTittel: 'Kalender', kalVisKalendere: 'Vis kalendere', kalIngenValgt: 'Ingen kalendere valgt. Kryss av kalenderne du vil se.', kalDittSvar: 'Ditt svar: {0}', kalIkkeSvart: 'Ikke svart', svarJa: 'Deltar', svarKanskje: 'Kanskje', svarNei: 'Avslår', svarIngen: 'Ingen svar ennå.', svarLagret: 'Svar lagret', svarFjernet: 'Svar fjernet', kalNeste: 'Kommende', kalAlle: 'Hele kalenderen', kalHeldag: 'Hele dagen', kalMerke: 'Markering – ikke et arrangement', kalMerkeInfo: 'Dette er bare en markering i kalenderen, ikke et arrangement. Det er ingen påmelding, og du trenger ikke svare.', kalLeggTil: 'Legg i min kalender', kalTom: 'Ingen kommende arrangementer.', kalFeilet: 'Fikk ikke hentet: {0}',
     sokSykkel: 'Søk regnr, navn eller modell', skannSkilt: 'Ta bilde av skiltet eller velg fra bilder', skannLeser: 'Leser skiltet…', skannLaster: 'Laster skiltleser (første gang tar litt tid)…', skannFant: 'Fant {0}', skannUsikker: 'Usikker – velg riktig sykkel i lista', skannUkjentNaer: 'Leste {0} – den er ikke registrert. Lista viser de som ligner.', skannUkjent: 'Leste {0}, men den sykkelen er ikke registrert i appen (eller hører til en annen avdeling).', skannIngen: 'Fant ikke noe skilt. Ta bildet nærmere, så skiltet fyller bildet.', skannFeil: 'Skiltleseren kunne ikke lastes. Sjekk nettet, eller skriv regnr.',
     eierMeldTittel: 'Melding til eieren', sendSmsKort: 'Send SMS', eierMeldHint: 'Åpner meldingen på din telefon, så du kan endre teksten før du sender. For Signal kopieres teksten – lim den inn i chatten.', meldingKopiert: 'Teksten er kopiert – lim den inn i Signal',
     eierMeldAvvik: 'Hei {0}! Ved kontrollen {1} av {2} ble det notert: {3}.{4} Er det utbedret? Send gjerne et bilde. Hilsen {5}', eierMeldFrist: 'Fristen er {0}.', eierMeldVanlig: 'Hei {0}! Gjelder {1}: … Hilsen {2}',
@@ -521,7 +522,7 @@ const TXT = {
     bokImportBeholder: 'Entries written directly in the app are kept. Introduction and summary from the file replace the old ones.',
     bokForhandsvis: 'Preview', bokImportTil: 'Import into the RC book for {0}', bokImportOk: '{0} entries in {1} months added',
     bokForbereder: 'Preparing print …',
-    kalTittel: 'Calendar', kalVisKalendere: 'Show calendars', kalIngenValgt: 'No calendars selected. Select the calendars you want to see.', kalDittSvar: 'Your answer: {0}', kalIkkeSvart: 'Not answered', svarJa: 'Going', svarKanskje: 'Maybe', svarNei: 'Not going', svarIngen: 'No answers yet.', svarLagret: 'Answer saved', svarFjernet: 'Answer removed', kalNeste: 'Coming up', kalAlle: 'Full calendar', kalHeldag: 'All day', kalLeggTil: 'Add to my calendar', kalTom: 'No upcoming events.', kalFeilet: 'Could not load: {0}',
+    kalTittel: 'Calendar', kalVisKalendere: 'Show calendars', kalIngenValgt: 'No calendars selected. Select the calendars you want to see.', kalDittSvar: 'Your answer: {0}', kalIkkeSvart: 'Not answered', svarJa: 'Going', svarKanskje: 'Maybe', svarNei: 'Not going', svarIngen: 'No answers yet.', svarLagret: 'Answer saved', svarFjernet: 'Answer removed', kalNeste: 'Coming up', kalAlle: 'Full calendar', kalHeldag: 'All day', kalMerke: 'Marker – not an event', kalMerkeInfo: 'This is only a marker in the calendar, not an event. There is no sign-up, and you do not need to reply.', kalLeggTil: 'Add to my calendar', kalTom: 'No upcoming events.', kalFeilet: 'Could not load: {0}',
     sokSykkel: 'Search reg. no., name or model', skannSkilt: 'Take or choose a photo of the plate', skannLeser: 'Reading the plate…', skannLaster: 'Loading the plate reader (takes a moment the first time)…', skannFant: 'Found {0}', skannUsikker: 'Not sure – pick the right bike in the list', skannUkjentNaer: 'Read {0} – not registered. The list shows similar ones.', skannUkjent: 'Read {0}, but that bike is not registered in the app (or belongs to another chapter).', skannIngen: 'No plate found. Take the photo closer, so the plate fills the picture.', skannFeil: 'Could not load the plate reader. Check your connection, or type the reg. no.',
     eierMeldTittel: 'Message to the owner', sendSmsKort: 'Send SMS', eierMeldHint: 'Opens the message on your phone, so you can edit it before sending. For Signal the text is copied – paste it into the chat.', meldingKopiert: 'Text copied – paste it into Signal',
     eierMeldAvvik: 'Hi {0}! At the inspection on {1} of {2} we noted: {3}.{4} Has it been fixed? Feel free to send a photo. Regards, {5}', eierMeldFrist: 'The deadline is {0}.', eierMeldVanlig: 'Hi {0}! About {1}: … Regards, {2}',
@@ -1812,6 +1813,7 @@ function kalTid(h) {
 }
 // Anniversaries and birthdays are markers, not events – no attendance answers for them
 const kalMarkering = h => h.type === 'bursdag' || /^(jub|bursdag)\|/.test(String(h.id || ''));
+const kalMerke = h => `<span class="kalmerke"><span aria-hidden="true">${h.type === 'bursdag' || /^bursdag\|/.test(String(h.id || '')) ? '🎂' : '🎉'}</span>${esc(t('kalMerke'))}</span>`;
 const kalFlere = () => KAL && KAL.kalendere.length > 1;
 const SVAR_FARGE = { ja: '#2f9e55', kanskje: '#e0b011', nei: '#d64545' };
 const kalMittSvar = h => {
@@ -1822,7 +1824,7 @@ const kalMittSvar = h => {
 const svarTall = h => { const s = h.svar || { ja: [], kanskje: [], nei: [] };
   return `<div class="svartall">${['ja', 'kanskje', 'nei'].map(k => `<span class="${h.mittSvar === k ? 'mitt' : ''}"><i style="background:${SVAR_FARGE[k]}"></i>${s[k].length}</span>`).join('')}</div>`; };
 const kalRad = (h, i) => `<button type="button" class="kalrad" data-kal="${i}">${kalDag(h)}<div class="kalinfo"><b>${esc(h.tittel)}${kalFlere() ? `<span class="kaltag">${esc(h.kalender)}</span>` : ''}</b>
-  <div class="dempet">${esc(kalTid(h))}${h.sted ? ' · ' + esc(h.sted) : ''}</div>${kalMarkering(h) ? '' : kalMittSvar(h) + svarTall(h)}</div></button>`;
+  <div class="dempet">${esc(kalTid(h))}${h.sted ? ' · ' + esc(h.sted) : ''}</div>${kalMarkering(h) ? kalMerke(h) : kalMittSvar(h) + svarTall(h)}</div></button>`;
 async function lastKalender() {
   try {
     if (!KAL) {
@@ -1851,10 +1853,10 @@ function visKalender() {
 function visHendelse(i) {
   const h = KAL.hendelser[i]; if (!h) return tilbake();
   tegnLag(h.tittel, `<div class="kort"><div class="kalrad" style="padding-top:0">${kalDag(h)}<div class="kalinfo"><b>${esc(h.tittel)}</b>
-      <div class="dempet">${esc(kalTid(h))}</div>${kalFlere() ? `<div class="dempet">${esc(h.kalender)}</div>` : ''}${kalMarkering(h) ? '' : kalMittSvar(h)}</div></div>
+      <div class="dempet">${esc(kalTid(h))}</div>${kalFlere() ? `<div class="dempet">${esc(h.kalender)}</div>` : ''}${kalMarkering(h) ? kalMerke(h) : kalMittSvar(h)}</div></div>
     ${h.sted ? `<p class="kalsted" style="margin:10px 0 0">📍 ${esc(h.sted)} · <a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.sted)}">${t('visKart')}</a></p>` : ''}
     ${h.beskrivelse ? `<p class="kalbesk">${esc(h.beskrivelse)}</p>` : ''}</div>
-    ${kalMarkering(h) ? '' : `<div class="svarknapper">${['ja', 'kanskje', 'nei'].map(k => `<button type="button" class="${k}${h.mittSvar === k ? ' valgt' : ''}" data-a="svarKal" data-i="${i}" data-svar="${k}">${t({ ja: 'svarJa', kanskje: 'svarKanskje', nei: 'svarNei' }[k])}</button>`).join('')}</div>
+    ${kalMarkering(h) ? `<p class="dempet" style="margin:10px 2px">${esc(t('kalMerkeInfo'))}</p>` : `<div class="svarknapper">${['ja', 'kanskje', 'nei'].map(k => `<button type="button" class="${k}${h.mittSvar === k ? ' valgt' : ''}" data-a="svarKal" data-i="${i}" data-svar="${k}">${t({ ja: 'svarJa', kanskje: 'svarKanskje', nei: 'svarNei' }[k])}</button>`).join('')}</div>
     <div class="kort svarliste">${(() => { const s = h.svar || { ja: [], kanskje: [], nei: [] }; const n = s.ja.length + s.kanskje.length + s.nei.length;
       return n ? ['ja', 'kanskje', 'nei'].filter(k => s[k].length).map(k => `<h4 style="color:${SVAR_FARGE[k]}">${t({ ja: 'svarJa', kanskje: 'svarKanskje', nei: 'svarNei' }[k])} (${s[k].length})</h4><p>${s[k].map(esc).join(', ')}</p>`).join('') : `<p class="dempet">${t('svarIngen')}</p>`; })()}</div>`}
     <button type="button" class="bred kalknapp" data-a="kalIcs" data-i="${i}">${svg(IKON.kal)} ${t('kalLeggTil')}</button>`);
