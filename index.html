@@ -321,7 +321,15 @@ details.kort p{font-size:14.5px;color:#cfd3d9}
   body.skriver #utskrift{display:block;font:11pt/1.45 Georgia,serif;color:#000}
   #utskrift h1{font-size:20pt}#utskrift h2{font-size:16pt;margin-top:22pt;page-break-before:always}#utskrift section:first-of-type h2{page-break-before:auto}
   #utskrift h3{text-transform:none;letter-spacing:0;color:#000;font-weight:700;font-size:12pt;margin:12pt 0 3pt;page-break-after:avoid}#utskrift article{page-break-inside:auto}
-  #utskrift figure{display:inline-block;margin:4pt 6pt 4pt 0;max-width:48%;vertical-align:top}#utskrift img{max-width:100%;max-height:7cm}#utskrift figcaption{font-size:9pt}}
+  #utskrift figure{display:inline-block;margin:4pt 6pt 4pt 0;max-width:48%;vertical-align:top}#utskrift img{max-width:100%;max-height:7cm}#utskrift figcaption{font-size:9pt}
+  html:has(body.skriver),body.skriver{background:#fff!important}
+  body.skriver #utskrift.stat{font:10.5pt/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #utskrift.stat h1{font-size:18pt;margin:0 0 2pt}#utskrift.stat .statdato{color:#555;margin:0 0 10pt}
+  #utskrift.stat h3{text-transform:uppercase;letter-spacing:.06em;font-size:10pt;color:#444;margin:14pt 0 5pt;page-break-after:avoid}
+  #utskrift.stat .kort{background:#fff;color:#000;border:1px solid #bbb;border-radius:6pt;padding:8pt;margin:0 0 6pt;page-break-inside:avoid}
+  #utskrift.stat .dempet{color:#555}#utskrift.stat .linje1>span:not(.dempet){color:#000;font-size:10.5pt}#utskrift.stat .wpbar{background:#e4e6ea}
+  #utskrift.stat .sesong span{background:#eef0f3;color:#666}#utskrift.stat .sesong span.v0{background:var(--s0);color:#fff}#utskrift.stat .sesong span.v1{background:var(--s1);color:#1a1400}#utskrift.stat .sesong span.v2{background:var(--s2);color:#fff}
+  #utskrift.stat .sesong span.fremtid{opacity:.5}}
 </style>
 </head>
 <body>
@@ -438,7 +446,7 @@ const TXT = {
     purrSms: 'Hei {0}! Påminnelse om teknisk kontroll for {1}: {2} er ikke kontrollert ennå. Gi meg en lyd når det passer. Hilsen {3}',
     smsKnapp: 'SMS', smsSendt: 'Åpnet ✓',
     statistikk: 'Statistikk', statKontrollert: 'Andel kontrollert per måned', statAvvik: 'Avvik i {0}', statAvvikHint: 'Antall kontroller med «bør utbedres» eller kjøreforbud per område.',
-    statIBruk: 'Har tatt appen i bruk', statIBrukN: '{0} av {1} medlemmer', helKlubben: 'Hele klubben', statSykler: '{0} sykler', ingenData: 'Ingen data ennå.',
+    statIBruk: 'Har tatt appen i bruk', statIBrukN: '{0} av {1} medlemmer', helKlubben: 'Hele klubben', statSykler: '{0} sykler', ingenData: 'Ingen data ennå.', statPdf: 'Last ned PDF / skriv ut', statUtskrevet: 'Skrevet ut {0}',
     personvern: 'Personvern',
     personvernTekst: '<p><b>Hva lagres:</b> navn, telefonnummer, avdeling og rolle; syklene dine (regnr, modell, årsmodell); kontrollresultater med km-stand og merknader; bilder du eller RC laster opp; og egenerklæringen (reiseforsikring, førerkortklasse, utløpsdato for helsetrygdekort og MC-forsikringsselskap). Passordet lagres bare som en kryptografisk hash – ingen kan lese det.</p><p><b>Hvem ser det:</b> du ser dine egne data. Road Captain ser alle i sin avdeling. Klubbens app-administratorer ser alt. Wolfpack-lista viser bare navn, avdeling og kjørte km for hele klubben.</p><p><b>Hvor:</b> i et Google-regneark og en Google Drive-mappe som administreres av klubbens app-administrator. Ingenting deles med andre eller brukes til reklame.</p><p><b>Hvorfor:</b> for å gjennomføre og følge opp den tekniske kontrollen klubben krever.</p><p><b>Innsyn og sletting:</b> kontakt Road Captain eller administrator hvis du vil se hva som er lagret om deg, få noe rettet, eller bli slettet.</p>',
     sistAktiv: 'Sist aktiv {0}', sistAktivAldri: 'Aldri logget inn', sistInnlogget: 'Sist innlogget', sistAktivTittel: 'Sist aktiv', medlemSiden: 'Medlem siden', medlemSidenAar: '{0} · {1} år', bursdagKort: 'Bursdag', iDag: 'i dag {0}', iGaar: 'i går {0}',
@@ -581,7 +589,7 @@ const TXT = {
     purrSms: 'Hi {0}! Reminder about the technical inspection for {1}: {2} has not been inspected yet. Let me know when it suits you. Regards, {3}',
     smsKnapp: 'Text', smsSendt: 'Opened ✓',
     statistikk: 'Statistics', statKontrollert: 'Share inspected per month', statAvvik: 'Issues in {0}', statAvvikHint: 'Number of inspections with "fix soon" or do-not-ride per area.',
-    statIBruk: 'Using the app', statIBrukN: '{0} of {1} members', helKlubben: 'Whole club', statSykler: '{0} bikes', ingenData: 'No data yet.',
+    statIBruk: 'Using the app', statIBrukN: '{0} of {1} members', helKlubben: 'Whole club', statSykler: '{0} bikes', ingenData: 'No data yet.', statPdf: 'Download PDF / print', statUtskrevet: 'Printed {0}',
     personvern: 'Privacy',
     personvernTekst: '<p><b>What is stored:</b> name, phone number, chapter and role; your bikes (registration, model, year); inspection results with odometer readings and notes; photos uploaded by you or your Road Captain; and the self-declaration (travel insurance, licence class, health card expiry date and motorcycle insurer). Your password is only stored as a cryptographic hash – nobody can read it.</p><p><b>Who can see it:</b> you see your own data. Road Captains see everyone in their chapter. The club\'s app administrators see everything. The Wolfpack list only shows name, chapter and distance ridden for the whole club.</p><p><b>Where:</b> in a Google spreadsheet and a Google Drive folder managed by the club\'s app administrator. Nothing is shared with others or used for advertising.</p><p><b>Why:</b> to carry out and follow up the technical inspection the club requires.</p><p><b>Access and deletion:</b> contact your Road Captain or an administrator if you want to see what is stored about you, have something corrected, or be deleted.</p>',
     sistAktiv: 'Last active {0}', sistAktivAldri: 'Never logged in', sistInnlogget: 'Last login', sistAktivTittel: 'Last active', medlemSiden: 'Member since', medlemSidenAar: '{0} · {1} years', bursdagKort: 'Birthday', iDag: 'today {0}', iGaar: 'yesterday {0}',
@@ -2276,7 +2284,24 @@ function visStatistikk() {
     <h3>${t('statAvvik', y)}</h3>
     <div class="kort">${aarK.length ? omr.map(o => `<div style="margin-bottom:10px"><div class="linje1"><span>${esc(o.n)}</span><b>${o.ant}</b></div>
       <div class="wpbar"><span style="width:${Math.round(o.ant / maks * 100)}%"></span></div></div>`).join('') : `<p class="tom" style="margin:0">${t('ingenData')}</p>`}
-      <p class="dempet" style="margin:4px 0 0">${t('statAvvikHint')}</p></div>`);
+      <p class="dempet" style="margin:4px 0 0">${t('statAvvikHint')}</p></div>
+    <button type="button" class="bred" data-a="statPdf" style="margin-top:8px">${t('statPdf')}</button>`);
+}
+
+// Print / save as PDF: copies the statistics page into #utskrift (light print style) and opens the print dialog.
+function statSkrivUt() {
+  const kilde = $('#lag main');
+  if (!kilde) return;
+  const kopi = kilde.cloneNode(true);
+  $$('[data-a="statPdf"]', kopi).forEach(b => b.remove());
+  const ut = $('#utskrift') || document.body.appendChild(Object.assign(document.createElement('div'), { id: 'utskrift' }));
+  ut.className = 'stat';
+  ut.innerHTML = `<h1>${esc(t('app'))} – ${esc(t('statistikk'))}</h1><p class="statdato">${esc(t('statUtskrevet', fmtDato(new Date().toISOString().slice(0, 10))))}</p>` + kopi.innerHTML;
+  document.title = `${t('app')} ${t('statistikk')} ${new Date().toISOString().slice(0, 10)}`;
+  document.body.classList.add('skriver');
+  const ferdig = () => { document.body.classList.remove('skriver'); ut.className = ''; ut.innerHTML = ''; document.title = t('app'); window.removeEventListener('afterprint', ferdig); };
+  window.addEventListener('afterprint', ferdig);
+  setTimeout(() => window.print(), 200);
 }
 
 // ─── Members ────────────────────────────────────────────────
@@ -2572,6 +2597,7 @@ const A = {
   },
   skjulInstall() { lagre('tk_inst_skjul', String(Date.now())); oppdaterInstall(); },
   statistikk() { apne(visStatistikk); },
+  statPdf() { statSkrivUt(); },
   async oppdater(btn) { await medKnapp(btn, async () => { await oppdaterAlt(); toast(t('oppdatert')); }); },
   async slettBilde(btn) {
     if (!confirm(t('slettBildeSp'))) return;
