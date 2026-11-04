@@ -333,18 +333,7 @@ details.kort p{font-size:14.5px;color:#cfd3d9}
   body.skriver #utskrift{display:block;font:11pt/1.45 Georgia,serif;color:#000}
   #utskrift h1{font-size:20pt}#utskrift h2{font-size:16pt;margin-top:22pt;page-break-before:always}#utskrift section:first-of-type h2{page-break-before:auto}
   #utskrift h3{text-transform:none;letter-spacing:0;color:#000;font-weight:700;font-size:12pt;margin:12pt 0 3pt;page-break-after:avoid}#utskrift article{page-break-inside:auto}
-  #utskrift figure{display:inline-block;margin:4pt 6pt 4pt 0;max-width:48%;vertical-align:top}#utskrift img{max-width:100%;max-height:7cm}#utskrift figcaption{font-size:9pt}
-  html:has(body.stat-ut),body.stat-ut{background:var(--bg)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  body.skriver #utskrift.stat{font:10.5pt/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--tekst);background:var(--bg);padding:12mm 12mm 8mm;-webkit-box-decoration-break:clone;box-decoration-break:clone;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  #utskrift.stat h1{font-size:18pt;margin:0 0 2pt;color:var(--aksent)}#utskrift.stat .statdato{color:var(--dempet);margin:0 0 10pt}
-  #utskrift.stat h3{font-size:9.5pt;text-transform:uppercase;letter-spacing:.08em;color:var(--dempet);font-weight:700;margin:14pt 0 5pt;page-break-after:avoid}#utskrift.stat .linje1>span:not(.dempet){color:var(--tekst);font-size:10.5pt}
-  #utskrift.stat .kort{padding:8pt;margin:0 0 6pt;page-break-inside:avoid}
-  #utskrift.stat h2{page-break-before:auto!important;break-before:auto!important;margin-top:0}
-  #utskrift.tlf .tlfunder{text-align:center;font-weight:700;font-size:12pt;margin:2pt 0 0;color:var(--tekst)}
-  #utskrift.tlf .klubbtittel{margin:0 0 4pt}#utskrift.tlf .klubbtittel img{max-width:120mm}#utskrift.tlf .statdato{text-align:center}
-  #utskrift.tlf .kort.tlfavd{page-break-inside:auto}#utskrift.tlf .tlfrad{page-break-inside:avoid;padding:4pt 0}
-  #utskrift.tlf .vkort,#utskrift.tlf a.signal{display:none!important}#utskrift.tlf .tlfavd h3{color:var(--aksent);font-size:11pt}
-  #utskrift.tlf .tlfrad .hvem2 b{font-size:10.5pt}#utskrift.tlf .tlfrad a.ring{font-size:10.5pt}}
+  #utskrift figure{display:inline-block;margin:4pt 6pt 4pt 0;max-width:48%;vertical-align:top}#utskrift img{max-width:100%;max-height:7cm}#utskrift figcaption{font-size:9pt}}
 </style>
 </head>
 <body>
@@ -406,7 +395,7 @@ const TXT = {
     sokSykkel: 'Søk regnr, navn eller modell', skannSkilt: 'Ta bilde av skiltet eller velg fra bilder', skannLeser: 'Leser skiltet…', skannLaster: 'Laster skiltleser (første gang tar litt tid)…', skannFant: 'Fant {0}', skannUsikker: 'Usikker – velg riktig sykkel i lista', skannUkjentNaer: 'Leste {0} – den er ikke registrert. Lista viser de som ligner.', skannUkjent: 'Leste {0}, men den sykkelen er ikke registrert i appen (eller hører til en annen avdeling).', skannIngen: 'Fant ikke noe skilt. Ta bildet nærmere, så skiltet fyller bildet.', skannFeil: 'Skiltleseren kunne ikke lastes. Sjekk nettet, eller skriv regnr.',
     eierMeldTittel: 'Melding til eieren', sendSmsKort: 'Send SMS', eierMeldHint: 'Åpner meldingen på din telefon, så du kan endre teksten før du sender. For Signal kopieres teksten – lim den inn i chatten.', meldingKopiert: 'Teksten er kopiert – lim den inn i Signal',
     eierMeldAvvik: 'Hei {0}! Ved kontrollen {1} av {2} ble det notert: {3}.{4} Er det utbedret? Send gjerne et bilde. Hilsen {5}', eierMeldFrist: 'Fristen er {0}.', eierMeldVanlig: 'Hei {0}! Gjelder {1}: … Hilsen {2}',
-    telefonliste: 'Telefonliste', tlfSok: 'Søk på navn, avdeling, status eller e-post', klubbhus: 'Klubbhus', klubbTlf: 'Klubbtelefon', ringVanlig: 'Ring vanlig', visKart: 'Vis i kart', tlfHentet: 'Hentet fra klubbens telefonliste {0}', tlfIngen: 'Ingen treff.', lagreKontakt: 'Lagre kontakt', lagreAlle: 'Lagre alle ({0})', tlfStilling: 'Stilling', tlfAlleStillinger: 'Alle stillinger', tlfStillingerN: '{0} stillinger', tlfAvdN: '{0} avdelinger', tlfPdf: 'Last ned PDF / skriv ut',
+    telefonliste: 'Telefonliste', tlfSok: 'Søk på navn, avdeling, status eller e-post', klubbhus: 'Klubbhus', klubbTlf: 'Klubbtelefon', ringVanlig: 'Ring vanlig', visKart: 'Vis i kart', tlfHentet: 'Hentet fra klubbens telefonliste {0}', tlfIngen: 'Ingen treff.', lagreKontakt: 'Lagre kontakt', lagreAlle: 'Lagre alle ({0})', tlfStilling: 'Stilling', tlfAlleStillinger: 'Alle stillinger', tlfStillingerN: '{0} stillinger', tlfAvdN: '{0} avdelinger', tlfPdf: 'Last ned PDF',
     nyKontrollDenne: 'Ny kontroll av denne sykkelen', kontrollerSelv: 'Kontroller sykkelen selv', venterMerke: 'VENTER', venterGodkj: 'Venter på godkjenning fra Road Captain',
     godkjentAvTittel: 'Godkjent av', godkjenn: 'Godkjenn', rettGodkjenn: 'Rett og godkjenn', avvis: 'Avvis', avvisGrunn: 'Hvorfor avvises kontrollen? Medlemmet ser grunnen.',
     godkjentToast: 'Kontrollen er godkjent', avvistToast: 'Kontrollen er avvist', venterListe: 'Venter på godkjenning ({0})', sendtTilGodkj: 'Lagret – sendt til Road Captain for godkjenning',
@@ -461,7 +450,7 @@ const TXT = {
     purrSms: 'Hei {0}! Påminnelse om teknisk kontroll for {1}: {2} er ikke kontrollert ennå. Gi meg en lyd når det passer. Hilsen {3}',
     smsKnapp: 'SMS', smsSendt: 'Åpnet ✓',
     statistikk: 'Statistikk', statKontrollert: 'Andel kontrollert per måned', statAvvik: 'Avvik i {0}', statAvvikHint: 'Antall kontroller med «bør utbedres» eller kjøreforbud per område.',
-    statIBruk: 'Har tatt appen i bruk', statIBrukN: '{0} av {1} medlemmer', helKlubben: 'Hele klubben', statSykler: '{0} sykler', ingenData: 'Ingen data ennå.', statPdf: 'Last ned PDF / skriv ut', statUtskrevet: 'Skrevet ut {0}',
+    statIBruk: 'Har tatt appen i bruk', statIBrukN: '{0} av {1} medlemmer', helKlubben: 'Hele klubben', statSykler: '{0} sykler', ingenData: 'Ingen data ennå.', statPdf: 'Last ned PDF', pdfLager: 'Lager PDF…', pdfForts: 'forts.', statUtskrevet: 'Skrevet ut {0}',
     personvern: 'Personvern',
     personvernTekst: '<p><b>Hva lagres:</b> navn, telefonnummer, avdeling og rolle; syklene dine (regnr, modell, årsmodell); kontrollresultater med km-stand og merknader; bilder du eller RC laster opp; og egenerklæringen (reiseforsikring, førerkortklasse, utløpsdato for helsetrygdekort og MC-forsikringsselskap). Passordet lagres bare som en kryptografisk hash – ingen kan lese det.</p><p><b>Hvem ser det:</b> du ser dine egne data. Road Captain ser alle i sin avdeling. Klubbens app-administratorer ser alt. Wolfpack-lista viser bare navn, avdeling og kjørte km for hele klubben.</p><p><b>Hvor:</b> i et Google-regneark og en Google Drive-mappe som administreres av klubbens app-administrator. Ingenting deles med andre eller brukes til reklame.</p><p><b>Hvorfor:</b> for å gjennomføre og følge opp den tekniske kontrollen klubben krever.</p><p><b>Innsyn og sletting:</b> kontakt Road Captain eller administrator hvis du vil se hva som er lagret om deg, få noe rettet, eller bli slettet.</p>',
     sistAktiv: 'Sist aktiv {0}', sistAktivAldri: 'Aldri logget inn', sistInnlogget: 'Sist innlogget', sistAktivTittel: 'Sist aktiv', medlemSiden: 'Medlem siden', medlemSidenAar: '{0} · {1} år', bursdagKort: 'Bursdag', iDag: 'i dag {0}', iGaar: 'i går {0}',
@@ -549,7 +538,7 @@ const TXT = {
     sokSykkel: 'Search reg. no., name or model', skannSkilt: 'Take or choose a photo of the plate', skannLeser: 'Reading the plate…', skannLaster: 'Loading the plate reader (takes a moment the first time)…', skannFant: 'Found {0}', skannUsikker: 'Not sure – pick the right bike in the list', skannUkjentNaer: 'Read {0} – not registered. The list shows similar ones.', skannUkjent: 'Read {0}, but that bike is not registered in the app (or belongs to another chapter).', skannIngen: 'No plate found. Take the photo closer, so the plate fills the picture.', skannFeil: 'Could not load the plate reader. Check your connection, or type the reg. no.',
     eierMeldTittel: 'Message to the owner', sendSmsKort: 'Send SMS', eierMeldHint: 'Opens the message on your phone, so you can edit it before sending. For Signal the text is copied – paste it into the chat.', meldingKopiert: 'Text copied – paste it into Signal',
     eierMeldAvvik: 'Hi {0}! At the inspection on {1} of {2} we noted: {3}.{4} Has it been fixed? Feel free to send a photo. Regards, {5}', eierMeldFrist: 'The deadline is {0}.', eierMeldVanlig: 'Hi {0}! About {1}: … Regards, {2}',
-    telefonliste: 'Phone list', tlfSok: 'Search name, chapter, status or email', klubbhus: 'Clubhouse', klubbTlf: 'Club phone', ringVanlig: 'Regular call', visKart: 'Show on map', tlfHentet: "From the club's phone list, {0}", tlfIngen: 'No matches.', lagreKontakt: 'Save contact', lagreAlle: 'Save all ({0})', tlfStilling: 'Position', tlfAlleStillinger: 'All positions', tlfStillingerN: '{0} positions', tlfAvdN: '{0} chapters', tlfPdf: 'Download PDF / print',
+    telefonliste: 'Phone list', tlfSok: 'Search name, chapter, status or email', klubbhus: 'Clubhouse', klubbTlf: 'Club phone', ringVanlig: 'Regular call', visKart: 'Show on map', tlfHentet: "From the club's phone list, {0}", tlfIngen: 'No matches.', lagreKontakt: 'Save contact', lagreAlle: 'Save all ({0})', tlfStilling: 'Position', tlfAlleStillinger: 'All positions', tlfStillingerN: '{0} positions', tlfAvdN: '{0} chapters', tlfPdf: 'Download PDF',
     nyKontrollDenne: 'New inspection of this bike', kontrollerSelv: 'Inspect the bike yourself', venterMerke: 'PENDING', venterGodkj: 'Waiting for approval from the Road Captain',
     godkjentAvTittel: 'Approved by', godkjenn: 'Approve', rettGodkjenn: 'Correct and approve', avvis: 'Reject', avvisGrunn: 'Why is the inspection rejected? The member will see the reason.',
     godkjentToast: 'Inspection approved', avvistToast: 'Inspection rejected', venterListe: 'Waiting for approval ({0})', sendtTilGodkj: 'Saved – sent to the Road Captain for approval',
@@ -604,7 +593,7 @@ const TXT = {
     purrSms: 'Hi {0}! Reminder about the technical inspection for {1}: {2} has not been inspected yet. Let me know when it suits you. Regards, {3}',
     smsKnapp: 'Text', smsSendt: 'Opened ✓',
     statistikk: 'Statistics', statKontrollert: 'Share inspected per month', statAvvik: 'Issues in {0}', statAvvikHint: 'Number of inspections with "fix soon" or do-not-ride per area.',
-    statIBruk: 'Using the app', statIBrukN: '{0} of {1} members', helKlubben: 'Whole club', statSykler: '{0} bikes', ingenData: 'No data yet.', statPdf: 'Download PDF / print', statUtskrevet: 'Printed {0}',
+    statIBruk: 'Using the app', statIBrukN: '{0} of {1} members', helKlubben: 'Whole club', statSykler: '{0} bikes', ingenData: 'No data yet.', statPdf: 'Download PDF', pdfLager: 'Making PDF…', pdfForts: 'cont.', statUtskrevet: 'Printed {0}',
     personvern: 'Privacy',
     personvernTekst: '<p><b>What is stored:</b> name, phone number, chapter and role; your bikes (registration, model, year); inspection results with odometer readings and notes; photos uploaded by you or your Road Captain; and the self-declaration (travel insurance, licence class, health card expiry date and motorcycle insurer). Your password is only stored as a cryptographic hash – nobody can read it.</p><p><b>Who can see it:</b> you see your own data. Road Captains see everyone in their chapter. The club\'s app administrators see everything. The Wolfpack list only shows name, chapter and distance ridden for the whole club.</p><p><b>Where:</b> in a Google spreadsheet and a Google Drive folder managed by the club\'s app administrator. Nothing is shared with others or used for advertising.</p><p><b>Why:</b> to carry out and follow up the technical inspection the club requires.</p><p><b>Access and deletion:</b> contact your Road Captain or an administrator if you want to see what is stored about you, have something corrected, or be deleted.</p>',
     sistAktiv: 'Last active {0}', sistAktivAldri: 'Never logged in', sistInnlogget: 'Last login', sistAktivTittel: 'Last active', medlemSiden: 'Member since', medlemSidenAar: '{0} · {1} years', bursdagKort: 'Birthday', iDag: 'today {0}', iGaar: 'yesterday {0}',
@@ -1936,6 +1925,7 @@ async function visTelefonliste() {
     const el = $('#tlfListe'); if (el) el.innerHTML = tlfHtml(avd, TLF_SOK) || `<p class="tom">${t('tlfIngen')}</p>`;
   };
   TLF_AVD = avd;
+  lastJsPdf().catch(() => {});
   tegn();
   const inp = $('[data-tlfsok]');
   if (inp) inp.oninput = () => { TLF_SOK = inp.value; tegn(); };
@@ -1976,13 +1966,6 @@ function tlfHtml(avd, sok) {
           ${x.telefon.replace(/\D/g, '').length >= 6 ? `<div class="tlfvalg"><a class="signal" href="${esc(signalLenke(x.telefon))}" target="_blank" rel="noopener">Signal</a>
             <a class="ring" href="${esc(telLenke(x.telefon))}" aria-label="${esc(t('ringVanlig'))}">${svg(IKON.telefon)}${esc(x.telefon.replace(/^\(\+47\)\s*/, ''))}</a></div>` : ''}</div>`).join('')}</div>`;
     }).join('');
-}
-// The PDF follows the chapter and position filters, but ignores the free-text search.
-function tlfSkrivUt() {
-  if (!TLF) return;
-  const under = [TLF_FA.join(', '), TLF_FS.join(', ')].filter(Boolean).join(' · ');
-  const innhold = tlfHtml(TLF_AVD, '') || `<p class="tom">${t('tlfIngen')}</p>`;
-  skrivUtMork(KLUBBTITTEL + (under ? `<p class="tlfunder">${esc(under)}</p>` : ''), innhold + `<p class="dempet" style="font-size:9pt">${esc(t('tlfHentet', fmtAktiv(TLF.hentet)))}</p>`, ['Bandidos MC Norway', t('telefonliste'), TLF_FA.length === 1 ? TLF_FA[0] : '', TLF_FS.length === 1 ? TLF_FS[0] : ''].filter(Boolean).join(' '), 'tlf');
 }
 
 async function lastWolfpack() {
@@ -2308,6 +2291,7 @@ document.addEventListener('click', ev => {   // the follow-up rows open the bike
 });
 
 // ─── Statistics ─────────────────────────────────────────────
+let STAT = null;
 function visStatistikk() {
   const y = aar(), nm = naaMnd();
   const mnd = SESONG.filter(m => m <= nm);
@@ -2324,6 +2308,10 @@ function visStatistikk() {
   const maks = Math.max(1, ...omr.map(o => o.ant));
   const brukere = S.d.brukere.filter(u => u.aktiv);
   const iBruk = brukere.filter(u => u.harPassord && !u.midlertidig).length;
+  const pstRad = (navn, liste) => ({ navn, n: liste.length, pst: SESONG.map(m => !mnd.includes(m) || !liste.length ? null : Math.round(liste.filter(s => mndStatus(s, m, y)).length / liste.length * 100)) });
+  STAT = { y, iBruk, tot: brukere.length, pIBruk: brukere.length ? Math.round(iBruk / brukere.length * 100) : 0, omr, maks, antK: aarK.length,
+    rader: sykler.length ? (avd.length > 1 ? [pstRad(t('helKlubben'), sykler)] : []).concat(avd.map(a => pstRad(a, sykler.filter(s => s.avdeling === a)))) : [] };
+  lastJsPdf().catch(() => {});
   tegnLag(t('statistikk'), `
     <h3>${t('statIBruk')}</h3>
     <div class="kort"><div class="linje1"><b>${esc(t('statIBrukN', iBruk, brukere.length))}</b><span class="dempet">${brukere.length ? Math.round(iBruk / brukere.length * 100) : 0}%</span></div>
@@ -2337,28 +2325,154 @@ function visStatistikk() {
     <button type="button" class="bred" data-a="statPdf" style="margin-top:8px">${t('statPdf')}</button>`);
 }
 
-// Print / save as PDF: copies the statistics page into #utskrift (light print style) and opens the print dialog.
-function statSkrivUt() {
-  const kilde = $('#lag main');
-  if (!kilde) return;
-  const kopi = kilde.cloneNode(true);
-  $$('[data-a="statPdf"]', kopi).forEach(b => b.remove());
-  skrivUtMork(`<h1>${esc(t('app'))} – ${esc(t('statistikk'))}</h1>`, kopi.innerHTML, `${t('app')} ${t('statistikk')}`);
+// ─── PDF (drawn with jsPDF: dark page edge to edge, own page breaks) ───
+const PDFF = { bg: '#111316', kort: '#1b1e23', linje: '#323741', tekst: '#eceef1', dempet: '#98a1ac', aksent: '#ffa326', bar: '#0c0e11', s0: '#2e9e4f', s1: '#d6a915', s2: '#d43a3a', tom: '#20242a' };
+let JSPDF_LASTER = null;
+function lastJsPdf() {
+  if (window.jspdf) return Promise.resolve(window.jspdf);
+  if (!JSPDF_LASTER) JSPDF_LASTER = new Promise((ok, feil) => {
+    const sc = document.createElement('script'); sc.src = 'jspdf.umd.min.js?v=1';
+    sc.onload = () => ok(window.jspdf); sc.onerror = () => { JSPDF_LASTER = null; feil(new Error('PDF')); };
+    document.head.appendChild(sc);
+  });
+  return JSPDF_LASTER;
+}
+let TITTELBILDE = null;
+function hentTittelbilde() {
+  if (!TITTELBILDE) TITTELBILDE = fetch('bandidos-norway.png?v=1').then(r => r.blob()).then(b => new Promise(ok => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.readAsDataURL(b); })).catch(() => '');
+  return TITTELBILDE;
+}
+// jsPDF's built-in Helvetica only has Latin-1 (æøå are fine); replace anything else
+const pdfTxt = s => String(s == null ? '' : s).replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[–—]/g, '-').replace(/…/g, '...').replace(/[^\x20-\x7E\xA0-\xFF]/g, '');
+function nyPdf() {
+  const doc = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' });
+  const P = { doc, W: 210, H: 297, M: 12, y: 12 };
+  P.bakgrunn = () => { doc.setFillColor(PDFF.bg); doc.rect(0, 0, P.W, P.H, 'F'); };
+  P.nySide = () => { doc.addPage(); P.bakgrunn(); P.y = P.M; };
+  P.font = (st, stil, farge) => { doc.setFont('helvetica', stil || 'normal'); doc.setFontSize(st); doc.setTextColor(farge || PDFF.tekst); };
+  P.kort = (y, h) => { doc.setFillColor(PDFF.kort); doc.setDrawColor(PDFF.linje); doc.setLineWidth(0.3); doc.roundedRect(P.M, y, P.W - 2 * P.M, h, 2.5, 2.5, 'FD'); };
+  P.bar = (x, y, w, andel) => { doc.setFillColor(PDFF.bar); doc.roundedRect(x, y, w, 2.6, 1.3, 1.3, 'F'); if (andel > 0) { doc.setFillColor(PDFF.aksent); doc.roundedRect(x, y, Math.max(2.6, w * andel), 2.6, 1.3, 1.3, 'F'); } };
+  P.bakgrunn();
+  return P;
+}
+async function pdfTopp(P, tittel, under) {
+  const doc = P.doc, bilde = await hentTittelbilde();
+  if (bilde) { const w = 130, h = w * 93 / 777; doc.addImage(bilde, 'PNG', (P.W - w) / 2, P.y, w, h); P.y += h + 5; }
+  if (tittel) { P.font(15, 'bold', PDFF.aksent); doc.text(pdfTxt(tittel), P.W / 2, P.y + 4, { align: 'center' }); P.y += 8; }
+  if (under) { P.font(11, 'bold'); doc.text(pdfTxt(under), P.W / 2, P.y + 3, { align: 'center' }); P.y += 6; }
+  P.font(8.5, 'normal', PDFF.dempet); doc.text(pdfTxt(t('statUtskrevet', fmtDato(new Date().toISOString().slice(0, 10)))), P.W / 2, P.y + 3, { align: 'center' }); P.y += 9;
+}
+const pdfFilnavn = deler => deler.filter(Boolean).join(' ').replace(/[æÆ]/g, 'ae').replace(/[øØ]/g, 'o').replace(/[åÅ]/g, 'aa').normalize('NFD').replace(/[^\w .-]+/g, '').trim().replace(/\s+/g, '-') + '.pdf';
+// On phones: share sheet (Save to Files, Mail, Signal …). Elsewhere: normal download.
+async function leverPdf(doc, filnavn) {
+  const blob = doc.output('blob');
+  const fil = new File([blob], filnavn, { type: 'application/pdf' });
+  const mobil = matchMedia('(pointer:coarse)').matches;
+  if (mobil && navigator.canShare && navigator.canShare({ files: [fil] })) {
+    try { await navigator.share({ files: [fil], title: filnavn }); return; }
+    catch (e) { if (e && e.name === 'AbortError') return; }
+  }
+  const url = URL.createObjectURL(blob);
+  const a = Object.assign(document.createElement('a'), { href: url, download: filnavn });
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
-// Shared dark-mode print / save as PDF: fills #utskrift, opens the print dialog, cleans up afterwards.
-function skrivUtMork(topp, innhold, tittel, klasse) {
-  const ut = $('#utskrift') || document.body.appendChild(Object.assign(document.createElement('div'), { id: 'utskrift' }));
-  const iDag = new Date().toISOString().slice(0, 10);
-  ut.className = 'stat' + (klasse ? ' ' + klasse : '');
-  ut.innerHTML = topp + `<p class="statdato">${esc(t('statUtskrevet', fmtDato(iDag)))}</p>` + innhold;
-  document.title = `${tittel} ${iDag}`;
-  const side = document.head.appendChild(Object.assign(document.createElement('style'), { textContent: '@page{margin:0}' }));
-  document.body.classList.add('skriver', 'stat-ut');
-  const ferdig = () => { document.body.classList.remove('skriver', 'stat-ut'); side.remove(); ut.className = ''; ut.innerHTML = ''; document.title = t('app'); window.removeEventListener('afterprint', ferdig); };
-  window.addEventListener('afterprint', ferdig);
-  const bilder = $$('img', ut).filter(img => !img.complete);
-  Promise.all(bilder.map(img => new Promise(r => { img.onload = img.onerror = r; }))).then(() => setTimeout(() => window.print(), 200));
+// Phone list: each chapter is kept on one page if it fits; a chapter that is too long for a whole page continues on the next.
+async function tlfPdf() {
+  if (!TLF) return;
+  toast(t('pdfLager'));
+  await lastJsPdf();
+  const P = nyPdf(), doc = P.doc;
+  const under = [TLF_FA.join(', '), TLF_FS.join(', ')].filter(Boolean).join(' · ');
+  await pdfTopp(P, '', under);
+  const avd = TLF_AVD.filter(a => !TLF_FA.length || TLF_FA.includes(a.navn)).map(a => ({ a, p: a.personer.filter(x => !TLF_FS.length || TLF_FS.includes(String(x.status || '').trim())) })).filter(x => x.p.length);
+  const X = P.M + 5, BX = P.W - P.M - 5, RAD = x => x.epost ? 12.5 : 9, HODE = (a, forts) => 9 + (!forts && (a.adresse.length || a.telefon) ? (a.adresse.length && a.telefon ? 9 : 5) : 0);
+  const tegnHode = (a, y, forts) => {
+    P.font(9, 'bold', PDFF.dempet); doc.text(pdfTxt(a.navn.toUpperCase() + (forts ? ' (' + t('pdfForts') + ')' : '')), X, y + 6.5, { charSpace: 0.4 });
+    let yy = y + 9;
+    if (!forts) {
+      const adr = a.adresse.join(', ');
+      P.font(8.5, 'normal', PDFF.dempet);
+      if (adr) { const tk = pdfTxt(t('klubbhus') + ': ' + adr); doc.text(tk, X, yy + 2.5); P.font(8.5, 'normal', PDFF.aksent); doc.textWithLink(pdfTxt(t('visKart')), X + doc.getTextWidth(tk) + 3, yy + 2.5, { url: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(adr) }); yy += 4.5; }
+      if (a.telefon) { P.font(8.5, 'normal', PDFF.dempet); const tk = pdfTxt(t('klubbTlf') + ': '); doc.text(tk, X, yy + 2.5); P.font(8.5, 'normal', PDFF.aksent); doc.textWithLink(pdfTxt(a.telefon), X + doc.getTextWidth(tk), yy + 2.5, { url: telLenke(a.telefon) }); yy += 4.5; }
+    }
+    return y + HODE(a, forts);
+  };
+  const tegnRad = (x, y, forst) => {
+    if (!forst) { doc.setDrawColor(PDFF.linje); doc.setLineWidth(0.2); doc.line(X, y, BX, y); }
+    P.font(10, 'bold'); doc.text(pdfTxt(x.navn), X, y + 4.6, { maxWidth: 120 });
+    P.font(8.5, 'normal', PDFF.dempet); doc.text(pdfTxt(x.status), X, y + 8.2);
+    if (x.epost) { P.font(8.5, 'normal', PDFF.aksent); doc.textWithLink(pdfTxt(x.epost), X, y + 11.6, { url: 'mailto:' + x.epost }); }
+    if (x.telefon.replace(/\D/g, '').length >= 6) { P.font(10, 'normal', PDFF.aksent); const nr = pdfTxt(x.telefon.replace(/^\(\+47\)\s*/, '')); doc.textWithLink(nr, BX - doc.getTextWidth(nr), y + 6, { url: telLenke(x.telefon) }); }
+    return y + RAD(x);
+  };
+  const bunn = P.H - P.M;
+  avd.forEach(({ a, p }) => {
+    const hoyde = HODE(a, false) + p.reduce((s, x) => s + RAD(x), 0) + 3;
+    const ledig = bunn - P.y, helSide = bunn - P.M;
+    if (hoyde > ledig && P.y > P.M + 0.1) {
+      if (hoyde <= helSide || ledig < HODE(a, false) + 3 * 12.5) P.nySide();
+    }
+    // draw the chapter, splitting only if it is taller than a page
+    let i = 0, forts = false;
+    while (i < p.length) {
+      let h = HODE(a, forts), j = i;
+      while (j < p.length && P.y + h + RAD(p[j]) + 3 <= bunn) { h += RAD(p[j]); j++; }
+      if (j === i) { P.nySide(); continue; }
+      P.kort(P.y, h + 3);
+      let yy = tegnHode(a, P.y, forts);
+      for (let k = i; k < j; k++) yy = tegnRad(p[k], yy, k === i);
+      P.y += h + 3 + 4; i = j; forts = true;
+      if (i < p.length) P.nySide();
+    }
+  });
+  if (!avd.length) { P.font(10, 'normal', PDFF.dempet); doc.text(pdfTxt(t('tlfIngen')), P.W / 2, P.y + 5, { align: 'center' }); P.y += 10; }
+  P.font(7.5, 'normal', PDFF.dempet); doc.text(pdfTxt(t('tlfHentet', fmtAktiv(TLF.hentet))), P.M, Math.min(P.y + 2, P.H - 6));
+  await leverPdf(doc, pdfFilnavn(['Bandidos MC Norway', t('telefonliste'), TLF_FA.length === 1 ? TLF_FA[0] : '', new Date().toISOString().slice(0, 10)]));
+}
+
+// Statistics page as PDF (same data as on screen, see STAT in visStatistikk)
+async function statPdf() {
+  if (!STAT) return;
+  toast(t('pdfLager'));
+  await lastJsPdf();
+  const P = nyPdf(), doc = P.doc, X = P.M + 5, BX = P.W - P.M - 5, BW = BX - X;
+  await pdfTopp(P, t('app') + ' - ' + t('statistikk'));
+  const del = tekst => { if (P.y > P.H - 40) P.nySide(); P.font(8.5, 'bold', PDFF.dempet); doc.text(pdfTxt(tekst.toUpperCase()), P.M, P.y + 3, { charSpace: 0.4 }); P.y += 6; };
+  const plass = h => { if (P.y + h > P.H - P.M) P.nySide(); };
+  del(t('statIBruk'));
+  plass(16); P.kort(P.y, 15);
+  P.font(11, 'bold'); doc.text(pdfTxt(t('statIBrukN', STAT.iBruk, STAT.tot)), X, P.y + 6.5);
+  P.font(9, 'normal', PDFF.dempet); doc.text(STAT.pIBruk + '%', BX, P.y + 6.5, { align: 'right' });
+  P.bar(X, P.y + 9.5, BW, STAT.pIBruk / 100); P.y += 19;
+  del(t('statKontrollert'));
+  if (!STAT.rader.length) { P.font(10, 'normal', PDFF.dempet); doc.text(pdfTxt(t('ingenData')), X, P.y + 4); P.y += 9; }
+  const cw = (BW - 6 * 1.5) / 7;
+  STAT.rader.forEach(r => {
+    plass(23); P.kort(P.y, 22);
+    P.font(11, 'bold'); doc.text(pdfTxt(r.navn), X, P.y + 6.5);
+    P.font(8.5, 'normal', PDFF.dempet); doc.text(pdfTxt(r.n === 1 ? t('sykkel1') : t('syklerN', r.n)), BX, P.y + 6.5, { align: 'right' });
+    r.pst.forEach((v, i) => {
+      const x = X + i * (cw + 1.5), y = P.y + 9.5;
+      const f = v == null ? PDFF.tom : v >= 80 ? PDFF.s0 : v >= 50 ? PDFF.s1 : PDFF.s2;
+      doc.setFillColor(f); doc.roundedRect(x, y, cw, 6, 1.2, 1.2, 'F');
+      if (v != null) { P.font(8, 'bold', v >= 50 && v < 80 ? '#1a1400' : '#ffffff'); doc.text(v + '%', x + cw / 2, y + 4.1, { align: 'center' }); }
+      P.font(7, 'bold', PDFF.dempet); doc.text(pdfTxt(mndKort(SESONG[i])), x + cw / 2, y + 9.6, { align: 'center' });
+    });
+    P.y += 25;
+  });
+  del(t('statAvvik', STAT.y));
+  const h = STAT.antK ? STAT.omr.length * 9 + 10 : 16;
+  plass(h + 1); P.kort(P.y, h);
+  let yy = P.y + 3;
+  if (STAT.antK) STAT.omr.forEach(o => {
+    P.font(9.5, 'normal'); doc.text(pdfTxt(o.n), X, yy + 3.5);
+    P.font(10, 'bold'); doc.text(String(o.ant), BX, yy + 3.5, { align: 'right' });
+    P.bar(X, yy + 5, BW, o.ant / STAT.maks); yy += 9;
+  });
+  else { P.font(10, 'normal', PDFF.dempet); doc.text(pdfTxt(t('ingenData')), X, yy + 4); yy += 7; }
+  P.font(8, 'normal', PDFF.dempet); doc.text(pdfTxt(t('statAvvikHint')), X, yy + 3.5);
+  await leverPdf(doc, pdfFilnavn([t('app'), t('statistikk'), new Date().toISOString().slice(0, 10)]));
 }
 
 // ─── Members ────────────────────────────────────────────────
@@ -2619,7 +2733,7 @@ const A = {
   loggUt() { loggUt(); },
   oppfolging() { apne(visOppfolging); },
   telefonliste() { apne(visTelefonliste); },
-  tlfPdf() { tlfSkrivUt(); },
+  tlfPdf(el) { medKnapp(el, tlfPdf); },
   vcfPerson(el) { const a = TLF.avdelinger[+el.dataset.avd], p = a && a.personer[+el.dataset.p]; if (p) lastNedVcf(p.navn, vKort(p, a.navn)); },
   vcfAvd(el) { const a = TLF.avdelinger[+el.dataset.avd]; if (a) lastNedVcf('BMC ' + a.navn, a.personer.filter(harKontakt).map(p => vKort(p, a.navn)).join('\r\n')); },
   kopierMelding(el) { try { navigator.clipboard.writeText(el.dataset.tekst).then(() => toast(t('meldingKopiert'))); } catch (e) { /* the link still opens Signal */ } },
@@ -2655,7 +2769,7 @@ const A = {
   },
   skjulInstall() { lagre('tk_inst_skjul', String(Date.now())); oppdaterInstall(); },
   statistikk() { apne(visStatistikk); },
-  statPdf() { statSkrivUt(); },
+  statPdf(el) { medKnapp(el, statPdf); },
   async oppdater(btn) { await medKnapp(btn, async () => { await oppdaterAlt(); toast(t('oppdatert')); }); },
   async slettBilde(btn) {
     if (!confirm(t('slettBildeSp'))) return;
