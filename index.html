@@ -29,7 +29,16 @@ button.hvem.aktiv svg{color:var(--aksent)}
 button.tlfknapp{background:none;border:1.5px solid var(--kant,#2b3038);border-radius:50%;width:38px;height:38px;min-height:0;padding:0;display:grid;place-items:center;flex:none;color:var(--aksent)}
 button.tlfknapp svg{width:19px;height:19px}
 .tlfsok{margin-bottom:12px}
-.tlffilter{display:flex;gap:8px;margin-bottom:8px}.tlffilter select{flex:1;min-width:0}
+.tlffilter{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start}.tlffilter select{flex:1;min-width:0}
+.tlfstill{flex:1;min-width:0;position:relative}
+.tlfstill summary{list-style:none;cursor:pointer;background:#0c0e11;border:1px solid var(--linje);border-radius:10px;padding:11px 30px 11px 12px;min-height:46px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+.tlfstill summary::-webkit-details-marker{display:none}
+.tlfstill summary::after{content:'';position:absolute;right:13px;top:50%;width:7px;height:7px;border-right:2px solid var(--dempet);border-bottom:2px solid var(--dempet);transform:translateY(-70%) rotate(45deg)}
+.tlfstill[open] summary{border-color:var(--aksent)}
+.tlfstillvalg{position:absolute;right:0;left:-40%;top:calc(100% + 4px);z-index:20;background:var(--kort2);border:1px solid var(--linje);border-radius:10px;padding:8px 12px;max-height:60vh;overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.tlfstillvalg label{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--linje)}
+.tlfstillvalg input{width:20px;height:20px;min-height:0;margin:0;accent-color:var(--aksent);flex:none}
+.tlfstillvalg button.vkort{background:none;border:0;padding:2px 0 8px;color:var(--aksent);font-size:14px;text-decoration:underline;cursor:pointer}
 .klubbtittel{margin:4px 0 14px;text-align:center}.klubbtittel img{display:block;width:100%;max-width:420px;height:auto;margin:0 auto}
 .sokrad{display:flex;gap:8px;margin:0 0 12px}
 .sokrad input[type=search]{flex:1;min-width:0}
@@ -396,7 +405,7 @@ const TXT = {
     sokSykkel: 'Søk regnr, navn eller modell', skannSkilt: 'Ta bilde av skiltet eller velg fra bilder', skannLeser: 'Leser skiltet…', skannLaster: 'Laster skiltleser (første gang tar litt tid)…', skannFant: 'Fant {0}', skannUsikker: 'Usikker – velg riktig sykkel i lista', skannUkjentNaer: 'Leste {0} – den er ikke registrert. Lista viser de som ligner.', skannUkjent: 'Leste {0}, men den sykkelen er ikke registrert i appen (eller hører til en annen avdeling).', skannIngen: 'Fant ikke noe skilt. Ta bildet nærmere, så skiltet fyller bildet.', skannFeil: 'Skiltleseren kunne ikke lastes. Sjekk nettet, eller skriv regnr.',
     eierMeldTittel: 'Melding til eieren', sendSmsKort: 'Send SMS', eierMeldHint: 'Åpner meldingen på din telefon, så du kan endre teksten før du sender. For Signal kopieres teksten – lim den inn i chatten.', meldingKopiert: 'Teksten er kopiert – lim den inn i Signal',
     eierMeldAvvik: 'Hei {0}! Ved kontrollen {1} av {2} ble det notert: {3}.{4} Er det utbedret? Send gjerne et bilde. Hilsen {5}', eierMeldFrist: 'Fristen er {0}.', eierMeldVanlig: 'Hei {0}! Gjelder {1}: … Hilsen {2}',
-    telefonliste: 'Telefonliste', tlfSok: 'Søk på navn, avdeling, status eller e-post', klubbhus: 'Klubbhus', klubbTlf: 'Klubbtelefon', ringVanlig: 'Ring vanlig', visKart: 'Vis i kart', tlfHentet: 'Hentet fra klubbens telefonliste {0}', tlfIngen: 'Ingen treff.', lagreKontakt: 'Lagre kontakt', lagreAlle: 'Lagre alle ({0})', tlfStilling: 'Stilling', tlfAlleStillinger: 'Alle stillinger', tlfPdf: 'Last ned PDF / skriv ut',
+    telefonliste: 'Telefonliste', tlfSok: 'Søk på navn, avdeling, status eller e-post', klubbhus: 'Klubbhus', klubbTlf: 'Klubbtelefon', ringVanlig: 'Ring vanlig', visKart: 'Vis i kart', tlfHentet: 'Hentet fra klubbens telefonliste {0}', tlfIngen: 'Ingen treff.', lagreKontakt: 'Lagre kontakt', lagreAlle: 'Lagre alle ({0})', tlfStilling: 'Stilling', tlfAlleStillinger: 'Alle stillinger', tlfStillingerN: '{0} stillinger', tlfPdf: 'Last ned PDF / skriv ut',
     nyKontrollDenne: 'Ny kontroll av denne sykkelen', kontrollerSelv: 'Kontroller sykkelen selv', venterMerke: 'VENTER', venterGodkj: 'Venter på godkjenning fra Road Captain',
     godkjentAvTittel: 'Godkjent av', godkjenn: 'Godkjenn', rettGodkjenn: 'Rett og godkjenn', avvis: 'Avvis', avvisGrunn: 'Hvorfor avvises kontrollen? Medlemmet ser grunnen.',
     godkjentToast: 'Kontrollen er godkjent', avvistToast: 'Kontrollen er avvist', venterListe: 'Venter på godkjenning ({0})', sendtTilGodkj: 'Lagret – sendt til Road Captain for godkjenning',
@@ -539,7 +548,7 @@ const TXT = {
     sokSykkel: 'Search reg. no., name or model', skannSkilt: 'Take or choose a photo of the plate', skannLeser: 'Reading the plate…', skannLaster: 'Loading the plate reader (takes a moment the first time)…', skannFant: 'Found {0}', skannUsikker: 'Not sure – pick the right bike in the list', skannUkjentNaer: 'Read {0} – not registered. The list shows similar ones.', skannUkjent: 'Read {0}, but that bike is not registered in the app (or belongs to another chapter).', skannIngen: 'No plate found. Take the photo closer, so the plate fills the picture.', skannFeil: 'Could not load the plate reader. Check your connection, or type the reg. no.',
     eierMeldTittel: 'Message to the owner', sendSmsKort: 'Send SMS', eierMeldHint: 'Opens the message on your phone, so you can edit it before sending. For Signal the text is copied – paste it into the chat.', meldingKopiert: 'Text copied – paste it into Signal',
     eierMeldAvvik: 'Hi {0}! At the inspection on {1} of {2} we noted: {3}.{4} Has it been fixed? Feel free to send a photo. Regards, {5}', eierMeldFrist: 'The deadline is {0}.', eierMeldVanlig: 'Hi {0}! About {1}: … Regards, {2}',
-    telefonliste: 'Phone list', tlfSok: 'Search name, chapter, status or email', klubbhus: 'Clubhouse', klubbTlf: 'Club phone', ringVanlig: 'Regular call', visKart: 'Show on map', tlfHentet: "From the club's phone list, {0}", tlfIngen: 'No matches.', lagreKontakt: 'Save contact', lagreAlle: 'Save all ({0})', tlfStilling: 'Position', tlfAlleStillinger: 'All positions', tlfPdf: 'Download PDF / print',
+    telefonliste: 'Phone list', tlfSok: 'Search name, chapter, status or email', klubbhus: 'Clubhouse', klubbTlf: 'Club phone', ringVanlig: 'Regular call', visKart: 'Show on map', tlfHentet: "From the club's phone list, {0}", tlfIngen: 'No matches.', lagreKontakt: 'Save contact', lagreAlle: 'Save all ({0})', tlfStilling: 'Position', tlfAlleStillinger: 'All positions', tlfStillingerN: '{0} positions', tlfPdf: 'Download PDF / print',
     nyKontrollDenne: 'New inspection of this bike', kontrollerSelv: 'Inspect the bike yourself', venterMerke: 'PENDING', venterGodkj: 'Waiting for approval from the Road Captain',
     godkjentAvTittel: 'Approved by', godkjenn: 'Approve', rettGodkjenn: 'Correct and approve', avvis: 'Reject', avvisGrunn: 'Why is the inspection rejected? The member will see the reason.',
     godkjentToast: 'Inspection approved', avvistToast: 'Inspection rejected', venterListe: 'Waiting for approval ({0})', sendtTilGodkj: 'Saved – sent to the Road Captain for approval',
@@ -778,7 +787,7 @@ async function oppdaterAlt() {
 
 function loggUt(melding) {
   S.token = ''; S.d = null; S.fane = ''; S.filter = 'alle'; S.midlPw = ''; S.avd = hent('tk_avd') || 'Alle';
-  F = G = B = null; TLF = null; TLF_SOK = ""; TLF_FA = ""; TLF_FS = ""; KAL = null; KAL_HENTER = null; BOK = null; BOKV = null; BOK_P = null; BOK_IMPORT = null; lagre('tk_token', null); lagre('tk_utkast', null);
+  F = G = B = null; TLF = null; TLF_SOK = ""; TLF_FA = ""; TLF_FS = []; KAL = null; KAL_HENTER = null; BOK = null; BOKV = null; BOK_P = null; BOK_IMPORT = null; lagre('tk_token', null); lagre('tk_utkast', null);
   lukkAlle(); visLogin('login');
   if (melding) toast(typeof melding === 'string' ? melding : t('loggInnPaNytt'), true);
 }
@@ -1887,7 +1896,7 @@ function kalIcs(h) {
 }
 
 // ─── Phone list (read live from the club's own sheet via the backend) ───
-let TLF = null, TLF_SOK = '', TLF_FA = '', TLF_FS = '';
+let TLF = null, TLF_SOK = '', TLF_FA = '', TLF_FS = [];
 const e164 = n => { const d = String(n).replace(/[^\d+]/g, ''); return d.startsWith('+') ? d : d.startsWith('00') ? '+' + d.slice(2) : d.length === 8 ? '+47' + d : d; };
 const telLenke = n => 'tel:' + e164(n);
 // Opens a Signal chat with the number (Signal has no direct-call link); tap the call button in Signal from there.
@@ -1919,7 +1928,9 @@ async function visTelefonliste() {
   const avd = [...TLF.avdelinger].sort((a, b) => vekt(a) - vekt(b));
   tegnLag(t('telefonliste'), `${KLUBBTITTEL}
     <div class="tlffilter"><select data-tlffa aria-label="${esc(t('avdeling'))}"><option value="">${esc(t('alleAvd'))}</option>${avd.map(a => `<option value="${esc(a.navn)}"${a.navn === TLF_FA ? ' selected' : ''}>${esc(a.navn)}</option>`).join('')}</select>
-      <select data-tlffs aria-label="${esc(t('tlfStilling'))}"><option value="">${esc(t('tlfAlleStillinger'))}</option>${tlfStillinger(avd).map(x => `<option value="${esc(x)}"${x === TLF_FS ? ' selected' : ''}>${esc(x)}</option>`).join('')}</select></div>
+      <details class="tlfstill"><summary data-tlffs-tekst>${esc(tlfStillTekst())}</summary><div class="tlfstillvalg">
+        <button type="button" class="vkort" data-tlffs-nullstill>${esc(t('tlfAlleStillinger'))}</button>
+        ${tlfStillinger(avd).map(x => `<label><input type="checkbox" data-tlffs value="${esc(x)}"${TLF_FS.includes(x) ? ' checked' : ''}><span>${esc(x)}</span></label>`).join('')}</div></details></div>
     <input class="tlfsok" type="search" data-tlfsok placeholder="${esc(t('tlfSok'))}" value="${esc(TLF_SOK)}" autocomplete="off">
     <div id="tlfListe"></div><p class="dempet" style="font-size:12.5px">${esc(t('tlfHentet', fmtAktiv(TLF.hentet)))}</p>
     <button type="button" class="bred" data-a="tlfPdf">${t('tlfPdf')}</button>`);
@@ -1930,11 +1941,18 @@ async function visTelefonliste() {
   tegn();
   const inp = $('[data-tlfsok]');
   if (inp) inp.oninput = () => { TLF_SOK = inp.value; tegn(); };
-  const fa = $('[data-tlffa]'), fs = $('[data-tlffs]');
+  const fa = $('[data-tlffa]');
   if (fa) fa.onchange = () => { TLF_FA = fa.value; tegn(); };
-  if (fs) fs.onchange = () => { TLF_FS = fs.value; tegn(); };
+  const oppdStill = () => { TLF_FS = $$('[data-tlffs]').filter(c => c.checked).map(c => c.value); const s = $('[data-tlffs-tekst]'); if (s) s.textContent = tlfStillTekst(); tegn(); };
+  $$('[data-tlffs]').forEach(c => { c.onchange = oppdStill; });
+  const null1 = $('[data-tlffs-nullstill]');
+  if (null1) null1.onclick = () => { $$('[data-tlffs]').forEach(c => { c.checked = false; }); oppdStill(); };
+  // Close the position picker when tapping outside it
+  const still = $('.tlfstill');
+  if (still) document.addEventListener('click', function lukk(e) { if (!still.isConnected) return document.removeEventListener('click', lukk); if (!still.contains(e.target)) still.open = false; });
 }
 // Positions (status) in the order they first appear in the club's list
+const tlfStillTekst = () => !TLF_FS.length ? t('tlfAlleStillinger') : TLF_FS.length <= 2 ? TLF_FS.join(', ') : t('tlfStillingerN', TLF_FS.length);
 const tlfStillinger = avd => [...new Set(avd.flatMap(a => a.personer.map(x => String(x.status || '').trim())).filter(Boolean))];
 let TLF_AVD = [];
 const KLUBBTITTEL = '<h2 class="klubbtittel"><img src="bandidos-norway.png?v=1" alt="Bandidos MC Norway"></h2>';
@@ -1942,7 +1960,7 @@ function tlfHtml(avd, sok) {
     const q = String(sok || '').trim().toLowerCase();
     return avd.filter(a => !TLF_FA || a.navn === TLF_FA).map(a => {
       const avdTreff = !q || a.navn.toLowerCase().includes(q);
-      const p = a.personer.filter(x => !TLF_FS || String(x.status || '').trim() === TLF_FS).filter(x => avdTreff || (x.navn + ' ' + x.status + ' ' + (x.epost || '')).toLowerCase().includes(q) || x.telefon.replace(/\D/g, '').includes(q.replace(/\D/g, '') || '§'));
+      const p = a.personer.filter(x => !TLF_FS.length || TLF_FS.includes(String(x.status || '').trim())).filter(x => avdTreff || (x.navn + ' ' + x.status + ' ' + (x.epost || '')).toLowerCase().includes(q) || x.telefon.replace(/\D/g, '').includes(q.replace(/\D/g, '') || '§'));
       if (!p.length) return '';
       const adr = a.adresse.join(', ');
       const ai = TLF.avdelinger.indexOf(a);
@@ -1957,9 +1975,9 @@ function tlfHtml(avd, sok) {
 // The PDF follows the chapter and position filters, but ignores the free-text search.
 function tlfSkrivUt() {
   if (!TLF) return;
-  const under = [TLF_FA, TLF_FS].filter(Boolean).join(' · ');
+  const under = [TLF_FA, TLF_FS.join(', ')].filter(Boolean).join(' · ');
   const innhold = tlfHtml(TLF_AVD, '') || `<p class="tom">${t('tlfIngen')}</p>`;
-  skrivUtMork(KLUBBTITTEL + (under ? `<p class="tlfunder">${esc(under)}</p>` : ''), innhold + `<p class="dempet" style="font-size:9pt">${esc(t('tlfHentet', fmtAktiv(TLF.hentet)))}</p>`, ['Bandidos MC Norway', t('telefonliste'), TLF_FA, TLF_FS].filter(Boolean).join(' '), 'tlf');
+  skrivUtMork(KLUBBTITTEL + (under ? `<p class="tlfunder">${esc(under)}</p>` : ''), innhold + `<p class="dempet" style="font-size:9pt">${esc(t('tlfHentet', fmtAktiv(TLF.hentet)))}</p>`, ['Bandidos MC Norway', t('telefonliste'), TLF_FA, TLF_FS.length === 1 ? TLF_FS[0] : ''].filter(Boolean).join(' '), 'tlf');
 }
 
 async function lastWolfpack() {
