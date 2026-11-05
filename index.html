@@ -155,6 +155,8 @@ label.felt>span,div.felt>span,.felt-tittel{display:block;font-size:13px;color:va
 .punkt.mangler .pnavn::after{content:attr(data-mangler);color:#ff9b54;font-size:12px;font-weight:700}
 .skala{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .skala button{padding:8px 2px;font-size:14px;min-height:48px;line-height:1.1}
+.skala.skala4{grid-template-columns:repeat(4,1fr);gap:5px}.skala4 button{font-size:12.5px;padding:6px 1px}
+.skala button.valgt[data-v=""]{background:var(--aksent);border-color:var(--aksent);color:var(--aksent-t)}
 .skala button.valgt[data-v="0"]{background:var(--s0);border-color:var(--s0);color:#fff}
 .skala button.valgt[data-v="1"]{background:var(--s1);border-color:var(--s1);color:#1a1400}
 .skala button.valgt[data-v="2"]{background:var(--s2);border-color:var(--s2);color:#fff}
@@ -366,7 +368,7 @@ const TXT = {
     avdeling: 'Avdeling', alleAvd: 'Alle avdelinger',
     s0: 'OK', s1: 'Bør utbedres', s2: 'Kjøreforbud', s0k: 'OK', s1k: 'Bør<br>utbedres', s2k: 'Kjøre&shy;forbud', forbudMerke: 'KJØREFORBUD',
     g_lys: 'Lys', g_dekk: 'Dekk', g_bremser: 'Brems', g_ramme: 'Ramme', g_motor: 'Motor', g_allmenn: 'Allmenn tilstand',
-    sk_egen: 'Egenerklæring', sk_stor: 'Stor kontroll', sk_enkel: 'Enkel kontroll', sk_ekstra: 'Ekstra kontroll', mndKontroll: 'Månedskontroll', arrangement: 'Arrangement', arrangementPh: 'F.eks. Treff Larvik', valgfritt: 'valgfritt', ekstraHint: 'Rask kontroll på arrangementer – også sykler fra andre avdelinger. Teller ikke som månedens kontroll, men avvik og kjøreforbud følges opp som vanlig.', ekstraLagre: 'Lagre og ta neste sykkel', ekstraLagret: 'Lagret: {0} – klar for neste sykkel', ekstraOkt: 'Kontrollert her ({0})', ikkeRegistrert: 'Sykkelen er ikke registrert i appen', ikkeRegistrertKort: 'Ikke registrert', regnrUreg: 'Registreringsnummer', eierUreg: 'Eier (valgfritt)', regnrMangler: 'Skriv eller skann registreringsnummeret.', skannUregistrert: 'Leste {0} – ikke registrert i appen. Kontrollen lagres på skiltnummeret.', uregListe: 'Uregistrerte sykler kontrollert ({0})', byttTypeSporsmal: 'Du har et påbegynt skjema. Bytte type og tømme det?',
+    sk_egen: 'Egenerklæring', sk_stor: 'Stor kontroll', sk_enkel: 'Enkel kontroll', sk_ekstra: 'Ekstra kontroll', mndKontroll: 'Månedskontroll', arrangement: 'Arrangement', arrangementPh: 'F.eks. Treff Larvik', valgfritt: 'valgfritt', ekstraHint: 'Rask kontroll på arrangementer – også sykler fra andre avdelinger. Teller ikke som månedens kontroll, men avvik og kjøreforbud følges opp som vanlig.', ekstraLagre: 'Lagre og ta neste sykkel', ekstraLagret: 'Lagret: {0} – klar for neste sykkel', ekstraOkt: 'Kontrollert her ({0})', ikkeVurdertKnapp: 'Ikke vurdert', ekstraIngenVurdert: 'Vurder minst ett punkt.', ikkeRegistrert: 'Sykkelen er ikke registrert i appen', ikkeRegistrertKort: 'Ikke registrert', regnrUreg: 'Registreringsnummer', eierUreg: 'Eier (valgfritt)', regnrMangler: 'Skriv eller skann registreringsnummeret.', skannUregistrert: 'Leste {0} – ikke registrert i appen. Kontrollen lagres på skiltnummeret.', uregListe: 'Uregistrerte sykler kontrollert ({0})', byttTypeSporsmal: 'Du har et påbegynt skjema. Bytte type og tømme det?',
     oversikt: 'Oversikt', st_sykler: 'sykler', st_mangler: 'mangler {0}', st_avvik: 'med avvik', st_forbud: 'kjøreforbud', st_utenfor: 'utenfor sesong',
     ingenUtvalg: 'Ingen sykler i dette utvalget.', ingenSykler: 'Ingen sykler registrert ennå. Legg dem inn under Medlemmer.',
     kontrollert: 'Kontrollert {0}', aldri: 'Aldri kontrollert', manglerMnd: '{0} mangler', frist: 'frist {0}', passert: ' – passert',
@@ -509,7 +511,7 @@ const TXT = {
     avdeling: 'Chapter', alleAvd: 'All chapters',
     s0: 'OK', s1: 'Fix soon', s2: 'Do not ride', s0k: 'OK', s1k: 'Fix<br>soon', s2k: 'Do not<br>ride', forbudMerke: 'DO NOT RIDE',
     g_lys: 'Lights', g_dekk: 'Tyres', g_bremser: 'Brakes', g_ramme: 'Frame', g_motor: 'Engine', g_allmenn: 'General condition',
-    sk_egen: 'Self-declaration', sk_stor: 'Full inspection', sk_enkel: 'Quick inspection', sk_ekstra: 'Extra inspection', mndKontroll: 'Monthly inspection', arrangement: 'Event', arrangementPh: 'E.g. Rally Larvik', valgfritt: 'optional', ekstraHint: 'Quick check at events – bikes from other chapters too. Does not count as the monthly inspection, but issues and riding bans are followed up as usual.', ekstraLagre: 'Save and take the next bike', ekstraLagret: 'Saved: {0} – ready for the next bike', ekstraOkt: 'Inspected here ({0})', ikkeRegistrert: 'The bike is not registered in the app', ikkeRegistrertKort: 'Not registered', regnrUreg: 'Registration number', eierUreg: 'Owner (optional)', regnrMangler: 'Type or scan the registration number.', skannUregistrert: 'Read {0} – not registered in the app. The inspection is saved on the plate number.', uregListe: 'Unregistered bikes inspected ({0})', byttTypeSporsmal: 'You have a form in progress. Switch type and clear it?',
+    sk_egen: 'Self-declaration', sk_stor: 'Full inspection', sk_enkel: 'Quick inspection', sk_ekstra: 'Extra inspection', mndKontroll: 'Monthly inspection', arrangement: 'Event', arrangementPh: 'E.g. Rally Larvik', valgfritt: 'optional', ekstraHint: 'Quick check at events – bikes from other chapters too. Does not count as the monthly inspection, but issues and riding bans are followed up as usual.', ekstraLagre: 'Save and take the next bike', ekstraLagret: 'Saved: {0} – ready for the next bike', ekstraOkt: 'Inspected here ({0})', ikkeVurdertKnapp: 'Not assessed', ekstraIngenVurdert: 'Assess at least one point.', ikkeRegistrert: 'The bike is not registered in the app', ikkeRegistrertKort: 'Not registered', regnrUreg: 'Registration number', eierUreg: 'Owner (optional)', regnrMangler: 'Type or scan the registration number.', skannUregistrert: 'Read {0} – not registered in the app. The inspection is saved on the plate number.', uregListe: 'Unregistered bikes inspected ({0})', byttTypeSporsmal: 'You have a form in progress. Switch type and clear it?',
     oversikt: 'Overview', st_sykler: 'bikes', st_mangler: 'missing {0}', st_avvik: 'with issues', st_forbud: 'do not ride', st_utenfor: 'off season',
     ingenUtvalg: 'No bikes match this filter.', ingenSykler: 'No bikes registered yet. Add them under Members.',
     kontrollert: 'Inspected {0}', aldri: 'Never inspected', manglerMnd: '{0} missing', frist: 'deadline {0}', passert: ' – overdue',
@@ -1358,11 +1360,11 @@ function knapp2(key, valg, verdi, klasse) {
 }
 const OK_VALG = () => [['OK', t('ok')], ['Ikke OK', t('ikkeOk'), true]];
 
-function punktRad(id, navn, ekstra) {
+function punktRad(id, navn, ekstra, ikkeVurdert) {
   const satt = F[id] !== undefined && F[id] !== '';
   return `<div class="punkt" data-punkt="${id}">
     <div class="pnavn" data-mangler="${esc(t('ikkeVurdertLbl'))}">${navn}</div>
-    <div class="skala">${[0, 1, 2].map(v => `<button type="button" data-sett="${id}" data-v="${v}" data-num class="${satt && F[id] === v ? 'valgt' : ''}">${t('s' + v + 'k')}</button>`).join('')}</div>
+    <div class="skala${ikkeVurdert ? ' skala4' : ''}">${ikkeVurdert ? `<button type="button" data-sett="${id}" data-v="" class="${satt ? '' : 'valgt'}">${t('ikkeVurdertKnapp')}</button>` : ''}${[0, 1, 2].map(v => `<button type="button" data-sett="${id}" data-v="${v}" data-num class="${satt && F[id] === v ? 'valgt' : ''}">${t('s' + v + 'k')}</button>`).join('')}</div>
     ${ekstra && ekstra.length ? `<div class="ekstra">${ekstra.map(([xid, ph, mode]) => `<input data-f="${xid}" placeholder="${esc(t(ph) + (FORRIGE[xid] && HINT.includes(xid) ? ' – ' + t('sistKort', FORRIGE[xid]) : ''))}" aria-label="${esc(t(ph))}" inputmode="${mode}" value="${esc(F[xid] || '')}">`).join('')}</div>` : ''}</div>`;
 }
 
@@ -1381,7 +1383,9 @@ function nyttEkstra(forrige) {
 async function lagreEkstra(btn) {
   if (F.uregistrert) { F.regnr = String(F.regnr || '').toUpperCase().replace(/\s+/g, ''); if (!F.regnr) { toast(t('regnrMangler'), true); const el = $('[data-f="regnr"]'); return el && el.focus(); } }
   else if (!F.sykkel_id) return toast(t('velgSykkelToast'), true);
-  const maks = Math.max(...punktIder().map(p => Number(F[p])));
+  const vurdert = punktIder().filter(p => F[p] !== undefined && F[p] !== '');
+  if (!vurdert.length && !F.kjoreforbud) return toast(t('ekstraIngenVurdert'), true);
+  const maks = Math.max(0, ...vurdert.map(p => Number(F[p])));
   if ((maks === 2 || F.kjoreforbud) && !F.frist && !confirm(t('ingenFrist'))) return;
   await medKnapp(btn, async () => {
     const s = F.uregistrert ? { eier: F.eier_navn || t('ikkeRegistrertKort'), regnr: F.regnr } : finnEkstraSykkel(F.sykkel_id) || {};
@@ -1424,7 +1428,7 @@ function ekstraSkjema() {
       <label class="felt"><span>${t('km')} <small class="dempet">(${t('valgfritt')})</small></span><input data-f="km" inputmode="numeric" value="${esc(F.km)}"></label>
     </div>
     <button type="button" class="bred" data-a="alleBra">${t('alleOk')}</button>
-    <div class="kort"><h3>${t('sk_ekstra')}</h3><p class="dempet" style="margin:0 0 4px">${t('enkelHint')}</p>${ENKEL.map(([id, n]) => punktRad(id, t(n))).join('')}</div>
+    <div class="kort"><h3>${t('sk_ekstra')}</h3><p class="dempet" style="margin:0 0 4px">${t('enkelHint')}</p>${ENKEL.map(([id, n]) => punktRad(id, t(n), null, true)).join('')}</div>
     <div class="kort"><h3>${t('bilderTittel')}</h3>${ventendeBilder(F.bilder)}${bildeKnapper(['annet'])}</div>
     <div class="kort"><h3>${t('status')}</h3>
       <div id="statusBanner" class="banner"></div>
@@ -1532,7 +1536,7 @@ function oppdaterStatus() {
   const ider = punktIder();
   const satt = ider.filter(p => F[p] !== undefined && F[p] !== '');
   const maks = satt.length ? Math.max(...satt.map(p => Number(F[p]))) : -1;
-  const mangler = ider.length - satt.length;
+  const mangler = F.skjema === 'ekstra' ? 0 : ider.length - satt.length;   // extra inspection: unassessed points are fine
   const cb = $('[data-f="kjoreforbud"]');
   if (cb) { cb.disabled = maks === 2; cb.checked = maks === 2 || !!F.kjoreforbud; }
   let tekst, kl;
@@ -2710,6 +2714,7 @@ const A = {
   forkastKontroll() { if (!confirm(t('tommeSkjema'))) return; F = nyttSkjema(F && F.sykkel_id); forhandsutfyll(); lagreUtkast(); render(); },
   async lagreKontroll(btn) {
     if (!F.sykkel_id && !(F.skjema === 'ekstra' && F.uregistrert)) { toast(t('velgSykkelToast'), true); const el = $('[data-f="sykkel_id"]'); return el && el.focus(); }
+    if (F.skjema === 'ekstra') return lagreEkstra(btn);   // points may be left «ikke vurdert»
     const ider = punktIder();
     const mangler = ider.filter(p => F[p] === undefined || F[p] === '');
     $$('.punkt').forEach(el => el.classList.toggle('mangler', mangler.includes(el.dataset.punkt)));
@@ -2718,7 +2723,6 @@ const A = {
       $(`[data-punkt="${mangler[0]}"]`).scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
-    if (F.skjema === 'ekstra') return lagreEkstra(btn);
     // a photo of both tyres is required on every inspection (not when an RC corrects one that already exists)
     const harDekk = ty => (F.bilder || []).some(b => b.type === ty);
     if (!F._retter && (!harDekk('dekk_f') || !harDekk('dekk_b'))) {
