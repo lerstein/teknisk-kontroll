@@ -366,7 +366,7 @@ const TXT = {
     avdeling: 'Avdeling', alleAvd: 'Alle avdelinger',
     s0: 'OK', s1: 'Bør utbedres', s2: 'Kjøreforbud', s0k: 'OK', s1k: 'Bør<br>utbedres', s2k: 'Kjøre&shy;forbud', forbudMerke: 'KJØREFORBUD',
     g_lys: 'Lys', g_dekk: 'Dekk', g_bremser: 'Brems', g_ramme: 'Ramme', g_motor: 'Motor', g_allmenn: 'Allmenn tilstand',
-    sk_egen: 'Egenerklæring', sk_stor: 'Stor kontroll', sk_enkel: 'Enkel kontroll', sk_ekstra: 'Ekstra kontroll', mndKontroll: 'Månedskontroll', arrangement: 'Arrangement', arrangementPh: 'F.eks. Treff Larvik', valgfritt: 'valgfritt', ekstraHint: 'Rask kontroll på arrangementer – også sykler fra andre avdelinger. Teller ikke som månedens kontroll, men avvik og kjøreforbud følges opp som vanlig.', ekstraLagre: 'Lagre og ta neste sykkel', ekstraLagret: 'Lagret: {0} – klar for neste sykkel', ekstraOkt: 'Kontrollert her ({0})', byttTypeSporsmal: 'Du har et påbegynt skjema. Bytte type og tømme det?',
+    sk_egen: 'Egenerklæring', sk_stor: 'Stor kontroll', sk_enkel: 'Enkel kontroll', sk_ekstra: 'Ekstra kontroll', mndKontroll: 'Månedskontroll', arrangement: 'Arrangement', arrangementPh: 'F.eks. Treff Larvik', valgfritt: 'valgfritt', ekstraHint: 'Rask kontroll på arrangementer – også sykler fra andre avdelinger. Teller ikke som månedens kontroll, men avvik og kjøreforbud følges opp som vanlig.', ekstraLagre: 'Lagre og ta neste sykkel', ekstraLagret: 'Lagret: {0} – klar for neste sykkel', ekstraOkt: 'Kontrollert her ({0})', ikkeRegistrert: 'Sykkelen er ikke registrert i appen', ikkeRegistrertKort: 'Ikke registrert', regnrUreg: 'Registreringsnummer', eierUreg: 'Eier (valgfritt)', regnrMangler: 'Skriv eller skann registreringsnummeret.', skannUregistrert: 'Leste {0} – ikke registrert i appen. Kontrollen lagres på skiltnummeret.', uregListe: 'Uregistrerte sykler kontrollert ({0})', byttTypeSporsmal: 'Du har et påbegynt skjema. Bytte type og tømme det?',
     oversikt: 'Oversikt', st_sykler: 'sykler', st_mangler: 'mangler {0}', st_avvik: 'med avvik', st_forbud: 'kjøreforbud', st_utenfor: 'utenfor sesong',
     ingenUtvalg: 'Ingen sykler i dette utvalget.', ingenSykler: 'Ingen sykler registrert ennå. Legg dem inn under Medlemmer.',
     kontrollert: 'Kontrollert {0}', aldri: 'Aldri kontrollert', manglerMnd: '{0} mangler', frist: 'frist {0}', passert: ' – passert',
@@ -509,7 +509,7 @@ const TXT = {
     avdeling: 'Chapter', alleAvd: 'All chapters',
     s0: 'OK', s1: 'Fix soon', s2: 'Do not ride', s0k: 'OK', s1k: 'Fix<br>soon', s2k: 'Do not<br>ride', forbudMerke: 'DO NOT RIDE',
     g_lys: 'Lights', g_dekk: 'Tyres', g_bremser: 'Brakes', g_ramme: 'Frame', g_motor: 'Engine', g_allmenn: 'General condition',
-    sk_egen: 'Self-declaration', sk_stor: 'Full inspection', sk_enkel: 'Quick inspection', sk_ekstra: 'Extra inspection', mndKontroll: 'Monthly inspection', arrangement: 'Event', arrangementPh: 'E.g. Rally Larvik', valgfritt: 'optional', ekstraHint: 'Quick check at events – bikes from other chapters too. Does not count as the monthly inspection, but issues and riding bans are followed up as usual.', ekstraLagre: 'Save and take the next bike', ekstraLagret: 'Saved: {0} – ready for the next bike', ekstraOkt: 'Inspected here ({0})', byttTypeSporsmal: 'You have a form in progress. Switch type and clear it?',
+    sk_egen: 'Self-declaration', sk_stor: 'Full inspection', sk_enkel: 'Quick inspection', sk_ekstra: 'Extra inspection', mndKontroll: 'Monthly inspection', arrangement: 'Event', arrangementPh: 'E.g. Rally Larvik', valgfritt: 'optional', ekstraHint: 'Quick check at events – bikes from other chapters too. Does not count as the monthly inspection, but issues and riding bans are followed up as usual.', ekstraLagre: 'Save and take the next bike', ekstraLagret: 'Saved: {0} – ready for the next bike', ekstraOkt: 'Inspected here ({0})', ikkeRegistrert: 'The bike is not registered in the app', ikkeRegistrertKort: 'Not registered', regnrUreg: 'Registration number', eierUreg: 'Owner (optional)', regnrMangler: 'Type or scan the registration number.', skannUregistrert: 'Read {0} – not registered in the app. The inspection is saved on the plate number.', uregListe: 'Unregistered bikes inspected ({0})', byttTypeSporsmal: 'You have a form in progress. Switch type and clear it?',
     oversikt: 'Overview', st_sykler: 'bikes', st_mangler: 'missing {0}', st_avvik: 'with issues', st_forbud: 'do not ride', st_utenfor: 'off season',
     ingenUtvalg: 'No bikes match this filter.', ingenSykler: 'No bikes registered yet. Add them under Members.',
     kontrollert: 'Inspected {0}', aldri: 'Never inspected', manglerMnd: '{0} missing', frist: 'deadline {0}', passert: ' – overdue',
@@ -1379,16 +1379,18 @@ function nyttEkstra(forrige) {
   return { skjema: 'ekstra', sykkel_id: '', maaned: idag().slice(0, 7), dato: forrige ? forrige.dato : idag(), arrangement: forrige ? forrige.arrangement : '', km: '', kjoreforbud: false, frist: '', merknad: '' };
 }
 async function lagreEkstra(btn) {
-  if (!F.sykkel_id) return toast(t('velgSykkelToast'), true);
+  if (F.uregistrert) { F.regnr = String(F.regnr || '').toUpperCase().replace(/\s+/g, ''); if (!F.regnr) { toast(t('regnrMangler'), true); const el = $('[data-f="regnr"]'); return el && el.focus(); } }
+  else if (!F.sykkel_id) return toast(t('velgSykkelToast'), true);
   const maks = Math.max(...punktIder().map(p => Number(F[p])));
   if ((maks === 2 || F.kjoreforbud) && !F.frist && !confirm(t('ingenFrist'))) return;
   await medKnapp(btn, async () => {
-    const s = finnEkstraSykkel(F.sykkel_id) || {};
+    const s = F.uregistrert ? { eier: F.eier_navn || t('ikkeRegistrertKort'), regnr: F.regnr } : finnEkstraSykkel(F.sykkel_id) || {};
     const bilder = F.bilder || [];
-    const data = Object.assign({}, F, { bilder: undefined, _forhand: undefined, _forhandVerdi: undefined });
+    const data = Object.assign({}, F, { bilder: undefined, _forhand: undefined, _forhandVerdi: undefined, uregistrert: undefined },
+      F.uregistrert ? { sykkel_id: '' } : { regnr: undefined, eier_navn: undefined, modell: undefined });
     const r = await api('lagreKontroll', { kontroll: data });
     const feil = bilder.length ? await lastOppBilder(bilder, 'kontroll', r.id, btn) : '';
-    EKSTRA_LOGG.push({ sykkel_id: F.sykkel_id, eier: s.eier || '', regnr: s.regnr || '', v: maks, forbud: maks === 2 || !!F.kjoreforbud, arrangement: F.arrangement, dato: F.dato });
+    EKSTRA_LOGG.push({ sykkel_id: F.uregistrert ? 'U:' + F.regnr : F.sykkel_id, eier: s.eier || '', regnr: s.regnr || '', v: maks, forbud: maks === 2 || !!F.kjoreforbud, arrangement: F.arrangement, dato: F.dato });
     const ferdig = F;
     F = nyttEkstra(ferdig); lagreUtkast();
     await lastData(); render(); scrollTo(0, 0);
@@ -1411,9 +1413,14 @@ function ekstraSkjema() {
     <div class="kort">
       <div class="rad2"><label class="felt"><span>${t('arrangement')}</span><input data-f="arrangement" value="${esc(F.arrangement)}" placeholder="${esc(t('arrangementPh'))}" maxlength="60" autocomplete="off"></label>
         <label class="felt"><span>${t('dato')}</span><input type="date" data-f="dato" value="${esc(F.dato)}"></label></div>
+      ${F.uregistrert ? `<div class="felt"><span>${t('regnrUreg')}</span><div class="sokrad" style="margin:0"><input data-f="regnr" value="${esc(F.regnr || '')}" autocapitalize="characters" autocomplete="off" maxlength="12" style="flex:1;min-width:0;text-transform:uppercase">
+        <label class="skannknapp" aria-label="${esc(t('skannSkilt'))}">${svg(IKON.kamera)}<input type="file" accept="image/*" data-skann="ekstra" hidden></label></div></div>
+      <div class="rad2"><label class="felt"><span>${t('eierUreg')}</span><input data-f="eier_navn" value="${esc(F.eier_navn || '')}" autocomplete="off" maxlength="60"></label>
+        <label class="felt"><span>${t('modell')}</span><input data-f="modell" value="${esc(F.modell || '')}" autocomplete="off" maxlength="40"></label></div>` : `
       <div class="felt"><span>${t('sykkel')}</span><div class="sokrad" style="margin:0"><select data-f="sykkel_id" aria-label="${esc(t('sykkel'))}" style="flex:1;min-width:0"><option value="">${t('velgSykkel')}</option>
         ${Object.entries(grupper).map(([a, l]) => `<optgroup label="${esc(a)}">${l.map(opt).join('')}</optgroup>`).join('')}
-      </select><label class="skannknapp" aria-label="${esc(t('skannSkilt'))}">${svg(IKON.kamera)}<input type="file" accept="image/*" data-skann="ekstra" hidden></label></div></div>
+      </select><label class="skannknapp" aria-label="${esc(t('skannSkilt'))}">${svg(IKON.kamera)}<input type="file" accept="image/*" data-skann="ekstra" hidden></label></div></div>`}
+      <label class="sjekk" style="margin:-4px 0 10px"><input type="checkbox" data-f="uregistrert" ${F.uregistrert ? 'checked' : ''}> ${t('ikkeRegistrert')}</label>
       <label class="felt"><span>${t('km')} <small class="dempet">(${t('valgfritt')})</small></span><input data-f="km" inputmode="numeric" value="${esc(F.km)}"></label>
     </div>
     <button type="button" class="bred" data-a="alleBra">${t('alleOk')}</button>
@@ -1426,6 +1433,9 @@ function ekstraSkjema() {
       <label class="felt"><span>${t('merknad')}</span><textarea data-f="merknad" placeholder="${esc(t('merknadPh'))}">${esc(F.merknad)}</textarea></label>
     </div>
     <button type="button" class="primar bred" data-a="lagreKontroll">${t('ekstraLagre')}</button>
+    ${(() => { const u = S.d.kontroller.filter(k => erEkstra(k) && !k.sykkel_id).slice(0, 30);
+      return u.length ? `<h3>${esc(t('uregListe', u.length))}</h3>${u.map(k => `<button class="kort" data-kontroll="${esc(k.id)}"><div class="linje1"><b>${esc(k.regnr)}</b>${k.kjoreforbud === 'Ja' ? `<span class="merke">${t('forbudMerke')}</span>` : chip(k.sum_allmenn, skalaNavn(k.sum_allmenn))}</div>
+        <div class="dempet">${fmtDato(k.dato)}${k.arrangement ? ' · ' + esc(k.arrangement) : ''}${k.navn && k.navn !== '(ikke registrert)' ? ' · ' + esc(k.navn) : ''}${k.modell ? ' · ' + esc(k.modell) : ''}</div></button>`).join('')}` : ''; })()}
     ${okt.length ? `<h3>${esc(t('ekstraOkt', okt.length))}</h3><div class="kort">${okt.map(l => `<div class="linje1" style="padding:5px 0"><span>${esc(l.eier)} – ${esc(l.regnr)}</span>${l.forbud ? `<span class="merke">${t('forbudMerke')}</span>` : chip(l.v, skalaNavn(l.v))}</div>`).join('')}</div>` : ''}
     <p class="dempet" style="text-align:center">${t('autoLagret')}</p>
   </div>`;
@@ -1845,6 +1855,10 @@ async function skannSkilt(fil, modus) {
     const valgt = r.sikker || (r.treff.length === 1 ? r.treff[0].s : null);
     if (valgt && F && F.skjema === 'ekstra') { F.sykkel_id = valgt.id; lagreUtkast(); render(); return toast(t('skannFant', valgt.regnr + ' – ' + valgt.eier), r.sikker ? false : true); }
     const lest = lesbarSkilt(r.kandidater);
+    if (!r.treff.length && lest && F && F.skjema === 'ekstra') {   // not in the app: register the inspection on the plate alone
+      F.uregistrert = true; F.sykkel_id = ''; F.regnr = lest; lagreUtkast(); render();
+      return toast(t('skannUregistrert', lest), true);
+    }
     return toast(r.treff.length ? t('skannUsikker') : lest ? t('skannUkjent', lest) : t('skannIngen'), true);
   }
   if (r.sikker) { toast(t('skannFant', r.sikker.regnr)); return apne(() => visSykkel(r.sikker.id)); }
@@ -2695,7 +2709,7 @@ const A = {
   byttSkjema() { F.skjema = F.skjema === 'stor' ? 'enkel' : 'stor'; lagreUtkast(); render(); },
   forkastKontroll() { if (!confirm(t('tommeSkjema'))) return; F = nyttSkjema(F && F.sykkel_id); forhandsutfyll(); lagreUtkast(); render(); },
   async lagreKontroll(btn) {
-    if (!F.sykkel_id) { toast(t('velgSykkelToast'), true); return $('[data-f="sykkel_id"]').focus(); }
+    if (!F.sykkel_id && !(F.skjema === 'ekstra' && F.uregistrert)) { toast(t('velgSykkelToast'), true); const el = $('[data-f="sykkel_id"]'); return el && el.focus(); }
     const ider = punktIder();
     const mangler = ider.filter(p => F[p] === undefined || F[p] === '');
     $$('.punkt').forEach(el => el.classList.toggle('mangler', mangler.includes(el.dataset.punkt)));
@@ -2969,6 +2983,7 @@ function feltEndret(ev) {
   if (!el.matches('[data-f]')) return;
   const sk = skjemaFor(el); if (!sk || !sk.obj) return;
   sk.obj[el.dataset.f] = el.type === 'checkbox' ? el.checked : el.value;
+  if (sk.navn === 'K' && ev.type === 'change' && el.dataset.f === 'uregistrert') { if (F.uregistrert) F.sykkel_id = ''; lagreUtkast(); return render(); }
   if (sk.navn === 'K' && ev.type === 'change' && (el.dataset.f === 'sykkel_id' || el.dataset.f === 'maaned')) {
     if (el.dataset.f === 'maaned') F.skjema = skjemaForMnd(Number(F.maaned.slice(5)));
     if (el.dataset.f === 'sykkel_id' && F.skjema !== 'ekstra') forhandsutfyll();
