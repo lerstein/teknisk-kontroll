@@ -190,6 +190,15 @@ label.felt>span,div.felt>span,.felt-tittel{display:block;font-size:13px;color:va
 .status{font-size:13.5px;color:var(--dempet);margin-top:8px}
 .rodt{color:#ff8d8d;font-weight:650}
 .oransje{color:#ffab6b;font-weight:650}
+.manglerlinje{margin:4px 2px 10px;font-size:14.5px;font-weight:600;color:#ffab6b;text-align:center}
+.manglerlinje.klar{color:#7fe39c}
+.manglerlinje:empty{display:none}
+.kvittering .kvtittel{font-size:17px;margin-bottom:4px}
+.kvittering div+div{font-weight:550}
+.kobanner .kotyper{font-weight:550;margin-top:2px}
+.kobanner .koinfo{font-weight:450;font-size:13.5px;margin-top:4px;opacity:.9}
+.boklagtil{font-size:13px;color:var(--dempet);flex:none;white-space:nowrap}
+.bokforslag .kaltag{margin:3px 4px 0 0;vertical-align:0}
 .stat{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
 .stat button{flex-direction:column;gap:0;padding:10px 4px;min-height:66px;background:var(--kort);font-weight:600}
 .stat b{font-size:22px;line-height:1.1}
@@ -302,6 +311,7 @@ details.kort p{font-size:14.5px;color:#cfd3d9}
 .bokknapp svg{width:26px;height:26px;color:var(--aksent);flex:none}
 .bokknapp span:first-of-type{flex:1;display:flex;flex-direction:column}
 .bokknapp small{color:var(--dempet);font-size:13px}
+#bokStatus span{display:inline}
 .bokknapp .pil{font-size:24px;color:var(--dempet)}
 .bokvelg{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
 .bokvelg select{width:auto;flex:1;max-width:60%}
@@ -353,7 +363,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbzQ6G2EWbndE-2-MohZIaGe
 const TXT = {
   no: {
     app: 'RC Portal', undertittel: 'Teknisk kontroll · Wolfpack · Håndbok', laster: 'Laster…', vent: 'Vent…', tilbake: '‹ Tilbake',
-    loggInn: 'Logg inn', forsteGang: 'Har kode fra RC', telefon: 'Telefonnummer', passord: 'Passord',
+    loggInn: 'Logg inn', forsteGang: 'Har kode fra RC', telefon: 'Telefonnummer', passord: 'Passord', passordKode: 'Passord eller kode',
     kodeFraRc: 'Aktiveringskode fra Road Captain', velgPassord: 'Velg passord (minst 6 tegn)', gjentaPassord: 'Gjenta passord',
     lagPassordLogg: 'Lag passord og logg inn',
     hintAktiver: 'Koden får du av Road Captain i avdelingen din. Den gjelder i 14 dager.',
@@ -489,14 +499,18 @@ const TXT = {
     bt_km: 'Kilometerstand', bt_dekk_f: 'Dekk foran', bt_dekk_b: 'Dekk bak', bk_dekk_f: 'Dekk foran *', bk_dekk_b: 'Dekk bak *', dekkBildeKrav: 'Ta bilde av begge dekkene – foran og bak – før du lagrer.', bt_avis: 'Bilde m/avis', bt_annet: 'Bilde', bt_profil: 'Profilbilde', bt_sykkel: 'Bilde av sykkelen', bk_profil: 'Bytt profilbilde', bk_profilNy: 'Legg til profilbilde', bk_sykkel: 'Bytt bilde av sykkelen', bk_sykkelNy: 'Legg til bilde av sykkelen', bk_km: 'Km-stand', bk_avis: 'Bilde m/avis', bk_annet: 'Andre bilder',
     fjernBilde: 'Fjern bilde', kunneIkkeLese: 'Kunne ikke lese bildet «{0}»', kunneIkkeLaste: 'Kunne ikke laste bildet', ingenBilder: 'Ingen bilder.',
     lasterOppAv: 'Laster opp bilde {0} av {1}…', lasterOppFlere: 'Laster opp {0} bilder…', lasterOpp1: 'Laster opp bilde…',
-    bildeFeil: '{0} av {1} bilder ble ikke lagret: {2}', bildeLagret: 'Bilde lagret', lastetOppAv: 'Lastet opp av {0} {1}',
+    bildeFeil: '{0} av {1} bilder ble ikke lastet opp ({2}). De ligger trygt på telefonen – trykk Prøv igjen.', bildeLagret: 'Bilde lagret',
+    koTittel: '{0} bilder er ikke lastet opp ennå', koTittel1: '1 bilde er ikke lastet opp ennå', koInfo: 'De ligger trygt på denne telefonen til de er lastet opp. Kontrollen er lagret.', koProv: 'Prøv igjen', koForkast: 'Forkast', koForkastSp: 'Forkaste bildene som ikke er lastet opp? De kan ikke hentes tilbake.', koAlleOk: 'Alle bildene er lastet opp', koForkastet: 'Bildene er forkastet',
+    kvLevert: 'Kontrollen er levert', kvVenter: 'Kontrollen er levert – venter på godkjenning fra Road Captain', kvGodkjent: 'Kontrollen er godkjent', kvBilderOk: 'Alle {0} bilder er lagret', kvBilder1: 'Bildet er lagret', kvBilderDel: '{0} av {1} bilder er lagret', kvIngenBilder: 'Ingen bilder',
+    mlMangler: 'Mangler før lagring: {0}', mlKlar: '✓ Klar til å lagre', mlSykkel: 'velg sykkel', mlBilde: 'bilde av {0}', mlUtbedret: 'bilde av utbedringen', ml1: '1 punkt ikke vurdert', mlN: '{0} punkter ikke vurdert',
+    bokAlleredeLagtTil: '✓ Allerede lagt til', bokStIkkeLevert: '{0}: ikke levert', bokStLevert: '{0}: levert ✓', bokStInnlegg: '{0}: {1} innlegg', bokStVenter: '{0} bidrag venter på deg', lastetOppAv: 'Lastet opp av {0} {1}',
     bildeKommentar: 'Kommentar til bildet', bildeKommentarLagret: 'Kommentar lagret', lagreBildeKommentar: 'Lagre kommentar', sykkelBilder: 'Bilder av sykkelen', slettBilde: 'Slett bilde', slettBildeSp: 'Slette bildet?', bildeSlettet: 'Bilde slettet',
     utkastBilder: 'Bildene er med, men tåler ikke omstart av appen før du lagrer',
     slettKontrollSp: 'Slette denne kontrollen for godt?', kontrollSlettet: 'Kontroll slettet'
   },
   en: {
     app: 'RC Portal', undertittel: 'Technical inspection · Wolfpack · Handbook', laster: 'Loading…', vent: 'Please wait…', tilbake: '‹ Back',
-    loggInn: 'Log in', forsteGang: 'I have a code', telefon: 'Phone number', passord: 'Password',
+    loggInn: 'Log in', forsteGang: 'I have a code', telefon: 'Phone number', passord: 'Password', passordKode: 'Password or code',
     kodeFraRc: 'Activation code from your Road Captain', velgPassord: 'Choose a password (at least 6 characters)', gjentaPassord: 'Repeat password',
     lagPassordLogg: 'Create password and log in',
     hintAktiver: "Your chapter's Road Captain gives you the code. It is valid for 14 days.",
@@ -632,7 +646,11 @@ const TXT = {
     bt_km: 'Odometer', bt_dekk_f: 'Front tyre', bt_dekk_b: 'Rear tyre', bk_dekk_f: 'Front tyre *', bk_dekk_b: 'Rear tyre *', dekkBildeKrav: 'Take a photo of both tyres – front and rear – before saving.', bt_avis: 'Photo w/ newspaper', bt_annet: 'Photo', bt_profil: 'Profile photo', bt_sykkel: 'Photo of the bike', bk_profil: 'Change profile photo', bk_profilNy: 'Add profile photo', bk_sykkel: 'Change bike photo', bk_sykkelNy: 'Add a photo of the bike', bk_km: 'Odometer', bk_avis: 'Newspaper', bk_annet: 'Other photos',
     fjernBilde: 'Remove photo', kunneIkkeLese: 'Could not read the image "{0}"', kunneIkkeLaste: 'Could not load the photo', ingenBilder: 'No photos.',
     lasterOppAv: 'Uploading photo {0} of {1}…', lasterOppFlere: 'Uploading {0} photos…', lasterOpp1: 'Uploading photo…',
-    bildeFeil: '{0} of {1} photos were not saved: {2}', bildeLagret: 'Photo saved', lastetOppAv: 'Uploaded by {0} {1}',
+    bildeFeil: '{0} of {1} photos were not uploaded ({2}). They are kept safe on the phone – tap Try again.', bildeLagret: 'Photo saved',
+    koTittel: '{0} photos are not uploaded yet', koTittel1: '1 photo is not uploaded yet', koInfo: 'They are kept safe on this phone until they are uploaded. The inspection is saved.', koProv: 'Try again', koForkast: 'Discard', koForkastSp: 'Discard the photos that are not uploaded? They cannot be recovered.', koAlleOk: 'All photos uploaded', koForkastet: 'Photos discarded',
+    kvLevert: 'The inspection is delivered', kvVenter: 'The inspection is delivered – waiting for approval from the Road Captain', kvGodkjent: 'The inspection is approved', kvBilderOk: 'All {0} photos are saved', kvBilder1: 'The photo is saved', kvBilderDel: '{0} of {1} photos are saved', kvIngenBilder: 'No photos',
+    mlMangler: 'Missing before saving: {0}', mlKlar: '✓ Ready to save', mlSykkel: 'choose a bike', mlBilde: 'photo of {0}', mlUtbedret: 'photo of the repair', ml1: '1 item not assessed', mlN: '{0} items not assessed',
+    bokAlleredeLagtTil: '✓ Already added', bokStIkkeLevert: '{0}: not delivered', bokStLevert: '{0}: delivered ✓', bokStInnlegg: '{0}: {1} entries', bokStVenter: '{0} contributions waiting for you', lastetOppAv: 'Uploaded by {0} {1}',
     bildeKommentar: 'Photo comment', bildeKommentarLagret: 'Comment saved', lagreBildeKommentar: 'Save comment', sykkelBilder: 'Bike photos', slettBilde: 'Delete photo', slettBildeSp: 'Delete the photo?', bildeSlettet: 'Photo deleted',
     utkastBilder: "Photos are kept, but won't survive an app restart until you save",
     slettKontrollSp: 'Delete this inspection permanently?', kontrollSlettet: 'Inspection deleted'
@@ -783,6 +801,7 @@ async function oppdaterAlt() {
 
 function loggUt(melding) {
   S.token = ''; S.d = null; S.fane = ''; S.filter = 'alle'; S.midlPw = ''; S.avd = hent('tk_avd') || 'Alle';
+  S.kvitt = null; BOKSTATUS = null;
   F = G = B = null; TLF = null; TLF_SOK = ""; TLF_FA = []; TLF_FS = []; KAL = null; KAL_HENTER = null; BOK = null; BOKV = null; BOK_P = null; BOK_IMPORT = null; lagre('tk_token', null); lagre('tk_utkast', null);
   lukkAlle(); visLogin('login');
   if (melding) toast(typeof melding === 'string' ? melding : t('loggInnPaNytt'), true);
@@ -915,7 +934,10 @@ function fyllBilder(rot) {
 function kanLeggeTilBilde(refType, ref) {
   if (rolle() === 'admin') return true;
   if (refType === 'sykkelgalleri') return kanSykkelbilde(ref);
-  const tilgang = (erRcLik() && ref.avdeling === meg().avdeling) || (refType === 'egen' && ref.telefon === meg().telefon);
+  const eier = ref.telefon || (finnSykkel(ref.sykkel_id) || {}).telefon;
+  const tilgang = (erRcLik() && ref.avdeling === meg().avdeling) || (refType === 'egen' && ref.telefon === meg().telefon) ||
+    // a member's own self-inspection (same rule as the backend's bildeRef)
+    (refType === 'kontroll' && eier === meg().telefon && ref.kontrollor_tlf === meg().telefon);
   return tilgang && alderTimer(ref.tidspunkt) < S.d.innstillinger.bildeDager * 24;
 }
 const kanKommentereBilde = b => rolle() === 'admin' || b.lastet_opp_av_tlf === meg().telefon ||
@@ -939,14 +961,48 @@ function bildeKort(refType, ref, typer) {
   return `<div class="kort"><h3>${t(refType === 'sykkelgalleri' ? 'sykkelBilder' : 'bilderTittel')}</h3>${galleri || `<p class="tom" style="margin:0">${t('ingenBilder')}</p>`}
     ${kan ? bildeKnapper(typer, `data-direkte="${refType}:${esc(ref.id)}"`) : ''}</div>`;
 }
-async function lastOppBilder(liste, refType, refId, btn) {
+// ─── Photo queue: a photo stays on the phone until the server has confirmed it ───
+// Every upload goes through the queue first, so a dropped connection or a closed app never loses a photo.
+const KO_NOKKEL = 'tk_bildeko';
+let KO_MINNE = null;   // used only when the phone's storage is full
+function koAlle() {
+  if (KO_MINNE) return KO_MINNE;
+  try { const v = JSON.parse(hent(KO_NOKKEL) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; }
+}
+function koLagre(liste) {
+  try { if (liste.length) localStorage.setItem(KO_NOKKEL, JSON.stringify(liste)); else localStorage.removeItem(KO_NOKKEL); KO_MINNE = null; }
+  catch (e) { KO_MINNE = liste; }
+}
+const koMine = refId => (S.d ? koAlle().filter(x => x.tlf === meg().telefon && (refId === undefined || x.ref_id === String(refId))) : []);
+async function lastOppKo(liste, btn) {
   let feil = 0, melding = '';
   for (let i = 0; i < liste.length; i++) {
     if (btn) btn.innerHTML = t('lasterOppAv', i + 1, liste.length);
-    try { await api('lastOppBilde', { ref_type: refType, ref_id: refId, type: liste[i].type, data: liste[i].data, kommentar: liste[i].kommentar || '' }); }
-    catch (e) { feil++; melding = e.message; }
+    const b = liste[i];
+    try {
+      await api('lastOppBilde', { ref_type: b.ref_type, ref_id: b.ref_id, type: b.type, data: b.data, kommentar: b.kommentar || '' });
+      koLagre(koAlle().filter(x => x.kid !== b.kid));
+    } catch (e) { feil++; melding = e.message; }
   }
   return feil ? t('bildeFeil', feil, liste.length, melding) : '';
+}
+async function lastOppBilder(liste, refType, refId, btn) {
+  if (!liste.length) return '';
+  const tlf = meg().telefon, st = Date.now().toString(36);
+  const nye = liste.map((b, i) => ({ kid: st + '-' + i + '-' + Math.random().toString(36).slice(2, 7), tlf, ref_type: refType, ref_id: String(refId),
+    type: b.type, data: b.data, kommentar: b.kommentar || '' }));
+  koLagre(koAlle().concat(nye));
+  return lastOppKo(nye, btn);
+}
+/** Banner with the photos that are still waiting on this phone – for one inspection/declaration, or all of them. */
+function koBanner(refId) {
+  const l = koMine(refId);
+  if (!l.length) return '';
+  const typer = [...new Set(l.map(b => t('bt_' + b.type)))].join(', ');
+  return `<div class="banner v1 kobanner"><div>${esc(l.length === 1 ? t('koTittel1') : t('koTittel', l.length))}</div>
+    <div class="kotyper">${esc(typer)}</div><div class="koinfo">${esc(t('koInfo'))}</div>
+    <div class="knapperad" style="margin:10px 0 0"><button type="button" class="primar" data-a="provBilderIgjen">${t('koProv')}</button>
+      <button type="button" data-a="forkastBilder">${t('koForkast')}</button></div></div>`;
 }
 async function velgBilder(el) {
   const filer = Array.from(el.files || []);
@@ -1009,7 +1065,7 @@ function visLogin() {
       <label class="felt"><span>${t('kodeFraRc')}</span><input name="kode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></label>
       <label class="felt"><span>${t('velgPassord')}</span><input name="passord" type="password" autocomplete="new-password" minlength="6" required></label>
       <label class="felt"><span>${t('gjentaPassord')}</span><input name="passord2" type="password" autocomplete="new-password" minlength="6" required></label>`
-      : `<label class="felt"><span>${t('passord')}</span><input name="passord" type="password" autocomplete="current-password" required></label>`}
+      : `<label class="felt"><span>${t('passordKode')}</span><input name="passord" type="password" autocomplete="current-password" required></label>`}
       <button class="primar bred" style="margin:4px 0 0">${modus === 'aktiver' ? t('lagPassordLogg') : t('loggInn')}</button>
     </form>
     <p class="hint">${modus === 'aktiver' ? t('hintAktiver') : t('hintLogin')}</p>
@@ -1078,11 +1134,11 @@ function render() {
     <header class="topp"><h1><img src="rcportal-topp.png?v=2" alt="${t('app')}" class="ordmerke-topp"></h1>
       <button type="button" class="hvem${S.fane === 'konto' ? ' aktiv' : ''}" data-fane="konto" aria-label="${esc(t('f_konto'))}"><span>${esc(b.navn)}<br>${esc(t('r_' + b.rolle))} · ${esc(b.avdeling)}</span>${avatar(b.telefon, 'avatar-liten') || svg(IKON.person)}</button>
       <button type="button" class="tlfknapp" data-a="telefonliste" aria-label="${esc(t('telefonliste'))}">${svg(IKON.telefon)}</button></header>
-    <main><div id="installPlass">${installBanner()}</div>${innhold()}${tilbakeLenke()}</main>
+    <main><div id="installPlass">${installBanner()}</div>${koBanner()}${innhold()}${tilbakeLenke()}</main>
     <nav class="bunn">${faner().map(([id, ik]) => `<button data-fane="${id}" class="${S.fane === id ? 'aktiv' : ''}">${svg(ik)}${t('f_' + id)}</button>`).join('')}</nav>`;
   if (S.fane === 'kontroll') oppdaterStatus();
   if (S.fane === 'wolfpack') lastWolfpack();
-  if (S.fane === 'oversikt' || S.fane === 'mine') lastKalender();
+  if (S.fane === 'oversikt' || S.fane === 'mine') { lastKalender(); lastBokStatus(); }
   if (S.fane === 'oversikt' && S.sok) filtrerSykler(S.sok);
   fyllBilder($('#app'));
 }
@@ -1136,7 +1192,7 @@ function visOversikt() {
   const vekt = i => (i.forbud ? 0 : i.frist ? 1 : i.manglerNa ? 2 : 3);
   const liste = alle.filter(filtre[S.filter] || filtre.alle).sort((a, b) => vekt(a) - vekt(b) || a.s.eier.localeCompare(b.s.eier, 'nb'));
   const statKnapp = (id, tall, tekst) => `<button data-filter="${id}" class="${S.filter === id ? 'aktiv' : ''}"><b>${tall}</b><span>${tekst}</span></button>`;
-  return `<div id="kalNeste"></div>${bokKnapp()}<h2>${t('oversikt')}${S.avd !== 'Alle' ? ' – ' + esc(S.avd) : ''}</h2>
+  return `<h2>${t('oversikt')}${S.avd !== 'Alle' ? ' – ' + esc(S.avd) : ''}</h2>
     ${avdVelger()}
     <div class="stat">${statKnapp('alle', ant.alle, t('st_sykler'))}${am ? statKnapp('mangler', ant.mangler, t('st_mangler', mndNavn(am))) : statKnapp('alle', '–', t('st_utenfor'))}${statKnapp('avvik', ant.avvik, t('st_avvik'))}${statKnapp('forbud', ant.forbud, t('st_forbud'))}</div>
     ${(() => { const v = S.d.kontroller.filter(k => kanGodkjenne(k) && iAvd(k));
@@ -1145,7 +1201,8 @@ function visOversikt() {
         <div class="dempet">${esc(k.regnr)} · ${esc(Mnd(Number(kMnd(k).slice(5))))} · ${fmtDato(k.dato)}${S.avd === 'Alle' ? ' · ' + esc(k.avdeling) : ''}</div></button>`).join('')}</div>` : ''; })()}
     <div class="knapperad" style="margin:-4px 0 14px">${(() => { const n = oppfolgingPunkter().length; return `<button type="button" data-a="oppfolging" class="${n ? 'primar' : ''}">${n ? t('oppfolgingN', n) : t('oppfolging')}</button>`; })()}
       <button type="button" data-a="statistikk">${t('statistikk')}</button></div>
-    <div class="forklaring"><span><i style="background:var(--s0)"></i>${t('s0')}</span><span><i style="background:var(--s1)"></i>${t('s1')}</span><span><i style="background:var(--s2)"></i>${t('s2')}</span><span>${esc(t('sesong', aar()))}: ${esc(mndNavn(SESONG[0]))}–${esc(mndNavn(SESONG[SESONG.length - 1]))}</span></div>
+    ${bokKnapp()}<div id="kalNeste"></div>
+    <div class="forklaring" id="listeStart"><span><i style="background:var(--s0)"></i>${t('s0')}</span><span><i style="background:var(--s1)"></i>${t('s1')}</span><span><i style="background:var(--s2)"></i>${t('s2')}</span><span>${esc(t('sesong', aar()))}: ${esc(mndNavn(SESONG[0]))}–${esc(mndNavn(SESONG[SESONG.length - 1]))}</span></div>
     ${alle.length ? sokRad() : ''}
     ${liste.length ? liste.map(i => sykkelKort(i, S.avd === 'Alle')).join('') :
       `<p class="tom">${alle.length ? t('ingenUtvalg') : t('ingenSykler')}</p>`}`;
@@ -1200,12 +1257,25 @@ function profilKort(tlf) {
   </div>`;
 }
 
+/** Receipt at the top of the bike after an inspection is delivered: what was saved and whether photos are still waiting. */
+function kvitteringHtml(sykkelId) {
+  const q = S.kvitt;
+  if (!q || q.sykkel !== sykkelId || Date.now() - q.tid > 30 * 60e3) return '';
+  const k = S.d.kontroller.find(x => x.id === q.kontroll);
+  const igjen = koMine(q.kontroll).length, lagret = Math.max(0, q.bilder - igjen);
+  const bt = !q.bilder ? t('kvIngenBilder') : igjen ? t('kvBilderDel', lagret, q.bilder) : q.bilder === 1 ? t('kvBilder1') : t('kvBilderOk', q.bilder);
+  const linje = k ? `${Mnd(Number(kMnd(k).slice(5)))} · ${t('sk_' + kSkjema(k))} · ${fmtDato(k.dato)}${k.km !== '' ? ' · ' + fmtKm(k.km) : ''}` : '';
+  return `<div class="banner ${q.type === 'kvVenter' ? 'info' : 'v0'} kvittering"><div class="kvtittel">✓ ${esc(t(q.type))}</div>
+    ${linje ? `<div>${esc(linje)}</div>` : ''}<div>${esc(bt)}</div></div>${koBanner(q.kontroll)}`;
+}
+
 function visSykkel(id) {
   const s = finnSykkel(id);
   if (!s) return tilbake();
   const ks = kontrollerFor(id);
   const es = egenFor(s.telefon).filter(e => e.sykkel_id === id);
   tegnLag(s.regnr, `
+    ${kvitteringHtml(id)}
     ${(() => { const mb = sisteBilde('sykkel', id); return mb ? `<button type="button" style="padding:0;border:0;background:none;width:100%;min-height:0;display:block" data-vis-bilde="${esc(mb.id)}"><img class="mcbilde" data-bilde-id="${esc(mb.id)}" alt="${esc(s.regnr)}"></button>` : ''; })()}
     ${kanSykkelbilde(s) ? `<p style="margin:-2px 0 10px">${filKnapp('sykkel', id, sisteBilde('sykkel', id) ? t('bk_sykkel') : t('bk_sykkelNy'))}</p>` : ''}
     <div class="kort"><div class="linje1"><h2 style="margin:0">${esc(s.eier)}</h2>${ks[0] && ks[0].kjoreforbud === 'Ja' ? `<span class="merke">${t('forbudMerke')}</span>` : ''}</div>
@@ -1263,6 +1333,7 @@ function visKontroll(id) {
     `<dt>${t(p.n)}${(p.x || []).map(([xid, xn]) => k[xid] !== '' && k[xid] != null ? `<br><small>${t(xn)}: ${esc(k[xid])}</small>` : '').join('')}</dt><dd>${chip(k[p.id], skalaNavn(k[p.id]))}</dd>`).join('')}</dl></div>`;
   const sum = Number(k.sum_allmenn);
   tegnLag(t('kontrollTittel', fmtDato(k.dato)), `
+    ${koBanner(k.id)}
     ${venter(k) ? `<div class="banner info">${t('venterGodkj')}${kanGodkjenne(k) ? `<div class="knapperad" style="margin:10px 0 0">
         <button type="button" class="primar" data-a="godkjenn" data-id="${esc(k.id)}">${t('godkjenn')}</button>
         <button type="button" data-a="rettKontroll" data-id="${esc(k.id)}">${t('rettGodkjenn')}</button>
@@ -1503,6 +1574,7 @@ function visKontrollSkjema() {
       <label class="felt"><span>${t('fiksesInnen')}</span><input type="date" data-f="frist" value="${esc(F.frist)}"></label>
       <label class="felt"><span>${t('merknad')}</span><textarea data-f="merknad" placeholder="${esc(t('merknadPh'))}">${esc(F.merknad)}</textarea></label>
     </div>
+    <p id="manglerLinje" class="manglerlinje" aria-live="polite"></p>
     <button type="button" class="primar bred" data-a="lagreKontroll">${t('lagreKontroll')}</button>
     ${!F._retter && kanEndreNoe() && nesteSykler().length ? `<button type="button" class="bred" data-a="lagreKontroll" data-neste="1">${t('lagreNeste', nesteSykler().length)}</button>` : ''}
     <button type="button" class="bred fare" data-a="forkastKontroll">${t('tomSkjema')}</button>
@@ -1547,6 +1619,18 @@ function oppdaterStatus() {
   else { tekst = t('stIngen'); kl = ''; }
   if (mangler && satt.length) tekst += mangler === 1 ? t('stGjen1') : t('stGjenN', mangler);
   el.className = 'banner ' + kl; el.textContent = tekst;
+  // one line right above «Save» with everything that would stop the save (same rules as lagreKontroll)
+  const ml = $('#manglerLinje');
+  if (ml && F.skjema !== 'ekstra') {
+    const harBilde = ty => (F.bilder || []).some(b => b.type === ty);
+    const deler = [];
+    if (!F.sykkel_id) deler.push(t('mlSykkel'));
+    if (!F._retter) ['dekk_f', 'dekk_b'].forEach(ty => { if (!harBilde(ty)) deler.push(t('mlBilde', t('bt_' + ty).toLowerCase())); });
+    if (F.utbedret_for && !harBilde('annet')) deler.push(t('mlUtbedret'));
+    if (mangler) deler.push(mangler === 1 ? t('ml1') : t('mlN', mangler));
+    ml.className = 'manglerlinje' + (deler.length ? '' : ' klar');
+    ml.textContent = deler.length ? t('mlMangler', deler.join(', ')) : t('mlKlar');
+  }
 }
 
 // ─── Wolfpack ───────────────────────────────────────────────
@@ -2164,6 +2248,7 @@ function visEgen(id) {
   const e = S.d.egenerklaeringer.find(x => x.id === id);
   if (!e) return tilbake();
   tegnLag(t('egenDetalj', fmtDato(e.dato)), `
+    ${koBanner(e.id)}
     <div class="kort"><dl class="info">
       <dt>${t('navn')}</dt><dd>${esc(e.navn)}</dd><dt>${t('avdeling')}</dt><dd>${esc(e.avdeling)}</dd>
       <dt>${t('reiseforsikring')}</dt><dd>${jaNei(e.reiseforsikring)}${e.reiseforsikring_selskap ? ' – ' + esc(e.reiseforsikring_selskap) : ''}</dd>
@@ -2759,15 +2844,17 @@ const A = {
                        : await api('lagreKontroll', { kontroll: data });
       F = null; lagre('tk_utkast', null);
       const feil = await lastOppBilder(bilder, 'kontroll', r.id, btn);
-      await lastData();
+      try { await lastData(); } catch (e) { /* saved; the next refresh picks it up */ }
+      S.kvitt = { sykkel: id, kontroll: r.id, tid: Date.now(), bilder: bilder.length,
+        type: retter ? 'kvGodkjent' : r.status === 'venter' ? 'kvVenter' : 'kvLevert' };
       if (neste.length && !feil) {   // inspection evening: straight on to the next bike missing this month
         F = nyttSkjema(neste[0].id); F.maaned = nesteMnd; F.skjema = skjemaForMnd(Number(nesteMnd.slice(5))); forhandsutfyll(); lagreUtkast();
         S.fane = 'kontroll'; lukkAlle(); render(); scrollTo(0, 0);
         return toast(t('lagretNeste', neste[0].eier, neste.length - 1));
       }
       S.fane = kanEndreNoe() ? 'oversikt' : 'mine'; render(); scrollTo(0, 0);
-      apne(() => visSykkel(id));
-      if (feil) { apne(() => visKontroll(r.id)); toast(feil + t('provHer'), true); }
+      apne(() => visSykkel(id));   // the receipt at the top shows what was saved, with «Try again» for photos still on the phone
+      if (feil) toast(feil, true);
       else toast(retter ? t('godkjentToast') : r.status === 'venter' ? t('sendtTilGodkj') : t('lagret'));
     });
   },
@@ -2815,7 +2902,7 @@ const A = {
       G = null;
       const feil = await lastOppBilder(bilder, 'egen', r.id, btn);
       lukkAlle(); await lastData(); render();
-      if (feil) { apne(() => visEgen(r.id)); toast(feil + t('provHer'), true); }
+      if (feil) { apne(() => visEgen(r.id)); toast(feil, true); }
       else toast(t('egenSendt'));
     });
   },
@@ -2879,6 +2966,22 @@ const A = {
   },
   loggUt() { loggUt(); },
   oppfolging() { apne(visOppfolging); },
+  async provBilderIgjen(btn) {
+    const mine = koMine();
+    if (!mine.length) { render(); if (LAG.length) LAG[LAG.length - 1](); return; }
+    await medKnapp(btn, async () => {
+      const feil = await lastOppKo(mine, btn);
+      try { await lastData(); } catch (e) { /* the toast below says enough */ }
+      render(); if (LAG.length) LAG[LAG.length - 1]();
+      toast(feil || t('koAlleOk'), !!feil);
+    });
+  },
+  forkastBilder() {
+    if (!confirm(t('koForkastSp'))) return;
+    koLagre(koAlle().filter(x => x.tlf !== meg().telefon));
+    render(); if (LAG.length) LAG[LAG.length - 1]();
+    toast(t('koForkastet'));
+  },
   telefonliste() { apne(visTelefonliste); },
   tlfPdf(el) { medKnapp(el, tlfPdf); },
   vcfPerson(el) { const a = TLF.avdelinger[+el.dataset.avd], p = a && a.personer[+el.dataset.p]; if (p) lastNedVcf(p.navn, vKort(p, a.navn)); },
@@ -2946,7 +3049,11 @@ document.addEventListener('click', ev => {
   if ('sprak' in ds) return settSprak(ds.sprak);
   if ('modus' in ds) return visLogin(ds.modus);
   if ('fane' in ds) { S.fane = ds.fane; lukkAlle(); render(); return scrollTo(0, 0); }
-  if ('filter' in ds) { S.filter = S.filter === ds.filter ? 'alle' : ds.filter; return render(); }
+  if ('filter' in ds) {
+    S.filter = S.filter === ds.filter ? 'alle' : ds.filter; render();
+    const l = S.filter !== 'alle' && $('#listeStart'); if (l) l.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
   if ('wpAvd' in ds) { wpAvd = ds.wpAvd; $$('[data-wp-avd]').forEach(b => b.classList.toggle('aktiv', b === el)); const aar = S.wpAar || new Date().getFullYear(); if (WP[aar]) tegnWolfpack(WP[aar]); return; }
   if ('sett' in ds) {
     const sk = skjemaFor(el); if (!sk || !sk.obj) return;
@@ -3025,7 +3132,37 @@ document.addEventListener('submit', async ev => {
   });
 });
 
-const bokKnapp = () => `<button type="button" class="kort bokknapp" data-a="rcBok">${svg(IKON.bok)}<span><b>${t('bokTittel')}</b><small>${esc(t('bokKortInfo', meg().avdeling))}</small></span><span class="pil">›</span></button>`;
+const bokKnapp = () => `<button type="button" class="kort bokknapp" data-a="rcBok">${svg(IKON.bok)}<span><b>${t('bokTittel')}</b><small id="bokStatus">${bokStatusHtml() || esc(t('bokKortInfo', meg().avdeling))}</small></span><span class="pil">›</span></button>`;
+// Status of the own chapter's book: last month delivered or not, entries this month, contributions waiting for the RC.
+let BOKSTATUS = null, BOKSTATUS_HENTER = null;
+function bokStatusFra(d) {
+  const na = new Date(), y = na.getFullYear(), m = na.getMonth() + 1;
+  if (!d || d.avdeling !== meg().avdeling || String(d.aar) !== String(y)) return null;
+  const mnd = mndKey(y, m), forrige = m > 1 ? mndKey(y, m - 1) : '';   // January: last month is in last year's book – skipped
+  const info = x => (d.maaneder || []).find(z => z.maaned === x) || {};
+  return { avd: d.avdeling, t: Date.now(), m, mnd, forrige, forrigeLevert: !forrige || info(forrige).levert === 'Ja',
+    poster: (d.poster || []).filter(p => p.maaned === mnd && p.status !== 'innlevert').length,
+    venter: d.kanSkrive ? (d.poster || []).filter(p => p.status === 'innlevert').length : 0 };
+}
+function bokStatusHtml() {
+  const b = BOKSTATUS;
+  if (!b || !S.d || b.avd !== meg().avdeling) return '';
+  const deler = [];
+  if (b.forrige) deler.push(b.forrigeLevert ? esc(t('bokStLevert', Mnd(b.m - 1))) : `<span class="oransje">${esc(t('bokStIkkeLevert', Mnd(b.m - 1)))}</span>`);
+  deler.push(esc(t('bokStInnlegg', Mnd(b.m), b.poster)));
+  if (b.venter) deler.push(`<span class="oransje">${esc(t('bokStVenter', b.venter))}</span>`);
+  return esc(meg().avdeling) + ' · ' + deler.join(' · ');
+}
+async function lastBokStatus() {
+  if (!S.d || !$('#bokStatus')) return;
+  if (!BOKSTATUS || BOKSTATUS.avd !== meg().avdeling || Date.now() - BOKSTATUS.t > 5 * 60e3) {
+    try { BOKSTATUS = bokStatusFra(await (BOKSTATUS_HENTER = BOKSTATUS_HENTER || api('rcBok', { avdeling: meg().avdeling, aar: String(new Date().getFullYear()) }))); }
+    catch (e) { return; }   // the button keeps its plain text
+    finally { BOKSTATUS_HENTER = null; }
+  }
+  const el = $('#bokStatus'), h = bokStatusHtml();
+  if (el && h) el.innerHTML = h;
+}
 // ─── RC-bok (the chapter's monthly activity log) ───────────────
 // Read: own chapter for everyone; every chapter for RC, president, officer and admin.
 // Write: RC/officer of the chapter and admin. Members hand in entries that their RC takes into the book.
@@ -3040,6 +3177,7 @@ async function lastBok(tving) {
   if (!tving && BOK && BOK.avdeling === BOKV.avd && BOK.aar === BOKV.aar && BOK._forslag === BOKV.mnd) return BOK;
   const d = await api('rcBok', { avdeling: BOKV.avd, aar: BOKV.aar, forslag: BOKV.mnd });
   d._forslag = BOKV.mnd;
+  BOKSTATUS = bokStatusFra(d) || BOKSTATUS;
   BOK = d; return d;
 }
 const bokUkedag = ds => { const d = new Date(ds + 'T12:00'); return d.toLocaleDateString(LANG === 'en' ? 'en-GB' : 'nb-NO', { weekday: 'long' }); };
@@ -3078,6 +3216,21 @@ function bokPostHtml(p, iBok) {
   </article>`;
 }
 
+/** Calendar suggestions for the book: one row per event, with the calendar(s) it came from.
+ *  The same event in several calendars (same date and title) becomes one row – the backend only sends calendars this user may see.
+ *  An event whose date and title are already an entry in the book is marked instead of offered again. */
+function bokForslagListe() {
+  const norm = x => String(x || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  const ut = [], idx = {};
+  (BOK.forslag || []).forEach((h, i) => {
+    const k = h.dato + '|' + norm(h.tittel);
+    if (idx[k] !== undefined) { const g = ut[idx[k]]; if (h.kalender && !g.kalendere.includes(h.kalender)) g.kalendere.push(h.kalender); return; }
+    idx[k] = ut.length;
+    ut.push({ h, i, kalendere: h.kalender ? [h.kalender] : [], iBoka: BOK.poster.some(p => p.dato === h.dato && norm(p.tittel) === norm(h.tittel)) });
+  });
+  return ut;
+}
+
 async function visRcBok() {
   bokStart();
   const tittel = t('bokTittel');
@@ -3092,7 +3245,7 @@ async function visRcBok() {
   const tall = n => BOK.poster.filter(p => p.maaned === iAar(n)).length;
   const naaMnd = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0');
   const ventende = poster.filter(p => p.status === 'innlevert');
-  const forslag = (BOK.forslag || []);
+  const forslag = bokForslagListe();
   tegnLag(tittel, `
     <div class="bokvelg">
       ${(BOK.lesbare || []).length > 1 ? `<select data-bok-avd aria-label="${esc(t('avdeling'))}">${BOK.lesbare.map(a => `<option${a === BOKV.avd ? ' selected' : ''}>${esc(a)}</option>`).join('')}</select>` : `<b>${esc(BOKV.avd)}</b>`}
@@ -3112,8 +3265,9 @@ async function visRcBok() {
     </div>
     ${BOK.kanBidra || BOK.kanSkrive ? `<button type="button" class="primar bred" data-a="bokNy">＋ ${t('bokNy')}</button>` : ''}
     ${(BOK.kanBidra || BOK.kanSkrive) && forslag.length ? `<div class="kort"><h3>${t('bokForslag')}</h3><p class="dempet" style="margin-top:0">${t('bokForslagInfo')}</p>
-      ${forslag.map((h, i) => `<div class="bokforslag"><div><b>${esc(h.tittel)}</b><small>${esc(stor(bokUkedag(h.dato)))} ${Number(h.dato.slice(8))}. ${esc(mndNavn(Number(h.dato.slice(5, 7))))}${h.sted ? ' · ' + esc(h.sted) : ''}</small></div>
-        <button type="button" data-a="bokFraKal" data-i="${i}">${t('bokLeggTil')}</button></div>`).join('')}</div>` : ''}
+      ${forslag.map(({ h, i, kalendere, iBoka }) => `<div class="bokforslag"><div><b>${esc(h.tittel)}</b><small>${esc(stor(bokUkedag(h.dato)))} ${Number(h.dato.slice(8))}. ${esc(mndNavn(Number(h.dato.slice(5, 7))))}${h.sted ? ' · ' + esc(h.sted) : ''}</small>
+        ${kalendere.map(n => `<span class="kaltag">${esc(n)}</span>`).join('')}</div>
+        ${iBoka ? `<span class="boklagtil">${t('bokAlleredeLagtTil')}</span>` : `<button type="button" data-a="bokFraKal" data-i="${i}">${t('bokLeggTil')}</button>`}</div>`).join('')}</div>` : ''}
     ${BOK.kanSkrive ? `<div class="kort"><h3>${t('bokRc')}</h3><div class="knapperad">
       <button type="button" data-a="bokTekster">${t('bokTekster')}</button>
       <button type="button" data-a="bokLever" data-v="${info.levert === 'Ja' ? '' : '1'}">${t(info.levert === 'Ja' ? 'bokApneIgjen' : 'bokMarkerLevert')}</button>

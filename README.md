@@ -42,7 +42,9 @@ Same stack as the club sales app: **Google Sheet** (storage) + **Apps Script** (
 - The phone scales photos down to max 1600 px JPEG before upload (typically 200–400 kB), so mobile data and Drive space are no problem.
 - Files are saved in your Drive under `Teknisk kontroll – bilder/<avdeling>/`, named `<date> <regnr> <type>.jpg`. The `Bilder` sheet has a `fil_url` column for opening them directly.
 - The files are **private**, with no public links. The app fetches them through the API using the same access rules as everything else.
-- Photos can be added afterwards from the control/declaration view for 7 days (admins always). Deleting a control also moves its photos to the Drive trash.
+- Every photo goes through a queue on the phone (`tk_bildeko` in localStorage) and is removed from it only when the server has confirmed it. If an upload fails, or the app is closed halfway, the photos stay on the phone and a banner with **Try again** / **Discard** appears on the inspection, the bike receipt and the main screen. The inspection itself is already saved.
+- After an inspection is saved, the bike page shows a receipt at the top (month, form, date, how many photos are saved) for 30 minutes.
+- Photos can be added afterwards from the control/declaration view for 7 days (admins always). A member can do the same on his own self-inspection. Deleting a control also moves its photos to the Drive trash.
 
 ## 2. Frontend
 
