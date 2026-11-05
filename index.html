@@ -162,6 +162,7 @@ label.felt>span,.felt-tittel{display:block;font-size:13px;color:var(--dempet);ma
 .ekstra input{min-height:42px;padding:9px 10px;font-size:15px}
 .valg2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .valg2 button{min-height:42px;padding:8px}
+.typevalg{margin:0 0 12px}.valg2.typevalg button.valgt{background:var(--aksent);border-color:var(--aksent);color:var(--aksent-t)}
 .valg2 button.valgt{background:var(--s0);border-color:var(--s0);color:#fff}
 .valg2 button.valgt.neg{background:var(--s2);border-color:var(--s2)}
 .valg2.noy button.valgt{background:#3c4452;border-color:#566070}
@@ -365,7 +366,7 @@ const TXT = {
     avdeling: 'Avdeling', alleAvd: 'Alle avdelinger',
     s0: 'OK', s1: 'Bør utbedres', s2: 'Kjøreforbud', s0k: 'OK', s1k: 'Bør<br>utbedres', s2k: 'Kjøre&shy;forbud', forbudMerke: 'KJØREFORBUD',
     g_lys: 'Lys', g_dekk: 'Dekk', g_bremser: 'Brems', g_ramme: 'Ramme', g_motor: 'Motor', g_allmenn: 'Allmenn tilstand',
-    sk_egen: 'Egenerklæring', sk_stor: 'Stor kontroll', sk_enkel: 'Enkel kontroll',
+    sk_egen: 'Egenerklæring', sk_stor: 'Stor kontroll', sk_enkel: 'Enkel kontroll', sk_ekstra: 'Ekstra kontroll', mndKontroll: 'Månedskontroll', arrangement: 'Arrangement', arrangementPh: 'F.eks. Treff Larvik', valgfritt: 'valgfritt', ekstraHint: 'Rask kontroll på arrangementer – også sykler fra andre avdelinger. Teller ikke som månedens kontroll, men avvik og kjøreforbud følges opp som vanlig.', ekstraLagre: 'Lagre og ta neste sykkel', ekstraLagret: 'Lagret: {0} – klar for neste sykkel', ekstraOkt: 'Kontrollert her ({0})', byttTypeSporsmal: 'Du har et påbegynt skjema. Bytte type og tømme det?',
     oversikt: 'Oversikt', st_sykler: 'sykler', st_mangler: 'mangler {0}', st_avvik: 'med avvik', st_forbud: 'kjøreforbud', st_utenfor: 'utenfor sesong',
     ingenUtvalg: 'Ingen sykler i dette utvalget.', ingenSykler: 'Ingen sykler registrert ennå. Legg dem inn under Medlemmer.',
     kontrollert: 'Kontrollert {0}', aldri: 'Aldri kontrollert', manglerMnd: '{0} mangler', frist: 'frist {0}', passert: ' – passert',
@@ -508,7 +509,7 @@ const TXT = {
     avdeling: 'Chapter', alleAvd: 'All chapters',
     s0: 'OK', s1: 'Fix soon', s2: 'Do not ride', s0k: 'OK', s1k: 'Fix<br>soon', s2k: 'Do not<br>ride', forbudMerke: 'DO NOT RIDE',
     g_lys: 'Lights', g_dekk: 'Tyres', g_bremser: 'Brakes', g_ramme: 'Frame', g_motor: 'Engine', g_allmenn: 'General condition',
-    sk_egen: 'Self-declaration', sk_stor: 'Full inspection', sk_enkel: 'Quick inspection',
+    sk_egen: 'Self-declaration', sk_stor: 'Full inspection', sk_enkel: 'Quick inspection', sk_ekstra: 'Extra inspection', mndKontroll: 'Monthly inspection', arrangement: 'Event', arrangementPh: 'E.g. Rally Larvik', valgfritt: 'optional', ekstraHint: 'Quick check at events – bikes from other chapters too. Does not count as the monthly inspection, but issues and riding bans are followed up as usual.', ekstraLagre: 'Save and take the next bike', ekstraLagret: 'Saved: {0} – ready for the next bike', ekstraOkt: 'Inspected here ({0})', byttTypeSporsmal: 'You have a form in progress. Switch type and clear it?',
     oversikt: 'Overview', st_sykler: 'bikes', st_mangler: 'missing {0}', st_avvik: 'with issues', st_forbud: 'do not ride', st_utenfor: 'off season',
     ingenUtvalg: 'No bikes match this filter.', ingenSykler: 'No bikes registered yet. Add them under Members.',
     kontrollert: 'Inspected {0}', aldri: 'Never inspected', manglerMnd: '{0} missing', frist: 'deadline {0}', passert: ' – overdue',
@@ -705,7 +706,9 @@ const aar = () => new Date().getFullYear();
 const aktivMnd = () => (SESONG.includes(naaMnd()) ? naaMnd() : null);
 const mndKey = (y, m) => y + '-' + pad(m);
 const kMnd = k => String(k.maaned || k.dato).slice(0, 7);
-const kSkjema = k => (k.skjema === 'enkel' ? 'enkel' : 'stor');
+const kSkjema = k => (k.skjema === 'enkel' || k.skjema === 'ekstra' ? k.skjema : 'stor');
+// Extra inspection (spot check at an event): the simple points, any month, never counts as the month's inspection
+const erEkstra = k => k && k.skjema === 'ekstra';
 const skalaNavn = v => [t('s0'), t('s1'), t('s2')][Number(v)] || '–';
 const fmtKm = v => v === '' || v == null ? '' : Number(v).toLocaleString(LANG === 'en' ? 'en-GB' : 'nb-NO') + ' km';
 
@@ -810,7 +813,7 @@ const kanGodkjenne = k => venter(k) && kanEndreAvd(k.avdeling);
 const venterMerke = k => venter(k) ? `<span class="merke gul">${t('venterMerke')}</span>` : '';
 const finnSykkel = id => S.d.sykler.find(s => s.id === id);
 const kontrollerFor = id => S.d.kontroller.filter(k => k.sykkel_id === id);
-const sisteKontroll = id => S.d.kontroller.find(k => k.sykkel_id === id);
+const sisteKontroll = id => S.d.kontroller.find(k => k.sykkel_id === id && !(erEkstra(k) && Number(k.sum_allmenn) < 1 && k.kjoreforbud !== 'Ja'));
 // A self-inspection waiting for approval must not make a bike look better than the last approved one – e.g. lift a riding ban.
 const gjeldendeKontroll = id => {
   const k = sisteKontroll(id); if (!k || k.status !== 'venter') return k;
@@ -829,7 +832,7 @@ function mndStatus(s, m, y) {
     const e = egne.find(x => x.sykkel_id === s.id) || egne[0];
     return e ? { v: egenAvvik(e) ? 1 : 0, e } : null;
   }
-  const k = S.d.kontroller.find(x => x.sykkel_id === s.id && kMnd(x) === mndKey(y, m));
+  const k = S.d.kontroller.find(x => x.sykkel_id === s.id && !erEkstra(x) && kMnd(x) === mndKey(y, m));
   return k ? { v: Number(k.sum_allmenn) || 0, k } : null;
 }
 
@@ -1220,7 +1223,7 @@ function visSykkel(id) {
     ${bildeKort('sykkelgalleri', s, ['annet'])}
     <h3>${t('kontroller', ks.length)}</h3>
     ${ks.length ? ks.map(k => `<button class="kort" data-kontroll="${esc(k.id)}">
-        <div class="linje1"><b>${esc(Mnd(Number(kMnd(k).slice(5))))} · ${t('sk_' + kSkjema(k))}</b>${venterMerke(k)}${k.kjoreforbud === 'Ja' ? `<span class="merke">${t('forbudMerke')}</span>` : chip(k.sum_allmenn, skalaNavn(k.sum_allmenn))}</div>
+        <div class="linje1"><b>${erEkstra(k) ? esc(t('sk_ekstra') + (k.arrangement ? ' · ' + k.arrangement : '')) : `${esc(Mnd(Number(kMnd(k).slice(5))))} · ${t('sk_' + kSkjema(k))}`}</b>${venterMerke(k)}${k.kjoreforbud === 'Ja' ? `<span class="merke">${t('forbudMerke')}</span>` : chip(k.sum_allmenn, skalaNavn(k.sum_allmenn))}</div>
         <div class="dempet">${fmtDato(k.dato)} · ${esc(k.kontrollor)}${k.km !== '' ? ' · ' + fmtKm(k.km) : ''}${antBilder('kontroll', k.id)}</div>${chips(k)}</button>`).join('')
       : `<p class="tom">${t('ingenKontroller')}</p>`}
     <h3>${t('egenerkl', es.length)}</h3>
@@ -1270,14 +1273,14 @@ function visKontroll(id) {
     <div class="kort"><dl class="info">
       <dt>${t('eier')}</dt><dd>${esc(k.navn)}</dd><dt>${t('sykkel')}</dt><dd>${esc(k.regnr)} ${esc(k.modell)}</dd>
       <dt>${t('avdeling')}</dt><dd>${esc(k.avdeling)}</dd>
-      <dt>${t('maaned')}</dt><dd>${esc(Mnd(Number(kMnd(k).slice(5))))} ${esc(kMnd(k).slice(0, 4))}</dd><dt>${t('skjema')}</dt><dd>${t('sk_' + sk)}</dd>
+      ${sk === 'ekstra' ? (k.arrangement ? `<dt>${t('arrangement')}</dt><dd>${esc(k.arrangement)}</dd>` : '') : `<dt>${t('maaned')}</dt><dd>${esc(Mnd(Number(kMnd(k).slice(5))))} ${esc(kMnd(k).slice(0, 4))}</dd>`}<dt>${t('skjema')}</dt><dd>${t('sk_' + sk)}</dd>
       <dt>${t('km')}</dt><dd>${k.km !== '' ? fmtKm(k.km) : '–'}${k.km_byttet === 'Ja' ? ` <small>(${t('kmByttetKort')})</small>` : ''}</dd>
       ${sk === 'stor' ? `<dt>${t('bildeAvis')}</dt><dd>${jaNei(k.bilde_avis)}</dd>` : ''}
       <dt>${t('kontrollor')}</dt><dd>${esc(k.kontrollor)}</dd><dt>${t('registrert')}</dt><dd>${esc(k.tidspunkt)}</dd>
       ${!venter(k) && k.godkjent_av ? `<dt>${t('godkjentAvTittel')}</dt><dd>${esc(k.godkjent_av)}</dd>` : ''}</dl>${sk === 'stor' ? chips(k) : ''}</div>
     ${bildeKort('kontroll', k, ['dekk_f', 'dekk_b', 'km', 'avis', 'annet'])}
-    ${sk === 'enkel'
-      ? `<div class="kort"><h3>${t('sk_enkel')}</h3><dl class="info">${ENKEL.map(([id, n]) => `<dt>${t(n)}</dt><dd>${chip(k[id], skalaNavn(k[id]))}</dd>`).join('')}</dl></div>`
+    ${sk !== 'stor'
+      ? `<div class="kort"><h3>${t('sk_' + sk)}</h3><dl class="info">${ENKEL.map(([id, n]) => `<dt>${t(n)}</dt><dd>${chip(k[id], skalaNavn(k[id]))}</dd>`).join('')}</dl></div>`
       : SEKSJONER.map(seksjon).join('') +
         `<div class="kort"><h3>${t('oljeTittel')}</h3><dl class="info">${OLJER.map(([o, n]) => `<dt>${t(n)}${k[o] !== '' && k[o] != null ? ` <small>(${esc(k[o])})</small>` : ''}</dt><dd>${okChip(k[o + '_ok'])}</dd>`).join('')}
           <dt>${t('batteri')}${k.batteri_dato !== '' && k.batteri_dato != null ? ` <small>(${esc(k.batteri_dato)})</small>` : ''}</dt><dd>${okChip(k.batteri_ok)}</dd></dl></div>`}
@@ -1317,7 +1320,7 @@ function nyttSkjema(sykkelId) {
   const maaned = standardMnd();
   return { sykkel_id: sykkelId || '', maaned, skjema: skjemaForMnd(Number(maaned.slice(5))), dato: idag(), km: '', bilde_avis: '', kjoreforbud: false, frist: '', merknad: '' };
 }
-const punktIder = () => (!F || F.skjema === 'egen' ? [] : F.skjema === 'enkel' ? ENKEL.map(([id]) => id) : PUNKTER);
+const punktIder = () => (!F || F.skjema === 'egen' ? [] : F.skjema === 'enkel' || F.skjema === 'ekstra' ? ENKEL.map(([id]) => id) : PUNKTER);
 let utkastAdvart = false;
 function lagreUtkast() {
   if (!F) return;
@@ -1330,7 +1333,7 @@ function lagreUtkast() {
 function hentUtkast() {
   try {
     const u = JSON.parse(hent('tk_utkast') || 'null');
-    if (u && !u.maaned) { u.maaned = standardMnd(); u.skjema = skjemaForMnd(Number(u.maaned.slice(5))); }
+    if (u && !u.maaned && u.skjema !== 'ekstra') { u.maaned = standardMnd(); u.skjema = skjemaForMnd(Number(u.maaned.slice(5))); }
     return u;
   } catch (e) { return null; }
 }
@@ -1339,7 +1342,7 @@ const harInnhold = f => f && [...PUNKTER, ...ENKEL.map(([id]) => id)].some(p => 
 /** Bikes in the RC's own chapter(s) still missing an inspection in the month of the open form – the queue for an inspection evening. */
 function nesteSykler() {
   if (!F || !F.maaned) return [];
-  return S.d.sykler.filter(s => s.id !== F.sykkel_id && kanEndreAvd(s.avdeling) && iAvd(s) && !S.d.kontroller.some(k => k.sykkel_id === s.id && k.maaned === F.maaned))
+  return S.d.sykler.filter(s => s.id !== F.sykkel_id && kanEndreAvd(s.avdeling) && iAvd(s) && !S.d.kontroller.some(k => k.sykkel_id === s.id && !erEkstra(k) && k.maaned === F.maaned))
     .sort((a, b) => String(a.eier).localeCompare(String(b.eier), 'nb'));
 }
 function startKontroll(id) {
@@ -1364,8 +1367,72 @@ function punktRad(id, navn, ekstra) {
 }
 
 let FORRIGE = {};
+function typeVelger() {
+  if (!kanEndreNoe() || (F && F._retter)) return '';
+  const ek = F && F.skjema === 'ekstra';
+  return `<div class="valg2 typevalg"><button type="button" data-a="kontrollType" data-v="mnd" class="${ek ? '' : 'valgt'}">${t('mndKontroll')}</button><button type="button" data-a="kontrollType" data-v="ekstra" class="${ek ? 'valgt' : ''}">${t('sk_ekstra')}</button></div>`;
+}
+let EKSTRA_LOGG = [];   // what was saved in this extra-inspection session (also bikes from other chapters, which the RC cannot see afterwards)
+const alleEkstraSykler = () => S.d.sykler.concat((S.d.ekstraSykler || []).filter(x => !S.d.sykler.some(s => s.id === x.id)));
+const finnEkstraSykkel = id => alleEkstraSykler().find(s => s.id === id);
+function nyttEkstra(forrige) {
+  return { skjema: 'ekstra', sykkel_id: '', maaned: idag().slice(0, 7), dato: forrige ? forrige.dato : idag(), arrangement: forrige ? forrige.arrangement : '', km: '', kjoreforbud: false, frist: '', merknad: '' };
+}
+async function lagreEkstra(btn) {
+  if (!F.sykkel_id) return toast(t('velgSykkelToast'), true);
+  const maks = Math.max(...punktIder().map(p => Number(F[p])));
+  if ((maks === 2 || F.kjoreforbud) && !F.frist && !confirm(t('ingenFrist'))) return;
+  await medKnapp(btn, async () => {
+    const s = finnEkstraSykkel(F.sykkel_id) || {};
+    const bilder = F.bilder || [];
+    const data = Object.assign({}, F, { bilder: undefined, _forhand: undefined, _forhandVerdi: undefined });
+    const r = await api('lagreKontroll', { kontroll: data });
+    const feil = bilder.length ? await lastOppBilder(bilder, 'kontroll', r.id, btn) : '';
+    EKSTRA_LOGG.push({ sykkel_id: F.sykkel_id, eier: s.eier || '', regnr: s.regnr || '', v: maks, forbud: maks === 2 || !!F.kjoreforbud, arrangement: F.arrangement, dato: F.dato });
+    const ferdig = F;
+    F = nyttEkstra(ferdig); lagreUtkast();
+    await lastData(); render(); scrollTo(0, 0);
+    if (feil) toast(feil, true); else toast(t('ekstraLagret', (s.eier || '') + ' – ' + (s.regnr || '')));
+  });
+}
+function ekstraSkjema() {
+  const egen = meg().avdeling;
+  const sykler = alleEkstraSykler().filter(s => rolle() === 'admin' ? iAvd(s) || s.id === F.sykkel_id : true)
+    .sort((a, b) => (a.avdeling === egen ? 0 : 1) - (b.avdeling === egen ? 0 : 1) || a.avdeling.localeCompare(b.avdeling, 'nb') || a.eier.localeCompare(b.eier, 'nb'));
+  const gjort = new Set(EKSTRA_LOGG.filter(l => l.arrangement === F.arrangement && l.dato === F.dato).map(l => l.sykkel_id));
+  const grupper = {};
+  sykler.forEach(s => (grupper[s.avdeling] = grupper[s.avdeling] || []).push(s));
+  const opt = s => `<option value="${esc(s.id)}"${s.id === F.sykkel_id ? ' selected' : ''}>${gjort.has(s.id) ? '✓ ' : ''}${esc(s.eier)} – ${esc(s.regnr)}${s.modell ? ' ' + esc(s.modell) : ''}</option>`;
+  const okt = EKSTRA_LOGG.filter(l => l.arrangement === F.arrangement && l.dato === F.dato);
+  return `<div data-skjema="K">
+    <h2>${t('sk_ekstra')}</h2>
+    ${typeVelger()}
+    <p class="dempet" style="margin:0 0 10px">${t('ekstraHint')}</p>
+    <div class="kort">
+      <div class="rad2"><label class="felt"><span>${t('arrangement')}</span><input data-f="arrangement" value="${esc(F.arrangement)}" placeholder="${esc(t('arrangementPh'))}" maxlength="60" autocomplete="off"></label>
+        <label class="felt"><span>${t('dato')}</span><input type="date" data-f="dato" value="${esc(F.dato)}"></label></div>
+      <label class="felt"><span>${t('sykkel')}</span><select data-f="sykkel_id"><option value="">${t('velgSykkel')}</option>
+        ${Object.entries(grupper).map(([a, l]) => `<optgroup label="${esc(a)}">${l.map(opt).join('')}</optgroup>`).join('')}
+      </select></label>
+      <label class="felt"><span>${t('km')} <small class="dempet">(${t('valgfritt')})</small></span><input data-f="km" inputmode="numeric" value="${esc(F.km)}"></label>
+    </div>
+    <button type="button" class="bred" data-a="alleBra">${t('alleOk')}</button>
+    <div class="kort"><h3>${t('sk_ekstra')}</h3><p class="dempet" style="margin:0 0 4px">${t('enkelHint')}</p>${ENKEL.map(([id, n]) => punktRad(id, t(n))).join('')}</div>
+    <div class="kort"><h3>${t('bilderTittel')}</h3>${ventendeBilder(F.bilder)}${bildeKnapper(['annet'])}</div>
+    <div class="kort"><h3>${t('status')}</h3>
+      <div id="statusBanner" class="banner"></div>
+      <label class="sjekk"><input type="checkbox" data-f="kjoreforbud" ${F.kjoreforbud ? 'checked' : ''}> ${t('s2')}</label>
+      <label class="felt"><span>${t('fiksesInnen')}</span><input type="date" data-f="frist" value="${esc(F.frist)}"></label>
+      <label class="felt"><span>${t('merknad')}</span><textarea data-f="merknad" placeholder="${esc(t('merknadPh'))}">${esc(F.merknad)}</textarea></label>
+    </div>
+    <button type="button" class="primar bred" data-a="lagreKontroll">${t('ekstraLagre')}</button>
+    ${okt.length ? `<h3>${esc(t('ekstraOkt', okt.length))}</h3><div class="kort">${okt.map(l => `<div class="linje1" style="padding:5px 0"><span>${esc(l.eier)} – ${esc(l.regnr)}</span>${l.forbud ? `<span class="merke">${t('forbudMerke')}</span>` : chip(l.v, skalaNavn(l.v))}</div>`).join('')}</div>` : ''}
+    <p class="dempet" style="text-align:center">${t('autoLagret')}</p>
+  </div>`;
+}
 function visKontrollSkjema() {
   if (!F) F = hentUtkast() || nyttSkjema();
+  if (F.skjema === 'ekstra') { if (!kanEndreNoe()) F = nyttSkjema(); else return ekstraSkjema(); }
   FORRIGE = F.sykkel_id ? forrigeVerdier(F.sykkel_id) : {};
   const sykler = S.d.sykler.filter(s => (F._retter ? s.id === F.sykkel_id : rolle() === 'admin' ? iAvd(s) : kanEndreAvd(s.avdeling) || s.telefon === meg().telefon)).sort((a, b) => a.avdeling.localeCompare(b.avdeling) || a.eier.localeCompare(b.eier, 'nb'));
   if (F.sykkel_id && !finnSykkel(F.sykkel_id)) F.sykkel_id = '';
@@ -1374,7 +1441,7 @@ function visKontrollSkjema() {
   const opt = s => `<option value="${esc(s.id)}"${s.id === F.sykkel_id ? ' selected' : ''}>${esc(s.eier)} – ${esc(s.regnr)}${s.modell ? ' ' + esc(s.modell) : ''}</option>`;
   const forrige = F.sykkel_id ? sisteKontroll(F.sykkel_id) : null;
   const fm = Number(F.maaned.slice(5));
-  const sammeMnd = F.sykkel_id && F.skjema !== 'egen' ? S.d.kontroller.find(k => k.sykkel_id === F.sykkel_id && kMnd(k) === F.maaned) : null;
+  const sammeMnd = F.sykkel_id && F.skjema !== 'egen' ? S.d.kontroller.find(k => k.sykkel_id === F.sykkel_id && !erEkstra(k) && kMnd(k) === F.maaned) : null;
   const stor = F.skjema === 'stor';
   const y = Number(F.maaned.slice(0, 4));
   if (F.skjema === 'egen') return aprilSkjema(sykler, grupper, opt, y);
@@ -1382,6 +1449,7 @@ function visKontrollSkjema() {
   const egenK = !F._retter && F.sykkel_id && !kanEndreAvd((finnSykkel(F.sykkel_id) || {}).avdeling);
   return `<div data-skjema="K">
     <h2>${F._retter ? t('rettTittel') : t('nyKontroll')}</h2>
+    ${typeVelger()}
     ${rolle() === 'admin' && !F._retter ? avdVelger() : ''}
     ${egenK || (!F._retter && !kanEndreNoe()) ? `<div class="banner info">${t('egenKontrollInfo')}</div>` : ''}
     <div class="kort">
@@ -2192,7 +2260,7 @@ function handbokUrl(s) {
 function avvikTekst(k) {
   if (!k) return [];
   const ut = [];
-  if (kSkjema(k) === 'enkel') ENKEL.forEach(([id, n]) => { if (Number(k[id]) >= 1) ut.push(t(n) + (Number(k[id]) >= 2 ? ' (' + t('s2').toLowerCase() + ')' : '')); });
+  if (kSkjema(k) !== 'stor') ENKEL.forEach(([id, n]) => { if (Number(k[id]) >= 1) ut.push(t(n) + (Number(k[id]) >= 2 ? ' (' + t('s2').toLowerCase() + ')' : '')); });
   else {
     SEKSJONER.forEach(sk => sk.r.forEach(p => { if (Number(k[p.id]) >= 1) ut.push(t(sk.t) + ' ' + t(p.n).toLowerCase() + (Number(k[p.id]) >= 2 ? ' (' + t('s2').toLowerCase() + ')' : '')); }));
     OLJER.forEach(([o, n]) => { if (k[o + '_ok'] === 'Ikke OK') ut.push(t(n)); });
@@ -2606,6 +2674,14 @@ function visKonto() {
 
 // ─── Actions ────────────────────────────────────────────────
 const A = {
+  kontrollType(el) {
+    const ek = el.dataset.v === 'ekstra';
+    if ((F && F.skjema === 'ekstra') === ek) return;
+    if (harInnhold(F) && F.sykkel_id && !confirm(t('byttTypeSporsmal'))) return;
+    F = ek ? nyttEkstra(EKSTRA_LOGG[EKSTRA_LOGG.length - 1]) : nyttSkjema();
+    if (!ek) forhandsutfyll();
+    lagreUtkast(); render(); scrollTo(0, 0);
+  },
   alleBra() { punktIder().forEach(p => { if (F[p] === undefined || F[p] === '') F[p] = 0; }); lagreUtkast(); render(); toast(t('alleOkToast')); },
   byttSkjema() { F.skjema = F.skjema === 'stor' ? 'enkel' : 'stor'; lagreUtkast(); render(); },
   forkastKontroll() { if (!confirm(t('tommeSkjema'))) return; F = nyttSkjema(F && F.sykkel_id); forhandsutfyll(); lagreUtkast(); render(); },
@@ -2619,6 +2695,7 @@ const A = {
       $(`[data-punkt="${mangler[0]}"]`).scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
+    if (F.skjema === 'ekstra') return lagreEkstra(btn);
     // a photo of both tyres is required on every inspection (not when an RC corrects one that already exists)
     const harDekk = ty => (F.bilder || []).some(b => b.type === ty);
     if (!F._retter && (!harDekk('dekk_f') || !harDekk('dekk_b'))) {
@@ -2885,7 +2962,7 @@ function feltEndret(ev) {
   sk.obj[el.dataset.f] = el.type === 'checkbox' ? el.checked : el.value;
   if (sk.navn === 'K' && ev.type === 'change' && (el.dataset.f === 'sykkel_id' || el.dataset.f === 'maaned')) {
     if (el.dataset.f === 'maaned') F.skjema = skjemaForMnd(Number(F.maaned.slice(5)));
-    if (el.dataset.f === 'sykkel_id') forhandsutfyll();
+    if (el.dataset.f === 'sykkel_id' && F.skjema !== 'ekstra') forhandsutfyll();
     lagreUtkast(); return render();
   }
   if (sk.navn === 'G' && ev.type === 'change' && el.dataset.f === 'sykkel_id') return visEgenSkjema();
