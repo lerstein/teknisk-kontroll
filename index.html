@@ -142,8 +142,8 @@ input,select,textarea{width:100%;font:16px system-ui;color:var(--tekst);backgrou
 textarea{min-height:90px;resize:vertical}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--aksent);outline-offset:-1px}
 input[readonly]{opacity:.7}
-label.felt{display:block;margin-bottom:12px}
-label.felt>span,.felt-tittel{display:block;font-size:13px;color:var(--dempet);margin-bottom:5px}
+label.felt,div.felt{display:block;margin-bottom:12px}
+label.felt>span,div.felt>span,.felt-tittel{display:block;font-size:13px;color:var(--dempet);margin-bottom:5px}
 .rad2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .sjekk{display:flex;align-items:center;gap:10px;padding:8px 0;font-weight:600}
 .sjekk input{width:24px;height:24px;min-height:0;accent-color:var(--aksent)}
@@ -1411,9 +1411,9 @@ function ekstraSkjema() {
     <div class="kort">
       <div class="rad2"><label class="felt"><span>${t('arrangement')}</span><input data-f="arrangement" value="${esc(F.arrangement)}" placeholder="${esc(t('arrangementPh'))}" maxlength="60" autocomplete="off"></label>
         <label class="felt"><span>${t('dato')}</span><input type="date" data-f="dato" value="${esc(F.dato)}"></label></div>
-      <label class="felt"><span>${t('sykkel')}</span><select data-f="sykkel_id"><option value="">${t('velgSykkel')}</option>
+      <div class="felt"><span>${t('sykkel')}</span><div class="sokrad" style="margin:0"><select data-f="sykkel_id" aria-label="${esc(t('sykkel'))}" style="flex:1;min-width:0"><option value="">${t('velgSykkel')}</option>
         ${Object.entries(grupper).map(([a, l]) => `<optgroup label="${esc(a)}">${l.map(opt).join('')}</optgroup>`).join('')}
-      </select></label>
+      </select><label class="skannknapp" aria-label="${esc(t('skannSkilt'))}">${svg(IKON.kamera)}<input type="file" accept="image/*" data-skann="ekstra" hidden></label></div></div>
       <label class="felt"><span>${t('km')} <small class="dempet">(${t('valgfritt')})</small></span><input data-f="km" inputmode="numeric" value="${esc(F.km)}"></label>
     </div>
     <button type="button" class="bred" data-a="alleBra">${t('alleOk')}</button>
@@ -1797,7 +1797,10 @@ async function markerSkilt(img) {
   });
 }
 
-async function skannSkilt(fil) {
+async function skannSkilt(fil, modus) {
+  // modus 'ekstra': the extra-inspection form – match against every bike the RC may inspect, and pick it in the form
+  const ekstra = modus === 'ekstra' && F && F.skjema === 'ekstra';
+  const kilde = ekstra ? alleEkstraSykler() : S.d.sykler;
   let tekster = [], r;
   try {
     const w = await ocrArbeider(); toast(t('skannLeser'));
@@ -1825,7 +1828,7 @@ async function skannSkilt(fil) {
         if (gr) await lesLinjer(w, v, tekster);
       });
     }
-    for (const f of forsok) { await f(); r = finnSykkelFraTekst(tekster, S.d.sykler); r.kandidater = skiltKandidater(tekster); if (r.sikker) break; }
+    for (const f of forsok) { await f(); r = finnSykkelFraTekst(tekster, kilde); r.kandidater = skiltKandidater(tekster); if (r.sikker) break; }
     if (!r || !r.sikker) {
       const valgt = await markerSkilt(img);
       if (valgt) {
@@ -1833,11 +1836,17 @@ async function skannSkilt(fil) {
         // Read the rectified plate and each row with an appropriate character set.
         await les(valgt, ['6', '11']);
         await lesLinjer(w, utsnitt(valgt, 0, 0, valgt.width, valgt.height, 800), tekster);
-        r = finnSykkelFraTekst(tekster, S.d.sykler);
+        r = finnSykkelFraTekst(tekster, kilde);
         r.kandidater = skiltKandidater(tekster);
       }
     }
   } catch (e) { return toast(t('skannFeil'), true); }
+  if (ekstra) {
+    const valgt = r.sikker || (r.treff.length === 1 ? r.treff[0].s : null);
+    if (valgt && F && F.skjema === 'ekstra') { F.sykkel_id = valgt.id; lagreUtkast(); render(); return toast(t('skannFant', valgt.regnr + ' – ' + valgt.eier), r.sikker ? false : true); }
+    const lest = lesbarSkilt(r.kandidater);
+    return toast(r.treff.length ? t('skannUsikker') : lest ? t('skannUkjent', lest) : t('skannIngen'), true);
+  }
   if (r.sikker) { toast(t('skannFant', r.sikker.regnr)); return apne(() => visSykkel(r.sikker.id)); }
   const inp = $('[data-sykkelsok]');
   if (r.treff.length) {
@@ -2955,7 +2964,7 @@ function feltEndret(ev) {
   const el = ev.target;
   if (el.matches('input[data-bilde]')) { if (ev.type === 'change') velgBilder(el); return; }
   if (el.matches('[data-sykkelsok]')) { if (ev.type === 'input') filtrerSykler(el.value); return; }
-  if (el.matches('input[data-skann]')) { if (ev.type === 'change' && el.files[0]) { const f = el.files[0]; el.value = ''; skannSkilt(f); } return; }
+  if (el.matches('input[data-skann]')) { if (ev.type === 'change' && el.files[0]) { const f = el.files[0]; el.value = ''; skannSkilt(f, el.dataset.skann); } return; }
   if (el.matches('[data-avd]')) { S.avd = el.value; lagre('tk_avd', S.avd); if (S.fane === 'kontroll' && F) F.sykkel_id = ''; return render(); }
   if (!el.matches('[data-f]')) return;
   const sk = skjemaFor(el); if (!sk || !sk.obj) return;
