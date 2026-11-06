@@ -95,6 +95,11 @@ A rejected inspection (`status` = `avvist`) no longer counts anywhere; the membe
 The member can withdraw his own inspection while it is pending. Inspections an RC registers are approved at once.
 Columns `status`, `godkjent_av`, `godkjent_tid`, `avvist_grunn` are added to `Kontroller` automatically.
 
+### Editing saved inspections and self-declarations
+- **Edit inspection** (on the inspection view): RC/officer for their own chapter, admin for everything, with no time limit. This works for approved monthly inspections. Pending ones still use **Correct and approve**. Extra inspections can't be edited yet.
+- **Edit self-declaration**: the owner can edit it during the same season and must confirm again. RC/officer can edit for their own chapter, admin for everything.
+- The form opens pre-filled. Saving calls `endreKontroll` / `endreEgenerklaering` with `{ id, kontroll | egenerklaering }`. The server checks permissions, recalculates `sum_*`/kjøreforbud, and appends `{ av, tid, fra: { field: [old, new] } }` to the JSON column `endringer`. If nothing changed, it returns `{ ingenEndring: true }`. The view shows this as a **Change log**.
+
 ## Season, forms and scale
 
 | Month | Form | Filled in by |

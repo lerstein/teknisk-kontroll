@@ -424,7 +424,7 @@ const TXT = {
     nyKontrollDenne: 'Ny kontroll av denne sykkelen', kontrollerSelv: 'Kontroller sykkelen selv', venterMerke: 'VENTER', venterGodkj: 'Venter på godkjenning fra Road Captain',
     godkjentAvTittel: 'Godkjent av', godkjenn: 'Godkjenn', rettGodkjenn: 'Rett og godkjenn', avvis: 'Avvis', avvisGrunn: 'Hvorfor avvises kontrollen? Medlemmet ser grunnen.',
     godkjentToast: 'Kontrollen er godkjent', avvistToast: 'Kontrollen er avvist', venterListe: 'Venter på godkjenning ({0})', sendtTilGodkj: 'Lagret – sendt til Road Captain for godkjenning',
-    rettTittel: 'Rett kontrollen', egenKontrollInfo: 'Du kontrollerer din egen sykkel. Kontrollen teller med en gang, men Road Captain må godkjenne den.',
+    rettTittel: 'Rett kontrollen', redigerKontroll: 'Rediger kontroll', redigerTittel: 'Rediger kontrollen', redigerInfo: 'Du endrer en lagret kontroll. Endringene logges med navnet ditt.', lagreEndringer: 'Lagre endringer', endretToast: 'Endringene er lagret', ingenEndringer: 'Ingen endringer å lagre', avbrytRedigering: 'Avbryt redigering', endringslogg: 'Endringslogg', endretAvTid: '{0} – {1}', redigerEgen: 'Rediger egenerklæring', redigerEgenTittel: 'Rediger egenerklæring', redigerEgenInfo: 'Du endrer en innlevert egenerklæring. Endringene logges med navnet ditt.', egenKontrollInfo: 'Du kontrollerer din egen sykkel. Kontrollen teller med en gang, men Road Captain må godkjenne den.',
     avvistBanner: 'Kontrollen av {0} ({1}) ble avvist av {2}', trekkTilbake: 'Trekk tilbake kontrollen', redigerSykkel: 'Rediger sykkel', kontroller: 'Kontroller ({0})',
     ingenKontroller: 'Ingen kontroller registrert.', egenerkl: 'Egenerklæringer ({0})', ingenEgen: 'Ingen egenerklæring for denne sykkelen.',
     altOk: 'Alt OK', ikkeOkAnt: '{0} IKKE OK', bilde1: ' · 1 bilde', bilderN: ' · {0} bilder',
@@ -572,7 +572,7 @@ const TXT = {
     nyKontrollDenne: 'New inspection of this bike', kontrollerSelv: 'Inspect the bike yourself', venterMerke: 'PENDING', venterGodkj: 'Waiting for approval from the Road Captain',
     godkjentAvTittel: 'Approved by', godkjenn: 'Approve', rettGodkjenn: 'Correct and approve', avvis: 'Reject', avvisGrunn: 'Why is the inspection rejected? The member will see the reason.',
     godkjentToast: 'Inspection approved', avvistToast: 'Inspection rejected', venterListe: 'Waiting for approval ({0})', sendtTilGodkj: 'Saved – sent to the Road Captain for approval',
-    rettTittel: 'Correct the inspection', egenKontrollInfo: 'You are inspecting your own bike. It counts at once, but the Road Captain must approve it.',
+    rettTittel: 'Correct the inspection', redigerKontroll: 'Edit inspection', redigerTittel: 'Edit the inspection', redigerInfo: 'You are changing a saved inspection. The changes are logged with your name.', lagreEndringer: 'Save changes', endretToast: 'Changes saved', ingenEndringer: 'No changes to save', avbrytRedigering: 'Cancel editing', endringslogg: 'Change log', endretAvTid: '{0} – {1}', redigerEgen: 'Edit self-declaration', redigerEgenTittel: 'Edit self-declaration', redigerEgenInfo: 'You are changing a submitted self-declaration. The changes are logged with your name.', egenKontrollInfo: 'You are inspecting your own bike. It counts at once, but the Road Captain must approve it.',
     avvistBanner: 'The inspection of {0} ({1}) was rejected by {2}', trekkTilbake: 'Withdraw the inspection', redigerSykkel: 'Edit bike', kontroller: 'Inspections ({0})',
     ingenKontroller: 'No inspections registered.', egenerkl: 'Self-declarations ({0})', ingenEgen: 'No self-declaration for this bike.',
     altOk: 'All OK', ikkeOkAnt: '{0} NOT OK', bilde1: ' · 1 photo', bilderN: ' · {0} photos',
@@ -843,6 +843,12 @@ const kanEndreAvd = avd => rolle() === 'admin' || (erRcLik() && avd === meg().av
 const kanEndreNoe = () => rolle() === 'admin' || erRcLik();   // false for President (read-only)
 const venter = k => k.status === 'venter';
 const kanGodkjenne = k => venter(k) && kanEndreAvd(k.avdeling);
+/** Edit a saved (approved) monthly inspection: RC/officer in own chapter, admin everywhere. Pending ones use «Correct and approve». */
+const kanRedigere = k => !venter(k) && k.status !== 'avvist' && !erEkstra(k) && kanEndreAvd(k.avdeling);
+/** Edit a self-declaration: the owner during the same season, RC/officer in own chapter, admin everywhere. */
+const kanRedigereEgen = e => kanEndreAvd(e.avdeling) || (e.telefon === meg().telefon && String(e.dato).startsWith(String(aar())));
+/** Inspection form opened on an existing inspection (correcting a pending one, or editing a saved one). */
+const iRetting = () => !!(F && (F._retter || F._endrer));
 const venterMerke = k => venter(k) ? `<span class="merke gul">${t('venterMerke')}</span>` : '';
 const finnSykkel = id => S.d.sykler.find(s => s.id === id);
 const kontrollerFor = id => S.d.kontroller.filter(k => k.sykkel_id === id);
@@ -1337,6 +1343,28 @@ function endretFraHtml(k) {
   const rader = Object.keys(fra).filter(f => navn[f] && !(f === 'sum_allmenn')).map(f => `<li>${esc(navn[f])}: ${esc(vis(f, fra[f][0]))} → <b>${esc(vis(f, fra[f][1]))}</b></li>`);
   return rader.length ? `<div class="kort"><h3>${esc(t('rettetAv', k.godkjent_av || 'RC'))}</h3><ul style="margin:0;padding-left:18px">${rader.join('')}</ul></div>` : '';
 }
+/** Who changed a saved inspection or self-declaration, when, and what (column «endringer», JSON list). */
+function endringsloggHtml(x, navn, vis) {
+  let logg; try { logg = JSON.parse(x.endringer || '[]'); } catch (e) { return ''; }
+  if (!Array.isArray(logg) || !logg.length) return '';
+  const blokker = logg.slice().reverse().map(l => {
+    const rader = Object.keys(l.fra || {}).filter(f => navn[f] && f !== 'sum_allmenn').map(f => `<li>${esc(navn[f])}: ${esc(vis(f, l.fra[f][0]))} → <b>${esc(vis(f, l.fra[f][1]))}</b></li>`);
+    return rader.length ? `<p style="margin:8px 0 2px"><b>${esc(t('endretAvTid', l.av || '', l.tid || ''))}</b></p><ul style="margin:0;padding-left:18px">${rader.join('')}</ul>` : '';
+  }).join('');
+  return blokker ? `<div class="kort"><h3>${t('endringslogg')}</h3>${blokker}</div>` : '';
+}
+function kontrollFeltNavn() {
+  const navn = {}; ENKEL.forEach(([id, n]) => { navn[id] = t(n); });
+  SEKSJONER.forEach(sk => sk.r.forEach(p => { navn[p.id] = t(sk.t) + ' – ' + t(p.n).toLowerCase(); (p.x || []).forEach(([xid, xn]) => { navn[xid] = t(p.n) + ' – ' + t(xn).toLowerCase(); }); }));
+  OLJER.forEach(([o, n]) => { navn[o] = t(n); navn[o + '_ok'] = t(n) + ' – ' + t('ok'); });
+  Object.assign(navn, { km: t('km'), merknad: t('merknad'), frist: t('fiksesInnen'), kjoreforbud: t('s2'), dato: t('dato'), maaned: t('maaned'), skjema: t('skjema'),
+    bilde_avis: t('bildeAvis'), batteri_dato: t('batteri'), batteri_ok: t('batteri') + ' – ' + t('ok') });
+  return navn;
+}
+function kontrollVis(f, v) {
+  const skala = /^(sum_|allmenn_tilstand$)/.test(f) || PUNKTER.includes(f) || ENKEL.some(([id]) => id === f);
+  return v === '' || v == null ? '–' : skala ? skalaNavn(v) : f === 'km' ? fmtKm(v) : (f === 'frist' || f === 'dato') ? fmtDato(v) : f === 'skjema' ? t('sk_' + v) : String(v);
+}
 function visKontroll(id) {
   const k = S.d.kontroller.find(x => x.id === id);
   if (!k) return tilbake();
@@ -1353,6 +1381,7 @@ function visKontroll(id) {
     ${k.utbedret_for ? (() => { const o = S.d.kontroller.find(x => x.id === k.utbedret_for);
       return `<div class="banner info">${esc(t('utbedretMelding', o ? fmtDato(o.dato) : '', o ? avvikTekst(o).join(', ') : ''))}</div>`; })() : ''}
     ${endretFraHtml(k)}
+    ${endringsloggHtml(k, kontrollFeltNavn(), kontrollVis)}
     ${k.kjoreforbud === 'Ja' ? `<div class="banner v2">${k.frist ? t('forbudFrist', fmtDato(k.frist)) : t('forbudUten')}</div>` :
       sum >= 1 ? `<div class="banner v1">${k.frist ? t('borFrist', fmtDato(k.frist)) : t('bor')}</div>` : ''}
     <div class="kort"><dl class="info">
@@ -1370,7 +1399,22 @@ function visKontroll(id) {
         `<div class="kort"><h3>${t('oljeTittel')}</h3><dl class="info">${OLJER.map(([o, n]) => `<dt>${t(n)}${k[o] !== '' && k[o] != null ? ` <small>(${esc(k[o])})</small>` : ''}</dt><dd>${okChip(k[o + '_ok'])}</dd>`).join('')}
           <dt>${t('batteri')}${k.batteri_dato !== '' && k.batteri_dato != null ? ` <small>(${esc(k.batteri_dato)})</small>` : ''}</dt><dd>${okChip(k.batteri_ok)}</dd></dl></div>`}
     ${k.merknad ? `<div class="kort"><h3>${t('merknad')}</h3><p style="white-space:pre-wrap;margin:0">${esc(k.merknad)}</p></div>` : ''}
+    ${kanRedigere(k) ? `<button class="bred" data-a="redigerKontroll" data-id="${esc(k.id)}">✏️ ${t('redigerKontroll')}</button>` : ''}
     ${kanSlette(k) ? `<button class="fare bred" data-slett-kontroll="${esc(k.id)}">${venter(k) && k.kontrollor_tlf === meg().telefon && !kanEndreAvd(k.avdeling) ? t('trekkTilbake') : t('slettKontroll')}</button>` : ''}`);
+}
+
+/** Open an existing inspection in the form – key '_retter' (correct and approve a pending one) or '_endrer' (edit a saved one). */
+function apneKontrollForRetting(id, key) {
+  const k = S.d.kontroller.find(x => x.id === id);
+  if (!k) return;
+  const sk = kSkjema(k);
+  F = { [key]: k.id, sykkel_id: k.sykkel_id, maaned: kMnd(k), skjema: sk, dato: String(k.dato).slice(0, 10), km: k.km === '' ? '' : String(k.km),
+        bilde_avis: k.bilde_avis || '', km_byttet: k.km_byttet === 'Ja', kjoreforbud: k.kjoreforbud === 'Ja' && Number(k.sum_allmenn) < 2, frist: k.frist ? String(k.frist).slice(0, 10) : '', merknad: k.merknad || '' };
+  (sk === 'stor' ? PUNKTER : ENKEL.map(([id]) => id)).forEach(p => { if (k[p] !== '' && k[p] != null) F[p] = Number(k[p]); });
+  if (sk === 'stor') ['dekk_f_mm', 'dekk_f_dato', 'dekk_b_mm', 'dekk_b_dato', 'brems_f_belegg', 'brems_b_belegg', 'batteri_dato', 'batteri_ok',
+    'olje_primaer', 'olje_primaer_ok', 'olje_clutch', 'olje_clutch_ok', 'olje_hydr', 'olje_hydr_ok', 'olje_motor', 'olje_motor_ok', 'kjolevaeske', 'kjolevaeske_ok']
+    .forEach(f => { if (k[f] !== '' && k[f] != null) F[f] = String(k[f]); });
+  lagreUtkast(); lukkAlle(); S.fane = 'kontroll'; render(); scrollTo(0, 0);
 }
 
 // ─── New inspection ─────────────────────────────────────────
@@ -1432,7 +1476,7 @@ function nesteSykler() {
 }
 function startKontroll(id) {
   if (!F) F = hentUtkast();
-  if (F && F._retter) F = null;
+  if (iRetting()) F = null;
   if (harInnhold(F) && F.sykkel_id && F.sykkel_id !== id && !confirm(t('annenSykkelUtkast'))) return;
   if (!F || F.sykkel_id !== id) { F = nyttSkjema(id); forhandsutfyll(); }
   lagreUtkast(); lukkAlle(); S.fane = 'kontroll'; render(); scrollTo(0, 0);
@@ -1453,7 +1497,7 @@ function punktRad(id, navn, ekstra, ikkeVurdert) {
 
 let FORRIGE = {};
 function typeVelger() {
-  if (!kanEndreNoe() || (F && F._retter)) return '';
+  if (!kanEndreNoe() || iRetting()) return '';
   const ek = F && F.skjema === 'ekstra';
   return `<div class="valg2 typevalg"><button type="button" data-a="kontrollType" data-v="mnd" class="${ek ? '' : 'valgt'}">${t('mndKontroll')}</button><button type="button" data-a="kontrollType" data-v="ekstra" class="${ek ? 'valgt' : ''}">${t('sk_ekstra')}</button></div>`;
 }
@@ -1531,24 +1575,25 @@ function visKontrollSkjema() {
   if (!F) F = hentUtkast() || nyttSkjema();
   if (F.skjema === 'ekstra') { if (!kanEndreNoe()) F = nyttSkjema(); else return ekstraSkjema(); }
   FORRIGE = F.sykkel_id ? forrigeVerdier(F.sykkel_id) : {};
-  const sykler = S.d.sykler.filter(s => (F._retter ? s.id === F.sykkel_id : rolle() === 'admin' ? iAvd(s) : kanEndreAvd(s.avdeling) || s.telefon === meg().telefon)).sort((a, b) => a.avdeling.localeCompare(b.avdeling) || a.eier.localeCompare(b.eier, 'nb'));
+  const sykler = S.d.sykler.filter(s => (iRetting() ? s.id === F.sykkel_id : rolle() === 'admin' ? iAvd(s) : kanEndreAvd(s.avdeling) || s.telefon === meg().telefon)).sort((a, b) => a.avdeling.localeCompare(b.avdeling) || a.eier.localeCompare(b.eier, 'nb'));
   if (F.sykkel_id && !finnSykkel(F.sykkel_id)) F.sykkel_id = '';
   const grupper = {};
   sykler.forEach(s => (grupper[s.avdeling] = grupper[s.avdeling] || []).push(s));
   const opt = s => `<option value="${esc(s.id)}"${s.id === F.sykkel_id ? ' selected' : ''}>${esc(s.eier)} – ${esc(s.regnr)}${s.modell ? ' ' + esc(s.modell) : ''}</option>`;
   const forrige = F.sykkel_id ? sisteKontroll(F.sykkel_id) : null;
   const fm = Number(F.maaned.slice(5));
-  const sammeMnd = F.sykkel_id && F.skjema !== 'egen' ? S.d.kontroller.find(k => k.sykkel_id === F.sykkel_id && !erEkstra(k) && kMnd(k) === F.maaned) : null;
+  const sammeMnd = F.sykkel_id && F.skjema !== 'egen' ? S.d.kontroller.find(k => k.sykkel_id === F.sykkel_id && !erEkstra(k) && kMnd(k) === F.maaned && k.id !== F._endrer && k.id !== F._retter) : null;
   const stor = F.skjema === 'stor';
   const y = Number(F.maaned.slice(0, 4));
   if (F.skjema === 'egen') return aprilSkjema(sykler, grupper, opt, y);
 
-  const egenK = !F._retter && F.sykkel_id && !kanEndreAvd((finnSykkel(F.sykkel_id) || {}).avdeling);
+  const egenK = !iRetting() && F.sykkel_id && !kanEndreAvd((finnSykkel(F.sykkel_id) || {}).avdeling);
   return `<div data-skjema="K">
-    <h2>${F._retter ? t('rettTittel') : t('nyKontroll')}</h2>
+    <h2>${F._endrer ? t('redigerTittel') : F._retter ? t('rettTittel') : t('nyKontroll')}</h2>
+    ${F._endrer ? `<div class="banner info">${t('redigerInfo')}</div>` : ''}
     ${typeVelger()}
-    ${rolle() === 'admin' && !F._retter ? avdVelger() : ''}
-    ${egenK || (!F._retter && !kanEndreNoe()) ? `<div class="banner info">${t('egenKontrollInfo')}</div>` : ''}
+    ${rolle() === 'admin' && !iRetting() ? avdVelger() : ''}
+    ${egenK || (!iRetting() && !kanEndreNoe()) ? `<div class="banner info">${t('egenKontrollInfo')}</div>` : ''}
     <div class="kort">
       <label class="felt"><span>${t('sykkel')}</span><select data-f="sykkel_id"><option value="">${t('velgSykkel')}</option>
         ${Object.keys(grupper).length > 1 ? Object.entries(grupper).map(([a, l]) => `<optgroup label="${esc(a)}">${l.map(opt).join('')}</optgroup>`).join('') : sykler.map(opt).join('')}
@@ -1570,7 +1615,7 @@ function visKontrollSkjema() {
     </div>
     <div class="kort"><h3>${t('bilderTittel')}</h3>
       <p class="dempet" style="margin:0">${t('bilderHint')}</p>
-      ${ventendeBilder(F.bilder)}${F._retter ? bildeKnapper(stor ? ['km', 'avis', 'annet'] : ['km', 'annet']) : bildeKnapper(stor ? ['dekk_f', 'dekk_b', 'km', 'avis', 'annet'] : ['dekk_f', 'dekk_b', 'km', 'annet'])}</div>
+      ${ventendeBilder(F.bilder)}${iRetting() ? bildeKnapper(stor ? ['km', 'avis', 'annet'] : ['km', 'annet']) : bildeKnapper(stor ? ['dekk_f', 'dekk_b', 'km', 'avis', 'annet'] : ['dekk_f', 'dekk_b', 'km', 'annet'])}</div>
     <button type="button" class="bred" data-a="alleBra">${t('alleOk')}</button>
     ${stor
       ? SEKSJONER.map(s => `<div class="kort"><h3>${t(s.t)}</h3>${s.r.map(p => punktRad(p.id, t(p.n), p.x)).join('')}</div>`).join('') + `
@@ -1587,9 +1632,9 @@ function visKontrollSkjema() {
       <label class="felt"><span>${t('merknad')}</span><textarea data-f="merknad" placeholder="${esc(t('merknadPh'))}">${esc(F.merknad)}</textarea></label>
     </div>
     <p id="manglerLinje" class="manglerlinje" aria-live="polite"></p>
-    <button type="button" class="primar bred" data-a="lagreKontroll">${t('lagreKontroll')}</button>
-    ${!F._retter && kanEndreNoe() && nesteSykler().length ? `<button type="button" class="bred" data-a="lagreKontroll" data-neste="1">${t('lagreNeste', nesteSykler().length)}</button>` : ''}
-    <button type="button" class="bred fare" data-a="forkastKontroll">${t('tomSkjema')}</button>
+    <button type="button" class="primar bred" data-a="lagreKontroll">${F._endrer ? t('lagreEndringer') : t('lagreKontroll')}</button>
+    ${!iRetting() && kanEndreNoe() && nesteSykler().length ? `<button type="button" class="bred" data-a="lagreKontroll" data-neste="1">${t('lagreNeste', nesteSykler().length)}</button>` : ''}
+    <button type="button" class="bred fare" data-a="forkastKontroll">${F._endrer ? t('avbrytRedigering') : t('tomSkjema')}</button>
     <p class="dempet" style="text-align:center">${t('autoLagret')}</p>
   </div>`;
 }
@@ -1637,7 +1682,7 @@ function oppdaterStatus() {
     const harBilde = ty => (F.bilder || []).some(b => b.type === ty);
     const deler = [];
     if (!F.sykkel_id) deler.push(t('mlSykkel'));
-    if (!F._retter) ['dekk_f', 'dekk_b'].forEach(ty => { if (!harBilde(ty)) deler.push(t('mlBilde', t('bt_' + ty).toLowerCase())); });
+    if (!iRetting()) ['dekk_f', 'dekk_b'].forEach(ty => { if (!harBilde(ty)) deler.push(t('mlBilde', t('bt_' + ty).toLowerCase())); });
     if (F.utbedret_for && !harBilde('annet')) deler.push(t('mlUtbedret'));
     if (mangler) deler.push(mangler === 1 ? t('ml1') : t('mlN', mangler));
     ml.className = 'manglerlinje' + (deler.length ? '' : ' klar');
@@ -2217,13 +2262,35 @@ function startEgen(sykkelId) {
   apne(visEgenSkjema);
 }
 
+/** Open a submitted self-declaration in the form for editing. */
+function startEgenRedigering(id) {
+  const e = S.d.egenerklaeringer.find(x => x.id === id);
+  if (!e || !kanRedigereEgen(e)) return;
+  G = { _endrer: e.id, eier: e.telefon, sykkel_id: e.sykkel_id || '', km: e.km === '' || e.km == null ? '' : String(e.km), merknad: e.merknad || '',
+        bekreftet: e.telefon !== meg().telefon };   // the owner confirms again; an RC edits on top of the member's confirmation
+  ['reiseforsikring', 'reiseforsikring_selskap', 'forerkort_klasse', 'forerkort_merknad', 'helsetrygdekort', 'helsetrygdekort_utloper', 'mc_forsikring_selskap']
+    .forEach(k => { G[k] = e[k] != null ? String(e[k]).slice(0, k === 'helsetrygdekort_utloper' ? 10 : undefined) : ''; });
+  EGEN_SJEKK.forEach(([, r]) => r.forEach(([f]) => { if (e[f]) G[f] = e[f]; }));
+  apne(visEgenSkjema);
+}
+const egenFeltNavn = () => {
+  const navn = { reiseforsikring: t('reiseforsikring'), reiseforsikring_selskap: t('reiseforsikring') + ' – ' + t('selskap').toLowerCase(), forerkort_klasse: t('forerkortKort'),
+    forerkort_merknad: t('forerkortKort') + ' – ' + t('merknad').toLowerCase(), helsetrygdekort: t('helsekortKort'), helsetrygdekort_utloper: t('helsekortKort') + ' – ' + t('utlopsdato').toLowerCase(),
+    mc_forsikring_selskap: t('forsikringKort'), km: t('km'), merknad: t('merknad'), sykkel_id: t('sykkel') };
+  EGEN_SJEKK.forEach(([tt, r]) => r.forEach(([id, n]) => { navn[id] = t(tt) + (r.length > 1 ? ' – ' + t(n).toLowerCase() : ''); }));
+  return navn;
+};
+const egenVis = (f, v) => v === '' || v == null ? '–' : f === 'km' ? fmtKm(v) : f === 'helsetrygdekort_utloper' ? fmtDato(v) :
+  f === 'sykkel_id' ? ((finnSykkel(v) || {}).regnr || v) : (v === 'Ja' || v === 'Nei') ? jaNei(v) : v === 'OK' ? t('ok') : v === 'Ikke OK' ? t('ikkeOk') : String(v);
+
 function visEgenSkjema() {
   const eierTlf = G.eier || meg().telefon;
   const b = S.d.brukere.find(u => u.telefon === eierTlf) || meg();
   const paVegne = eierTlf !== meg().telefon;
   const mine = S.d.sykler.filter(s => s.telefon === eierTlf);
   const JN = [['Ja', t('ja')], ['Nei', t('nei'), true]];
-  tegnLag(t('egenerklaering'), `<div data-skjema="G">
+  tegnLag(G._endrer ? t('redigerEgenTittel') : t('egenerklaering'), `<div data-skjema="G">
+    ${G._endrer ? `<div class="banner info">${t('redigerEgenInfo')}</div>` : ''}
     ${paVegne ? `<div class="banner info">${esc(t('paVegneAv', b.navn))}</div>` : ''}
     <div class="kort"><h3>${paVegne ? esc(b.navn) : t('omDeg')}</h3>
       <dl class="info" style="margin-bottom:12px"><dt>${t('navn')}</dt><dd>${esc(b.navn)}</dd><dt>${t('avdeling')}</dt><dd>${esc(b.avdeling)}</dd></dl>
@@ -2245,7 +2312,7 @@ function visEgenSkjema() {
     ${EGEN_SJEKK.map(([tt, rader]) => `<div class="kort"><h3>${t(tt)}</h3>${rader.map(([id, n]) => `<div class="oljerad" style="grid-template-columns:1fr 1.6fr"><b>${t(n)}</b>${knapp2(id, OK_VALG(), G[id] || '')}</div>`).join('')}</div>`).join('')}
     <div class="kort"><label class="felt"><span>${t('merknad')}</span><textarea data-f="merknad">${esc(G.merknad)}</textarea></label>
       <label class="sjekk"><input type="checkbox" data-f="bekreftet" ${G.bekreftet ? 'checked' : ''}> ${t('bekreftTekst')}</label></div>
-    <button type="button" class="primar bred" data-a="lagreEgen">${t('sendEgen')}</button></div>`);
+    <button type="button" class="primar bred" data-a="lagreEgen">${G._endrer ? t('lagreEndringer') : t('sendEgen')}</button></div>`);
 }
 
 function sistKmEgen(sykkelId) {
@@ -2272,7 +2339,9 @@ function visEgen(id) {
     ${bildeKort('egen', e, ['km', 'annet'])}
     <div class="kort"><dl class="info">${EGEN_SJEKK.map(([tt, r]) => r.map(([id, n]) => `<dt>${t(tt)}${r.length > 1 ? ' – ' + t(n).toLowerCase() : ''}</dt><dd>${okChip(e[id])}</dd>`).join('')).join('')}</dl></div>
     ${e.merknad ? `<div class="kort"><h3>${t('merknad')}</h3><p style="white-space:pre-wrap;margin:0">${esc(e.merknad)}</p></div>` : ''}
-    <p class="dempet">${esc(t('bekreftetAv', e.navn, e.tidspunkt))}${e.registrert_av ? '<br>' + esc(t('regAv', e.registrert_av)) : ''}</p>`);
+    ${endringsloggHtml(e, egenFeltNavn(), egenVis)}
+    <p class="dempet">${esc(t('bekreftetAv', e.navn, e.tidspunkt))}${e.registrert_av ? '<br>' + esc(t('regAv', e.registrert_av)) : ''}</p>
+    ${kanRedigereEgen(e) ? `<button class="bred" data-a="redigerEgen" data-id="${esc(e.id)}">✏️ ${t('redigerEgen')}</button>` : ''}`);
 }
 
 // ─── Bike form ──────────────────────────────────────────────
@@ -2808,7 +2877,9 @@ const A = {
   },
   alleBra() { punktIder().forEach(p => { if (F[p] === undefined || F[p] === '') F[p] = 0; }); lagreUtkast(); render(); toast(t('alleOkToast')); },
   byttSkjema() { F.skjema = F.skjema === 'stor' ? 'enkel' : 'stor'; lagreUtkast(); render(); },
-  forkastKontroll() { if (!confirm(t('tommeSkjema'))) return; F = nyttSkjema(F && F.sykkel_id); forhandsutfyll(); lagreUtkast(); render(); },
+  forkastKontroll() {
+    if (F && F._endrer) { const id = F._endrer; F = null; lagre('tk_utkast', null); S.fane = kanEndreNoe() ? 'oversikt' : 'mine'; render(); return apne(() => visKontroll(id)); }
+    if (!confirm(t('tommeSkjema'))) return; F = nyttSkjema(F && F.sykkel_id); forhandsutfyll(); lagreUtkast(); render(); },
   async lagreKontroll(btn) {
     if (!F.sykkel_id && !(F.skjema === 'ekstra' && F.uregistrert)) { toast(t('velgSykkelToast'), true); const el = $('[data-f="sykkel_id"]'); return el && el.focus(); }
     if (F.skjema === 'ekstra') return lagreEkstra(btn);   // points may be left «ikke vurdert»
@@ -2822,7 +2893,7 @@ const A = {
     }
     // a photo of both tyres is required on every inspection (not when an RC corrects one that already exists)
     const harDekk = ty => (F.bilder || []).some(b => b.type === ty);
-    if (!F._retter && (!harDekk('dekk_f') || !harDekk('dekk_b'))) {
+    if (!iRetting() && (!harDekk('dekk_f') || !harDekk('dekk_b'))) {
       toast(t('dekkBildeKrav'), true);
       const kort = $('main .bildeknapper'); if (kort) kort.closest('.kort').scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
@@ -2833,7 +2904,7 @@ const A = {
       return;
     }
     // warnings, not stops: double inspection, odometer lower than before or an unlikely jump (a replaced odometer is a legitimate exception)
-    if (!F._retter) {
+    if (!iRetting()) {
       const tidl = S.d.kontroller.filter(k => k.sykkel_id === F.sykkel_id && !(F.utbedret_for && k.id === F.utbedret_for));
       const sistKm = Math.max(0, ...tidl.map(k => Number(k.km) || 0));
       const km = Number(String(F.km || '').replace(/\s/g, '').replace(',', '.')) || 0;
@@ -2850,21 +2921,23 @@ const A = {
     await medKnapp(btn, async () => {
       const id = F.sykkel_id;
       const bilder = F.bilder || [];
-      const data = Object.assign({}, F, { bilder: undefined, _forhand: undefined, _forhandVerdi: undefined, _retter: undefined });
-      const retter = F._retter;
+      const data = Object.assign({}, F, { bilder: undefined, _forhand: undefined, _forhandVerdi: undefined, _retter: undefined, _endrer: undefined });
+      const retter = F._retter, endrer = F._endrer;
       const r = retter ? Object.assign(await api('godkjennKontroll', { id: retter, handling: 'godkjenn', kontroll: data }), { id: retter })
+              : endrer ? Object.assign(await api('endreKontroll', { id: endrer, kontroll: data }), { id: endrer })
                        : await api('lagreKontroll', { kontroll: data });
       F = null; lagre('tk_utkast', null);
       const feil = await lastOppBilder(bilder, 'kontroll', r.id, btn);
       try { await lastData(); } catch (e) { /* saved; the next refresh picks it up */ }
       S.kvitt = { sykkel: id, kontroll: r.id, tid: Date.now(), bilder: bilder.length,
-        type: retter ? 'kvGodkjent' : r.status === 'venter' ? 'kvVenter' : 'kvLevert' };
+        type: endrer ? 'kvLevert' : retter ? 'kvGodkjent' : r.status === 'venter' ? 'kvVenter' : 'kvLevert' };
       if (neste.length && !feil) {   // inspection evening: straight on to the next bike missing this month
         F = nyttSkjema(neste[0].id); F.maaned = nesteMnd; F.skjema = skjemaForMnd(Number(nesteMnd.slice(5))); forhandsutfyll(); lagreUtkast();
         S.fane = 'kontroll'; lukkAlle(); render(); scrollTo(0, 0);
         return toast(t('lagretNeste', neste[0].eier, neste.length - 1));
       }
       S.fane = kanEndreNoe() ? 'oversikt' : 'mine'; render(); scrollTo(0, 0);
+      if (endrer) { apne(() => visSykkel(id)); apne(() => visKontroll(endrer)); return feil ? toast(feil, true) : toast(r.ingenEndring ? t('ingenEndringer') : t('endretToast')); }
       apne(() => visSykkel(id));   // the receipt at the top shows what was saved, with «Try again» for photos still on the phone
       if (feil) toast(feil, true);
       else toast(retter ? t('godkjentToast') : r.status === 'venter' ? t('sendtTilGodkj') : t('lagret'));
@@ -2892,27 +2965,25 @@ const A = {
       await lastData(); render(); tilbake(); toast(t('avvistToast'));
     });
   },
-  rettKontroll(btn) {
-    const k = S.d.kontroller.find(x => x.id === btn.dataset.id);
-    if (!k) return;
-    const sk = kSkjema(k);
-    F = { _retter: k.id, sykkel_id: k.sykkel_id, maaned: kMnd(k), skjema: sk, dato: String(k.dato).slice(0, 10), km: k.km === '' ? '' : String(k.km),
-          bilde_avis: k.bilde_avis || '', kjoreforbud: k.kjoreforbud === 'Ja' && Number(k.sum_allmenn) < 2, frist: k.frist ? String(k.frist).slice(0, 10) : '', merknad: k.merknad || '' };
-    (sk === 'stor' ? PUNKTER : ENKEL.map(([id]) => id)).forEach(p => { if (k[p] !== '' && k[p] != null) F[p] = Number(k[p]); });
-    if (sk === 'stor') ['dekk_f_mm', 'dekk_f_dato', 'dekk_b_mm', 'dekk_b_dato', 'brems_f_belegg', 'brems_b_belegg', 'batteri_dato', 'batteri_ok',
-      'olje_primaer', 'olje_primaer_ok', 'olje_clutch', 'olje_clutch_ok', 'olje_hydr', 'olje_hydr_ok', 'olje_motor', 'olje_motor_ok', 'kjolevaeske', 'kjolevaeske_ok']
-      .forEach(f => { if (k[f] !== '' && k[f] != null) F[f] = String(k[f]); });
-    lagreUtkast(); lukkAlle(); S.fane = 'kontroll'; render(); scrollTo(0, 0);
+  rettKontroll(btn) { apneKontrollForRetting(btn.dataset.id, '_retter'); },
+  redigerKontroll(btn) {
+    if (F && !iRetting() && harInnhold(F) && !confirm(t('annenSykkelUtkast'))) return;
+    apneKontrollForRetting(btn.dataset.id, '_endrer');
   },
+  redigerEgen(btn) { startEgenRedigering(btn.dataset.id); },
   alleOk() { EGEN_SJEKK.forEach(([, r]) => r.forEach(([id]) => { if (!G[id]) G[id] = 'OK'; })); visEgenSkjema(); },
   async lagreEgen(btn) {
     if (!G.sykkel_id) return toast(t('velgSykkelToast'), true);
     if (!G.bekreftet) return toast(t('egenBekreftToast'), true);
     await medKnapp(btn, async () => {
       const bilder = G.bilder || [];
-      const r = await api('lagreEgenerklaering', { egenerklaering: Object.assign({}, G, { bilder: undefined }) });
+      const endrer = G._endrer;
+      const data = Object.assign({}, G, { bilder: undefined, _endrer: undefined });
+      const r = endrer ? Object.assign(await api('endreEgenerklaering', { id: endrer, egenerklaering: data }), { id: endrer })
+                       : await api('lagreEgenerklaering', { egenerklaering: data });
       G = null;
       const feil = await lastOppBilder(bilder, 'egen', r.id, btn);
+      if (endrer) { await lastData(); tilbake(); render(); if (LAG.length) LAG[LAG.length - 1](); return feil ? toast(feil, true) : toast(r.ingenEndring ? t('ingenEndringer') : t('endretToast')); }
       lukkAlle(); await lastData(); render();
       if (feil) { apne(() => visEgen(r.id)); toast(feil, true); }
       else toast(t('egenSendt'));
