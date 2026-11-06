@@ -1603,7 +1603,7 @@ function visKontrollSkjema() {
       ${avvikTekst(forrige).length || forrige.merknad ? `<div class="forrigeinfo">${avvikTekst(forrige).length ? `<b>${t('forrigeAvvik')}:</b> ${esc(avvikTekst(forrige).join(', '))}` : ''}${forrige.merknad ? `${avvikTekst(forrige).length ? '<br>' : ''}<b>${t('merknad')}:</b> ${esc(forrige.merknad)}` : ''}</div>` : ''}` : ''}
       ${forrige && forrige.merknad ? `<div class="banner ${Number(forrige.sum_allmenn) >= 1 ? 'v1' : 'info'}" style="font-weight:550">${esc(t('forrigeMerknad', fmtDato(forrige.dato), forrige.merknad))}</div>` : ''}
       <label class="felt"><span>${t('maaned')}</span><select data-f="maaned">
-        ${SESONG.map(m => `<option value="${mndKey(y, m)}"${mndKey(y, m) === F.maaned ? ' selected' : ''}>${Mnd(m)} – ${t('sk_' + skjemaForMnd(m))}</option>`).join('')}
+        ${SESONG.filter(m => !iRetting() || skjemaForMnd(m) !== 'egen').map(m => `<option value="${mndKey(y, m)}"${mndKey(y, m) === F.maaned ? ' selected' : ''}>${Mnd(m)} – ${t('sk_' + skjemaForMnd(m))}</option>`).join('')}
       </select></label>
       ${F.skjema !== 'egen' ? `<div class="skjemavalg"><span class="dempet">${t('skjemaFor', t('sk_' + F.skjema), Mnd(fm))}</span>
         <button type="button" class="lenkeknapp" data-a="byttSkjema">${stor ? t('brukEnkel') : t('brukStor')}</button></div>` : ''}
