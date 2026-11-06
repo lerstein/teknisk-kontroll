@@ -786,7 +786,36 @@ async function api(action, data) {
     if (j.kode === 'BYTT') visTvungen();
     const e = new Error(j.feil || t('ukjentFeil')); e.kode = j.kode; throw e;
   }
+  // Saves may send back the fresh data set (j.alt) so the next lastData() needs no extra round trip.
+  if (j.alt && action !== 'hentData') NESTE_DATA = { d: j.alt, tid: Date.now() };
   return j.data;
+}
+
+// ─── Fast start: last data set is kept on the phone and shown at once ──
+let NESTE_DATA = null;
+const DATA_NOKKEL = 'tk_data';
+function lagreDataLokalt(d) {
+  try { localStorage.setItem(DATA_NOKKEL, JSON.stringify({ token: S.token, d })); } catch (e) { /* full or private mode – just skip */ }
+}
+function hentDataLokalt() {
+  try {
+    const x = JSON.parse(localStorage.getItem(DATA_NOKKEL) || 'null');
+    return x && x.token === S.token && x.d && x.d.bruker ? x.d : null;
+  } catch (e) { return null; }
+}
+function brukData(d) {
+  S.d = d;
+  Object.keys(WP).forEach(k => delete WP[k]);
+  const r = rolle();
+  if (r !== 'admin' && r !== 'officer') S.avd = S.d.bruker.avdeling;
+  else if (S.avd !== 'Alle' && !S.d.avdelinger.includes(S.avd)) S.avd = 'Alle';
+  if (!S.fane) S.fane = r === 'medlem' ? 'mine' : 'oversikt';
+}
+// Redraw after a background refresh, but never under someone's fingers:
+// not while a panel is open, the inspection form is showing, or a field has focus.
+function trygtAaTegne() {
+  const a = document.activeElement;
+  return !LAG.length && S.fane !== 'kontroll' && !(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName));
 }
 
 async function medKnapp(btn, fn) {
@@ -797,12 +826,12 @@ async function medKnapp(btn, fn) {
 }
 
 async function lastData() {
-  S.d = await api('hentData');
-  Object.keys(WP).forEach(k => delete WP[k]);
-  const r = rolle();
-  if (r !== 'admin' && r !== 'officer') S.avd = S.d.bruker.avdeling;
-  else if (S.avd !== 'Alle' && !S.d.avdelinger.includes(S.avd)) S.avd = 'Alle';
-  if (!S.fane) S.fane = r === 'medlem' ? 'mine' : 'oversikt';
+  let d = null;
+  if (NESTE_DATA && Date.now() - NESTE_DATA.tid < 10000) d = NESTE_DATA.d;
+  NESTE_DATA = null;
+  if (!d) d = await api('hentData');
+  brukData(d);
+  lagreDataLokalt(d);
 }
 
 async function oppdaterAlt() {
@@ -814,7 +843,7 @@ async function oppdaterAlt() {
 function loggUt(melding) {
   S.token = ''; S.d = null; S.fane = ''; S.filter = 'alle'; S.midlPw = ''; S.avd = hent('tk_avd') || 'Alle';
   S.kvitt = null; BOKSTATUS = null;
-  F = G = B = null; TLF = null; TLF_SOK = ""; TLF_FA = []; TLF_FS = []; KAL = null; KAL_HENTER = null; BOK = null; BOKV = null; BOK_P = null; BOK_IMPORT = null; lagre('tk_token', null); lagre('tk_utkast', null);
+  F = G = B = null; TLF = null; TLF_SOK = ""; TLF_FA = []; TLF_FS = []; KAL = null; KAL_HENTER = null; BOK = null; BOKV = null; BOK_P = null; BOK_IMPORT = null; lagre('tk_token', null); lagre('tk_utkast', null); lagre(DATA_NOKKEL, null); NESTE_DATA = null;
   lukkAlle(); visLogin('login');
   if (melding) toast(typeof melding === 'string' ? melding : t('loggInnPaNytt'), true);
 }
@@ -3673,6 +3702,19 @@ document.addEventListener('change', async ev => {
   document.title = t('app');
   if (API_URL.indexOf('http') !== 0) { $('#app').innerHTML = `<main><div class="banner v1">${t('apiMangler')}</div></main>`; return; }
   if (!S.token) return visLogin('login');
+  const lokalt = hentDataLokalt();
+  if (lokalt) {
+    // Show what we had last time straight away, then fetch fresh data quietly.
+    brukData(lokalt); render();
+    try {
+      await lastData();
+      if (trygtAaTegne()) { const y = scrollY; render(); scrollTo(0, y); }
+    } catch (e) {
+      if (e.kode === 'BYTT' || e.kode === 'AUTH') return;
+      toast(e.message, true);   // keep showing the saved data; "Oppdater" tries again
+    }
+    return;
+  }
   try { await lastData(); render(); }
   catch (e) {
     if (e.kode === 'BYTT') return;
