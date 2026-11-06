@@ -424,7 +424,7 @@ const TXT = {
     nyKontrollDenne: 'Ny kontroll av denne sykkelen', kontrollerSelv: 'Kontroller sykkelen selv', venterMerke: 'VENTER', venterGodkj: 'Venter på godkjenning fra Road Captain',
     godkjentAvTittel: 'Godkjent av', godkjenn: 'Godkjenn', rettGodkjenn: 'Rett og godkjenn', avvis: 'Avvis', avvisGrunn: 'Hvorfor avvises kontrollen? Medlemmet ser grunnen.',
     godkjentToast: 'Kontrollen er godkjent', avvistToast: 'Kontrollen er avvist', venterListe: 'Venter på godkjenning ({0})', sendtTilGodkj: 'Lagret – sendt til Road Captain for godkjenning',
-    rettTittel: 'Rett kontrollen', redigerKontroll: 'Rediger kontroll', redigerTittel: 'Rediger kontrollen', redigerInfo: 'Du endrer en lagret kontroll. Endringene logges med navnet ditt.', lagreEndringer: 'Lagre endringer', endretToast: 'Endringene er lagret', ingenEndringer: 'Ingen endringer å lagre', avbrytRedigering: 'Avbryt redigering', endringslogg: 'Endringslogg', endretAvTid: '{0} – {1}', redigerEgen: 'Rediger egenerklæring', redigerEgenTittel: 'Rediger egenerklæring', redigerEgenInfo: 'Du endrer en innlevert egenerklæring. Endringene logges med navnet ditt.', egenKontrollInfo: 'Du kontrollerer din egen sykkel. Kontrollen teller med en gang, men Road Captain må godkjenne den.',
+    rettTittel: 'Rett kontrollen', redigerKontroll: 'Rediger kontroll', redigerTittel: 'Rediger kontrollen', redigerInfo: 'Du endrer en lagret kontroll. Endringene logges med navnet ditt.', lagreEndringer: 'Lagre endringer', endretToast: 'Endringene er lagret', ingenEndringer: 'Ingen endringer å lagre', avbrytRedigering: 'Avbryt redigering', endringslogg: 'Endringslogg', endretAvTid: '{0} – {1}', redigerEgen: 'Rediger egenerklæring', innlevertDato: 'Innlevert dato', innlevertHint: 'Bare Road Captain og administrator kan endre datoen', redigerEgenTittel: 'Rediger egenerklæring', redigerEgenInfo: 'Du endrer en innlevert egenerklæring. Endringene logges med navnet ditt.', egenKontrollInfo: 'Du kontrollerer din egen sykkel. Kontrollen teller med en gang, men Road Captain må godkjenne den.',
     avvistBanner: 'Kontrollen av {0} ({1}) ble avvist av {2}', trekkTilbake: 'Trekk tilbake kontrollen', redigerSykkel: 'Rediger sykkel', kontroller: 'Kontroller ({0})',
     ingenKontroller: 'Ingen kontroller registrert.', egenerkl: 'Egenerklæringer ({0})', ingenEgen: 'Ingen egenerklæring for denne sykkelen.',
     altOk: 'Alt OK', ikkeOkAnt: '{0} IKKE OK', bilde1: ' · 1 bilde', bilderN: ' · {0} bilder',
@@ -572,7 +572,7 @@ const TXT = {
     nyKontrollDenne: 'New inspection of this bike', kontrollerSelv: 'Inspect the bike yourself', venterMerke: 'PENDING', venterGodkj: 'Waiting for approval from the Road Captain',
     godkjentAvTittel: 'Approved by', godkjenn: 'Approve', rettGodkjenn: 'Correct and approve', avvis: 'Reject', avvisGrunn: 'Why is the inspection rejected? The member will see the reason.',
     godkjentToast: 'Inspection approved', avvistToast: 'Inspection rejected', venterListe: 'Waiting for approval ({0})', sendtTilGodkj: 'Saved – sent to the Road Captain for approval',
-    rettTittel: 'Correct the inspection', redigerKontroll: 'Edit inspection', redigerTittel: 'Edit the inspection', redigerInfo: 'You are changing a saved inspection. The changes are logged with your name.', lagreEndringer: 'Save changes', endretToast: 'Changes saved', ingenEndringer: 'No changes to save', avbrytRedigering: 'Cancel editing', endringslogg: 'Change log', endretAvTid: '{0} – {1}', redigerEgen: 'Edit self-declaration', redigerEgenTittel: 'Edit self-declaration', redigerEgenInfo: 'You are changing a submitted self-declaration. The changes are logged with your name.', egenKontrollInfo: 'You are inspecting your own bike. It counts at once, but the Road Captain must approve it.',
+    rettTittel: 'Correct the inspection', redigerKontroll: 'Edit inspection', redigerTittel: 'Edit the inspection', redigerInfo: 'You are changing a saved inspection. The changes are logged with your name.', lagreEndringer: 'Save changes', endretToast: 'Changes saved', ingenEndringer: 'No changes to save', avbrytRedigering: 'Cancel editing', endringslogg: 'Change log', endretAvTid: '{0} – {1}', redigerEgen: 'Edit self-declaration', innlevertDato: 'Submitted on', innlevertHint: 'Only the Road Captain and administrators can change the date', redigerEgenTittel: 'Edit self-declaration', redigerEgenInfo: 'You are changing a submitted self-declaration. The changes are logged with your name.', egenKontrollInfo: 'You are inspecting your own bike. It counts at once, but the Road Captain must approve it.',
     avvistBanner: 'The inspection of {0} ({1}) was rejected by {2}', trekkTilbake: 'Withdraw the inspection', redigerSykkel: 'Edit bike', kontroller: 'Inspections ({0})',
     ingenKontroller: 'No inspections registered.', egenerkl: 'Self-declarations ({0})', ingenEgen: 'No self-declaration for this bike.',
     altOk: 'All OK', ikkeOkAnt: '{0} NOT OK', bilde1: ' · 1 photo', bilderN: ' · {0} photos',
@@ -2256,7 +2256,7 @@ function startEgen(sykkelId) {
   const mine = S.d.sykler.filter(s => s.telefon === eierTlf);
   const egne = egenFor(eierTlf);
   const forrige = (s0 && egne.find(e => e.sykkel_id === s0.id)) || egne[0] || {};
-  G = { eier: eierTlf, sykkel_id: s0 ? s0.id : (mine.length === 1 ? mine[0].id : ''), km: '', merknad: '', bekreftet: false };
+  G = { eier: eierTlf, dato: idag(), sykkel_id: s0 ? s0.id : (mine.length === 1 ? mine[0].id : ''), km: '', merknad: '', bekreftet: false };
   ['reiseforsikring', 'reiseforsikring_selskap', 'forerkort_klasse', 'forerkort_merknad', 'helsetrygdekort', 'helsetrygdekort_utloper', 'mc_forsikring_selskap']
     .forEach(k => { G[k] = forrige[k] != null ? String(forrige[k]) : ''; });
   apne(visEgenSkjema);
@@ -2266,7 +2266,7 @@ function startEgen(sykkelId) {
 function startEgenRedigering(id) {
   const e = S.d.egenerklaeringer.find(x => x.id === id);
   if (!e || !kanRedigereEgen(e)) return;
-  G = { _endrer: e.id, eier: e.telefon, sykkel_id: e.sykkel_id || '', km: e.km === '' || e.km == null ? '' : String(e.km), merknad: e.merknad || '',
+  G = { _endrer: e.id, eier: e.telefon, dato: String(e.dato || '').slice(0, 10), sykkel_id: e.sykkel_id || '', km: e.km === '' || e.km == null ? '' : String(e.km), merknad: e.merknad || '',
         bekreftet: e.telefon !== meg().telefon };   // the owner confirms again; an RC edits on top of the member's confirmation
   ['reiseforsikring', 'reiseforsikring_selskap', 'forerkort_klasse', 'forerkort_merknad', 'helsetrygdekort', 'helsetrygdekort_utloper', 'mc_forsikring_selskap']
     .forEach(k => { G[k] = e[k] != null ? String(e[k]).slice(0, k === 'helsetrygdekort_utloper' ? 10 : undefined) : ''; });
@@ -2276,11 +2276,11 @@ function startEgenRedigering(id) {
 const egenFeltNavn = () => {
   const navn = { reiseforsikring: t('reiseforsikring'), reiseforsikring_selskap: t('reiseforsikring') + ' – ' + t('selskap').toLowerCase(), forerkort_klasse: t('forerkortKort'),
     forerkort_merknad: t('forerkortKort') + ' – ' + t('merknad').toLowerCase(), helsetrygdekort: t('helsekortKort'), helsetrygdekort_utloper: t('helsekortKort') + ' – ' + t('utlopsdato').toLowerCase(),
-    mc_forsikring_selskap: t('forsikringKort'), km: t('km'), merknad: t('merknad'), sykkel_id: t('sykkel') };
+    mc_forsikring_selskap: t('forsikringKort'), km: t('km'), merknad: t('merknad'), sykkel_id: t('sykkel'), dato: t('innlevertDato') };
   EGEN_SJEKK.forEach(([tt, r]) => r.forEach(([id, n]) => { navn[id] = t(tt) + (r.length > 1 ? ' – ' + t(n).toLowerCase() : ''); }));
   return navn;
 };
-const egenVis = (f, v) => v === '' || v == null ? '–' : f === 'km' ? fmtKm(v) : f === 'helsetrygdekort_utloper' ? fmtDato(v) :
+const egenVis = (f, v) => v === '' || v == null ? '–' : f === 'km' ? fmtKm(v) : (f === 'helsetrygdekort_utloper' || f === 'dato') ? fmtDato(v) :
   f === 'sykkel_id' ? ((finnSykkel(v) || {}).regnr || v) : (v === 'Ja' || v === 'Nei') ? jaNei(v) : v === 'OK' ? t('ok') : v === 'Ikke OK' ? t('ikkeOk') : String(v);
 
 function visEgenSkjema() {
@@ -2294,6 +2294,7 @@ function visEgenSkjema() {
     ${paVegne ? `<div class="banner info">${esc(t('paVegneAv', b.navn))}</div>` : ''}
     <div class="kort"><h3>${paVegne ? esc(b.navn) : t('omDeg')}</h3>
       <dl class="info" style="margin-bottom:12px"><dt>${t('navn')}</dt><dd>${esc(b.navn)}</dd><dt>${t('avdeling')}</dt><dd>${esc(b.avdeling)}</dd></dl>
+      ${kanEndreAvd(b.avdeling) ? `<label class="felt"><span>${t('innlevertDato')}</span><input type="date" data-f="dato" max="${idag()}" value="${esc(G.dato || idag())}"></label>` : ''}
       <span class="felt-tittel">${t('reiseforsikring')}</span>${knapp2('reiseforsikring', JN, G.reiseforsikring, 'noy')}
       <label class="felt" style="margin-top:10px"><span>${t('selskap')}</span><input data-f="reiseforsikring_selskap" value="${esc(G.reiseforsikring_selskap)}"></label>
       <div class="rad2"><label class="felt"><span>${t('forerkort')}</span><input data-f="forerkort_klasse" placeholder="A, B …" value="${esc(G.forerkort_klasse)}"></label>
