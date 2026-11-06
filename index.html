@@ -323,6 +323,16 @@ details.kort p{font-size:14.5px;color:#cfd3d9}
 .bokmnder button.aktiv{background:var(--aksent);color:#111;border-color:var(--aksent)}
 .bokmnder button.aktiv small{color:#111}
 .bokmnder button.fremtid{opacity:.55}
+.bokstat{overflow-x:auto;margin:0 -4px 14px;padding:0 4px}
+.bokstat table{border-collapse:separate;border-spacing:3px;font-size:13px;min-width:100%}
+.bokstat th{font-weight:600;color:var(--dempet);font-size:11.5px;padding:2px 3px;text-align:center}
+.bokstat th.avd,.bokstat td.avd{text-align:left;position:sticky;left:0;background:var(--bg);box-shadow:-8px 0 0 var(--bg);z-index:1;white-space:nowrap;padding-right:8px;font-weight:600;color:var(--tekst);font-size:13px}
+.bokstat td{text-align:center;padding:0;min-width:28px}
+.bokstat td button{width:100%;min-height:34px;padding:2px 0;border-radius:6px;font-size:13px;font-weight:650;border:1px solid var(--linje);background:var(--kort);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05}
+.bokstat td button small{font-size:9.5px;font-weight:700}
+.bokstat td.tom{color:var(--linje)}
+.bokstat td.sum,.bokstat tr.sum td{font-weight:700;color:var(--aksent)}
+.bokstat tr.sum td.avd{color:var(--tekst)}
 .bokside h2{margin:4px 0 2px}
 .bokstatus{margin:0 0 12px;font-size:13.5px}
 .bokinnl{font-style:italic;color:var(--dempet)}
@@ -390,6 +400,7 @@ const TXT = {
     bokForslag: 'Fra kalenderen', bokForslagInfo: 'Arrangementer fra de siste ukene som ikke er i boka ennå.', bokLeggTil: 'Legg til',
     bokRc: 'For Road Captain', bokTekster: 'Innledning og oppsummering', bokMarkerLevert: 'Marker måneden som levert', bokApneIgjen: 'Åpne måneden igjen',
     bokImporter: 'Importer Word-fil', bokImportInfo: 'Last opp boka som Word-fil (.docx), så legges hendelsene inn automatisk. Måneder må ha overskrift som «Januar 2026».',
+    bokStatKnapp: 'Statistikk – innlegg per avdeling', bokStatTittel: 'RC-bok – statistikk', bokStatInfo: 'Antall innlegg i RC-boka per avdeling og måned. ✓ = måneden er levert. Trykk på et tall for å åpne boka.', bokStatAvd: 'Avdeling', bokStatSum: 'Sum', bokStatTotal: 'Totalt', bokStatHenter: 'Henter {0} av {1} avdelinger …', bokStatFeil: 'Fikk ikke hentet: {0}', bokStatIngen: 'Ingen innlegg i {0}.',
     bokSkrivUt: 'Skriv ut / lagre PDF – {0} {1}', bokInnlevertAv: 'Innlevert av {0} – venter på RC', bokTaMed: 'Ta med i boka', bokEndre: 'Endre',
     bokLeverInnInfo: 'Hendelsen blir synlig for alle i avdelingen med en gang. Du kan endre og slette det du selv har skrevet.', bokSkrevetAv: 'Skrevet av {0}', bokApenTest: '{0} sin RC-bok er åpen for alle som eksempel til {1}.', bokSeAnnen: 'Se RC-boka til {0}',
     bokNarFelt: 'Tidspunkt (valgfritt – står ellers dag og dato)', bokTittelFelt: 'Tittel', bokTekstFelt: 'Hva skjedde?',
@@ -537,6 +548,7 @@ const TXT = {
     bokForslag: 'From the calendar', bokForslagInfo: 'Events from the last few weeks that are not in the book yet.', bokLeggTil: 'Add',
     bokRc: 'For the Road Captain', bokTekster: 'Introduction and summary', bokMarkerLevert: 'Mark the month as delivered', bokApneIgjen: 'Reopen the month',
     bokImporter: 'Import Word file', bokImportInfo: 'Upload the book as a Word file (.docx) and the entries are added automatically. Months need a heading like "January 2026".',
+    bokStatKnapp: 'Statistics – entries per chapter', bokStatTittel: 'RC book – statistics', bokStatInfo: 'Number of entries in the RC book per chapter and month. ✓ = the month is delivered. Tap a number to open the book.', bokStatAvd: 'Chapter', bokStatSum: 'Total', bokStatTotal: 'Total', bokStatHenter: 'Loading {0} of {1} chapters …', bokStatFeil: 'Could not load: {0}', bokStatIngen: 'No entries in {0}.',
     bokSkrivUt: 'Print / save PDF – {0} {1}', bokInnlevertAv: 'Handed in by {0} – waiting for RC', bokTaMed: 'Take into the book', bokEndre: 'Edit',
     bokLeverInnInfo: 'The entry is visible to everyone in the chapter right away. You can edit and delete what you wrote yourself.', bokSkrevetAv: 'Written by {0}', bokApenTest: 'The RC book of {0} is open to everyone as an example until {1}.', bokSeAnnen: 'See the RC book of {0}',
     bokNarFelt: 'When (optional – otherwise day and date)', bokTittelFelt: 'Title', bokTekstFelt: 'What happened?',
@@ -3273,6 +3285,7 @@ async function visRcBok() {
       <button type="button" data-a="bokLever" data-v="${info.levert === 'Ja' ? '' : '1'}">${t(info.levert === 'Ja' ? 'bokApneIgjen' : 'bokMarkerLevert')}</button>
       <label class="knapp">${t('bokImporter')}<input type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" data-bok-import hidden></label></div>
       <p class="dempet" style="margin-bottom:0">${t('bokImportInfo')}</p></div>` : ''}
+    ${kanLeseAlleBoker() && (BOK.lesbare || []).length > 1 ? `<button type="button" class="bred" data-a="bokStat">${t('bokStatKnapp')}</button>` : ''}
     <button type="button" class="bred" data-a="bokSkrivUt">${t('bokSkrivUt', BOKV.avd, BOKV.aar)}</button>`);
 }
 
@@ -3450,7 +3463,65 @@ async function bokSkrivUt() {
   setTimeout(() => window.print(), 300);
 }
 
+// ─── RC-bok statistics: entries per chapter and month (RC, president, officer, admin) ───
+// Uses the same rcBok call as the book itself, once per chapter, a few at a time. Kept for 5 minutes per year.
+let BOKSTAT = null;
+async function lastBokStat(aar, tving) {
+  if (!tving && BOKSTAT && BOKSTAT.aar === aar && Date.now() - BOKSTAT.t < 5 * 60e3) return BOKSTAT;
+  const avd = (BOK && BOK.lesbare) || [meg().avdeling], rader = {}, feil = [];
+  let ferdig = 0, i = 0;
+  const neste = async () => {
+    while (i < avd.length) {
+      const a = avd[i++];
+      try {
+        const d = await api('rcBok', { avdeling: a, aar });
+        const mnd = Array(12).fill(0), lev = Array(12).fill(false);
+        (d.poster || []).forEach(p => { const m = Number(String(p.maaned).slice(5, 7)); if (p.status !== 'innlevert' && String(p.maaned).startsWith(aar) && m >= 1 && m <= 12) mnd[m - 1]++; });
+        (d.maaneder || []).forEach(x => { const m = Number(String(x.maaned).slice(5, 7)); if (x.levert === 'Ja' && String(x.maaned).startsWith(aar) && m >= 1) lev[m - 1] = true; });
+        rader[a] = { mnd, lev };
+      } catch (e) { feil.push(a); }
+      ferdig++;
+      const el = $('#bokStatFrem'); if (el) el.textContent = t('bokStatHenter', ferdig, avd.length);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(4, avd.length) }, neste));
+  BOKSTAT = { aar, t: Date.now(), avd: avd.filter(a => rader[a]), rader, feil };
+  return BOKSTAT;
+}
+async function visBokStat() {
+  const tittel = t('bokStatTittel'), aar = BOKV.aar;
+  if (!BOKSTAT || BOKSTAT.aar !== aar || Date.now() - BOKSTAT.t >= 5 * 60e3) {
+    tegnLag(tittel, `<p class="dempet" id="bokStatFrem">${t('laster')}</p>`);
+    try { await lastBokStat(aar); }
+    catch (e) { return tegnLag(tittel, `<div class="banner v1">${esc(e.message)}</div>`); }
+    if (!LAG.length || LAG[LAG.length - 1] !== visBokStat) return;   // the user went elsewhere while loading
+  }
+  const S2 = BOKSTAT, sum = a => S2.rader[a].mnd.reduce((x, y) => x + y, 0);
+  const avd = S2.avd.slice().sort((a, b) => sum(b) - sum(a) || a.localeCompare(b));
+  const kol = Array.from({ length: 12 }, (_, i) => S2.avd.reduce((x, a) => x + S2.rader[a].mnd[i], 0));
+  const total = kol.reduce((x, y) => x + y, 0), maks = Math.max(1, ...avd.flatMap(a => S2.rader[a].mnd));
+  const farge = n => `background:rgba(255,163,38,${(0.12 + 0.6 * n / maks).toFixed(2)});border-color:rgba(255,163,38,${(0.25 + 0.5 * n / maks).toFixed(2)})`;
+  const celle = (a, i) => { const n = S2.rader[a].mnd[i], lev = S2.rader[a].lev[i], m = aar + '-' + String(i + 1).padStart(2, '0');
+    if (!n && !lev) return '<td class="tom">·</td>';
+    return `<td><button type="button" data-a="bokStatApne" data-avd="${esc(a)}" data-m="${m}"${n ? ` style="${farge(n)}"` : ''}>${n || ''}${lev ? '<small>✓</small>' : ''}</button></td>`; };
+  tegnLag(tittel, `
+    <div class="bokvelg"><b>${esc(t('bokTittel'))}</b>
+      <div class="aarvelg"><button type="button" data-a="bokStatAar" data-d="-1" aria-label="${esc(t('bokForrigeAar'))}">‹</button><b>${aar}</b><button type="button" data-a="bokStatAar" data-d="1" aria-label="${esc(t('bokNesteAar'))}">›</button></div>
+    </div>
+    <p class="dempet" style="margin-top:0">${t('bokStatInfo')}</p>
+    ${S2.feil.length ? `<div class="banner v1">${esc(t('bokStatFeil', S2.feil.join(', ')))}</div>` : ''}
+    ${total ? `<div class="bokstat"><table>
+      <thead><tr><th class="avd">${t('bokStatAvd')}</th>${Array.from({ length: 12 }, (_, i) => `<th>${esc(mndKort(i + 1))}</th>`).join('')}<th>${t('bokStatSum')}</th></tr></thead>
+      <tbody>${avd.map(a => `<tr><td class="avd">${esc(a)}</td>${Array.from({ length: 12 }, (_, i) => celle(a, i)).join('')}<td class="sum">${sum(a) || '·'}</td></tr>`).join('')}
+        <tr class="sum"><td class="avd">${t('bokStatTotal')}</td>${kol.map(n => `<td>${n || '·'}</td>`).join('')}<td>${total}</td></tr></tbody>
+    </table></div>` : `<p class="tom">${esc(t('bokStatIngen', aar))}</p>`}`);
+  const tab = $('#lag .bokstat'); if (tab) tab.scrollLeft = tab.scrollWidth;   // narrow screens: start at the latest months, chapter names stay sticky
+}
+
 Object.assign(A, {
+  bokStat() { bokStart(); apne(visBokStat); },
+  bokStatAar(el) { const a = Number(BOKV.aar) + Number(el.dataset.d); BOKV.aar = String(a); BOKV.mnd = a + BOKV.mnd.slice(4); visBokStat(); },
+  bokStatApne(el) { BOKV.avd = el.dataset.avd; BOKV.mnd = el.dataset.m; BOKV.aar = el.dataset.m.slice(0, 4); apne(visRcBok); },
   rcBok() { bokStart(); BOKV.avd = BOKV.avd || meg().avdeling; apne(visRcBok); },
   bokMnd(el) { BOKV.mnd = el.dataset.m; visRcBok(); },
   bokSe(el) { BOKV.avd = el.dataset.avd; visRcBok(); },
