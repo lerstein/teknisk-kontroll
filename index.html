@@ -215,7 +215,7 @@ dl.info dd{margin:0;font-weight:600;text-align:right}
 .login{max-width:420px;padding-top:calc(48px + env(safe-area-inset-top))}
 .ordmerke{height:46px;width:auto;display:block;margin:0 auto}
 .ordmerke-topp{height:24px;width:auto;display:block}
-.ordmerke-tekst{display:block;text-align:center;font-size:44px;line-height:1.05;letter-spacing:.05em;color:var(--klubb);font-weight:400;-webkit-text-stroke:1.5px #000;paint-order:stroke fill;text-shadow:0 2px 0 #000}
+.ordmerke-tekst{display:block;white-space:nowrap;text-align:center;font-size:44px;line-height:1.05;letter-spacing:.05em;color:var(--klubb);font-weight:400;-webkit-text-stroke:1.5px #000;paint-order:stroke fill;text-shadow:0 2px 0 #000}
 .ordmerke-tekst.topp{font-size:24px;text-align:left;-webkit-text-stroke:1px #000;text-shadow:0 1px 0 #000}
 .logo{width:72px;height:72px;border-radius:18px;display:block;margin:0 auto 14px}
 div.logo{width:64px;height:64px;border-radius:16px;background:var(--aksent);color:var(--aksent-t);display:grid;place-items:center}
@@ -376,7 +376,8 @@ const KLUBBER = {
   bmc: { api: API_URL, navn: 'Bandidos MC Norway', prefiks: 'BMC', logo: 'bandidos-norway.png?v=1', farge: '' },
   cmc: { api: 'https://script.google.com/macros/s/AKfycbxRp62JGS9OklbeEOrgGBFdgMe1lHwjP5F3D2AzcAszYdCVVzpptcZb0P-LJ1wdiTMxZA/exec', navn: 'Camaradas MC', prefiks: 'CMC', logo: 'camaradas-logo.png?v=1', farge: '#e5722f', ordmerkeFont: 'Anton',
          // Same rules and pages as BMC, other names
-         tekst: [[/Wolfpack/g, 'Camino'], [/RC-boka/g, 'Bloggen'], [/RC-bok/g, 'Blogg'], [/RC book/g, 'Blog'], [/Road Captain/g, 'Road King'], [/BMC Norway/g, 'Camaradas MC']] }
+         tekst: [[/Wolfpack Europe/g, 'Road King'], [/Wolfpack/g, 'Camino'],   // no Europe office: proof goes to the Road King
+         [/RC-boka/g, 'Bloggen'], [/RC-bok/g, 'Blogg'], [/RC book/g, 'Blog'], [/Road Captain/g, 'Road King'], [/BMC Norway/g, 'Camaradas MC']] }
 };
 
 // ─── Texts (Norwegian / English) ────────────────────────────
