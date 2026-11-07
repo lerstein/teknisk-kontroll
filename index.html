@@ -41,7 +41,7 @@ button.tlfknapp svg{width:19px;height:19px}
 .tlfstillvalg label{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--linje)}
 .tlfstillvalg input{width:20px;height:20px;min-height:0;margin:0;accent-color:var(--aksent);flex:none}
 .tlfstillvalg button.vkort{background:none;border:0;padding:2px 0 8px;color:var(--aksent);font-size:14px;text-decoration:underline;cursor:pointer}
-.klubbtittel{margin:4px 0 14px;text-align:center}.klubbtekst{color:var(--klubb);font-size:26px;font-weight:800;letter-spacing:.06em}.klubbtittel img{display:block;width:100%;max-width:420px;height:auto;margin:0 auto}
+.klubbtittel{margin:4px 0 14px;text-align:center}.klubbtittel img.klubbmerke{max-width:220px}.klubbtekst{color:var(--klubb);font-size:26px;font-weight:800;letter-spacing:.06em}.klubbtittel img{display:block;width:100%;max-width:420px;height:auto;margin:0 auto}
 .sokrad{display:flex;gap:8px;margin:0 0 12px}
 .sokrad input[type=search]{flex:1;min-width:0}
 .skannknapp{flex:none;width:50px;display:grid;place-items:center;border-radius:12px;background:var(--aksent);color:#1a1300;cursor:pointer}
@@ -215,6 +215,8 @@ dl.info dd{margin:0;font-weight:600;text-align:right}
 .login{max-width:420px;padding-top:calc(48px + env(safe-area-inset-top))}
 .ordmerke{height:46px;width:auto;display:block;margin:0 auto}
 .ordmerke-topp{height:24px;width:auto;display:block}
+.ordmerke-tekst{display:block;text-align:center;font-size:44px;line-height:1.05;letter-spacing:.05em;color:var(--klubb);font-weight:400;-webkit-text-stroke:1.5px #000;paint-order:stroke fill;text-shadow:0 2px 0 #000}
+.ordmerke-tekst.topp{font-size:24px;text-align:left;-webkit-text-stroke:1px #000;text-shadow:0 1px 0 #000}
 .logo{width:72px;height:72px;border-radius:18px;display:block;margin:0 auto 14px}
 div.logo{width:64px;height:64px;border-radius:16px;background:var(--aksent);color:var(--aksent-t);display:grid;place-items:center}
 .logo svg{width:40px;height:40px}
@@ -372,7 +374,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbzQ6G2EWbndE-2-MohZIaGe
 // There is no club picker: at login the app tries the clubs in order (last used first) and keeps the one that accepts.
 const KLUBBER = {
   bmc: { api: API_URL, navn: 'Bandidos MC Norway', prefiks: 'BMC', logo: 'bandidos-norway.png?v=1', farge: '' },
-  cmc: { api: 'https://script.google.com/macros/s/AKfycbxRp62JGS9OklbeEOrgGBFdgMe1lHwjP5F3D2AzcAszYdCVVzpptcZb0P-LJ1wdiTMxZA/exec', navn: 'Camaradas MC', prefiks: 'CMC', logo: '', farge: '#ff6600',
+  cmc: { api: 'https://script.google.com/macros/s/AKfycbxRp62JGS9OklbeEOrgGBFdgMe1lHwjP5F3D2AzcAszYdCVVzpptcZb0P-LJ1wdiTMxZA/exec', navn: 'Camaradas MC', prefiks: 'CMC', logo: 'camaradas-logo.png?v=1', farge: '#e5722f', ordmerkeFont: 'Anton',
          // Same rules and pages as BMC, other names
          tekst: [[/Wolfpack/g, 'Camino'], [/RC-boka/g, 'Bloggen'], [/RC-bok/g, 'Blogg'], [/RC book/g, 'Blog'], [/Road Captain/g, 'Road King'], [/BMC Norway/g, 'Camaradas MC']] }
 };
@@ -739,6 +741,11 @@ const K = () => KLUBBER[KLUBB];
   ['no', 'en'].forEach(l => Object.keys(TXT[l]).forEach(k => { if (typeof TXT[l][k] === 'string') r.forEach(([a, b]) => { TXT[l][k] = TXT[l][k].replace(a, b); }); }));
 })();
 if (K().farge) document.documentElement.style.setProperty('--klubb', K().farge);
+// Wordmark: BMC uses the drawn RC Portal images; a club with ordmerkeFont gets "RC PORTAL" as text in a font close to its patches
+if (K().ordmerkeFont) document.head.insertAdjacentHTML('beforeend', `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(K().ordmerkeFont)}&display=swap">`);
+const ordmerke = (topp) => K().ordmerkeFont
+  ? `<span class="ordmerke-tekst${topp ? ' topp' : ''}" style="font-family:'${K().ordmerkeFont}',Impact,'Arial Narrow',sans-serif">RC PORTAL</span>`
+  : `<img src="${topp ? 'rcportal-topp.png?v=2' : 'rcportal-logo.png?v=2'}" alt="RC Portal" class="${topp ? 'ordmerke-topp' : 'ordmerke'}">`;
 let LANG = hent('tk_lang') === 'en' ? 'en' : 'no';
 function t(k, ...a) {
   let s = (TXT[LANG] && TXT[LANG][k] !== undefined) ? TXT[LANG][k] : (TXT.no[k] !== undefined ? TXT.no[k] : k);
@@ -1119,7 +1126,7 @@ function visLogin() {
   document.body.classList.add('uten-nav');
   $('#app').innerHTML = `<main class="login">
     <img class="logo" src="icon-192.png" alt="RC Portal">
-    <h1><img src="rcportal-logo.png?v=2" alt="${t('app')}" class="ordmerke"></h1>
+    <h1>${ordmerke(false)}</h1>
     <div class="under">${t('undertittel')}</div>
     <form id="loginSkjema" class="kort" autocomplete="on">
       <label class="felt"><span>${t('telefon')}</span><input name="telefon" type="tel" inputmode="tel" autocomplete="username" required value="${esc(hent('tk_tlf'))}"></label>
@@ -1205,7 +1212,7 @@ function render() {
   const b = meg();
   const innhold = { oversikt: visOversikt, kontroll: visKontrollSkjema, mine: visMine, wolfpack: visWolfpack, haandbok: visHaandbok, medlemmer: visMedlemmer, konto: visKonto }[S.fane] || visMine;
   $('#app').innerHTML = `
-    <header class="topp"><h1><img src="rcportal-topp.png?v=2" alt="${t('app')}" class="ordmerke-topp"></h1>
+    <header class="topp"><h1>${ordmerke(true)}</h1>
       <button type="button" class="hvem${S.fane === 'konto' ? ' aktiv' : ''}" data-fane="konto" aria-label="${esc(t('f_konto'))}"><span>${esc(b.navn)}<br>${esc(t('r_' + b.rolle))} · ${esc(b.avdeling)}</span>${avatar(b.telefon, 'avatar-liten') || svg(IKON.person)}</button>
       <button type="button" class="tlfknapp" data-a="telefonliste" aria-label="${esc(t('telefonliste'))}">${svg(IKON.telefon)}</button></header>
     <main><div id="installPlass">${installBanner()}</div>${koBanner()}${innhold()}${tilbakeLenke()}</main>
@@ -2243,7 +2250,7 @@ const tlfFaTekst = () => !TLF_FA.length ? t('alleAvd') : TLF_FA.length <= 2 ? TL
 const tlfStillTekst = () => !TLF_FS.length ? t('tlfAlleStillinger') : TLF_FS.length <= 2 ? TLF_FS.join(', ') : t('tlfStillingerN', TLF_FS.length);
 const tlfStillinger = avd => [...new Set(avd.flatMap(a => a.personer.map(x => String(x.status || '').trim())).filter(Boolean))];
 let TLF_AVD = [];
-const KLUBBTITTEL = K().logo ? `<h2 class="klubbtittel"><img src="${K().logo}" alt="${K().navn}"></h2>`
+const KLUBBTITTEL = K().logo ? `<h2 class="klubbtittel"><img src="${K().logo}" alt="${K().navn}"${KLUBB !== 'bmc' ? ' class="klubbmerke"' : ''}></h2>`
   : `<h2 class="klubbtittel klubbtekst">${K().navn.toUpperCase()}</h2>`;   // no logo: club name as text
 function tlfHtml(avd, sok) {
     const q = String(sok || '').trim().toLowerCase();
@@ -2677,7 +2684,9 @@ function nyPdf() {
 }
 async function pdfTopp(P, tittel, under) {
   const doc = P.doc, bilde = await hentTittelbilde();
-  if (bilde) { const w = 130, h = w * 93 / 777; doc.addImage(bilde, 'PNG', (P.W - w) / 2, P.y, w, h); P.y += h + 5; }
+  if (bilde) { let w = 130, h = w * 93 / 777;
+    if (KLUBB !== 'bmc') { const ip = doc.getImageProperties(bilde); h = 40; w = h * ip.width / ip.height; }   // tall patch logo
+    doc.addImage(bilde, 'PNG', (P.W - w) / 2, P.y, w, h); P.y += h + 5; }
   else if (!K().logo) { P.font(18, 'bold', K().farge || PDFF.aksent); doc.text(pdfTxt(K().navn.toUpperCase()), P.W / 2, P.y + 6, { align: 'center' }); P.y += 12; }   // club without logo: name as text
   if (tittel) { P.font(15, 'bold', PDFF.aksent); doc.text(pdfTxt(tittel), P.W / 2, P.y + 4, { align: 'center' }); P.y += 8; }
   if (under) { P.font(11, 'bold'); doc.text(pdfTxt(under), P.W / 2, P.y + 3, { align: 'center' }); P.y += 6; }
