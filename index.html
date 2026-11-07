@@ -41,7 +41,7 @@ button.tlfknapp svg{width:19px;height:19px}
 .tlfstillvalg label{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--linje)}
 .tlfstillvalg input{width:20px;height:20px;min-height:0;margin:0;accent-color:var(--aksent);flex:none}
 .tlfstillvalg button.vkort{background:none;border:0;padding:2px 0 8px;color:var(--aksent);font-size:14px;text-decoration:underline;cursor:pointer}
-.klubbtittel{margin:4px 0 14px;text-align:center}.klubbtittel img{display:block;width:100%;max-width:420px;height:auto;margin:0 auto}
+.klubbtittel{margin:4px 0 14px;text-align:center}.klubbtekst{color:var(--klubb);font-size:26px;font-weight:800;letter-spacing:.06em}.klubbtittel img{display:block;width:100%;max-width:420px;height:auto;margin:0 auto}
 .sokrad{display:flex;gap:8px;margin:0 0 12px}
 .sokrad input[type=search]{flex:1;min-width:0}
 .skannknapp{flex:none;width:50px;display:grid;place-items:center;border-radius:12px;background:var(--aksent);color:#1a1300;cursor:pointer}
@@ -368,6 +368,14 @@ details.kort p{font-size:14.5px;color:#cfd3d9}
 'use strict';
 // ─── Settings ───────────────────────────────────────────────
 const API_URL = 'https://script.google.com/macros/s/AKfycbzQ6G2EWbndE-2-MohZIaGeNGO9WOss2pFeHcVEWSDVo2wjYhzyHXOIucbHBjZ6qXbhUQ/exec';   // Apps Script web app URL (…/exec)
+// Clubs sharing this app. Each club has its own backend (own Google Sheet + Apps Script), so data never mixes.
+// There is no club picker: at login the app tries the clubs in order (last used first) and keeps the one that accepts.
+const KLUBBER = {
+  bmc: { api: API_URL, navn: 'Bandidos MC Norway', prefiks: 'BMC', logo: 'bandidos-norway.png?v=1', farge: '' },
+  cmc: { api: 'https://script.google.com/macros/s/AKfycbxRp62JGS9OklbeEOrgGBFdgMe1lHwjP5F3D2AzcAszYdCVVzpptcZb0P-LJ1wdiTMxZA/exec', navn: 'Camaradas MC', prefiks: 'CMC', logo: '', farge: '#ff6600',
+         // Same rules and pages as BMC, other names
+         tekst: [[/Wolfpack/g, 'Camino'], [/RC-boka/g, 'Bloggen'], [/RC-bok/g, 'Blogg'], [/RC book/g, 'Blog'], [/Road Captain/g, 'Road King'], [/BMC Norway/g, 'Camaradas MC']] }
+};
 
 // ─── Texts (Norwegian / English) ────────────────────────────
 const TXT = {
@@ -504,7 +512,7 @@ const TXT = {
     glemtHint: 'Gammelt passord slutter å virke, og medlemmet logges ut.', nyKodeSporsmal: 'Lage ny kode? Medlemmet må lage nytt passord.',
     nyKodeLaget: 'Ny kode laget', medlemLagtTil: 'Medlem lagt til', lagretToast: 'Lagret',
     smsTekst: 'Hei {0}! Du er lagt inn i RC Portal, appen for teknisk kontroll: {1}\nLogg inn med telefonnummeret ditt og koden {2} som passord. Første gang blir du bedt om å lage ditt eget passord. Koden gjelder i 14 dager.',
-    konto: 'Konto', telefonKort: 'Telefon', byttPassord: 'Bytt passord', navaerende: 'Nåværende passord', nyttPassord: 'Nytt passord (minst 6 tegn)',
+    konto: 'Konto', byttKlubb: 'Bytt til {0} (logg inn på nytt)', telefonKort: 'Telefon', byttPassord: 'Bytt passord', navaerende: 'Nåværende passord', nyttPassord: 'Nytt passord (minst 6 tegn)',
     gjentaNytt: 'Gjenta nytt passord', nyeUlike: 'De nye passordene er ikke like', passordByttet: 'Passord byttet',
     hentPaNytt: 'Hent data på nytt', oppdatert: 'Oppdatert', sprak: 'Språk',
     bt_km: 'Kilometerstand', bt_dekk_f: 'Dekk foran', bt_dekk_b: 'Dekk bak', bk_dekk_f: 'Dekk foran *', bk_dekk_b: 'Dekk bak *', dekkBildeKrav: 'Ta bilde av begge dekkene – foran og bak – før du lagrer.', bt_avis: 'Bilde m/avis', bt_annet: 'Bilde', bt_profil: 'Profilbilde', bt_sykkel: 'Bilde av sykkelen', bk_profil: 'Bytt profilbilde', bk_profilNy: 'Legg til profilbilde', bk_sykkel: 'Bytt bilde av sykkelen', bk_sykkelNy: 'Legg til bilde av sykkelen', bk_km: 'Km-stand', bk_avis: 'Bilde m/avis', bk_annet: 'Andre bilder',
@@ -652,7 +660,7 @@ const TXT = {
     glemtHint: 'The old password stops working and the member is logged out.', nyKodeSporsmal: 'Create a new code? The member will have to choose a new password.',
     nyKodeLaget: 'New code created', medlemLagtTil: 'Member added', lagretToast: 'Saved',
     smsTekst: 'Hi {0}! You have been added to RC Portal, the technical inspection app: {1}\nLog in with your phone number and the code {2} as your password. The first time, you will be asked to choose your own password. The code is valid for 14 days.',
-    konto: 'Account', telefonKort: 'Phone', byttPassord: 'Change password', navaerende: 'Current password', nyttPassord: 'New password (at least 6 characters)',
+    konto: 'Account', byttKlubb: 'Switch to {0} (log in again)', telefonKort: 'Phone', byttPassord: 'Change password', navaerende: 'Current password', nyttPassord: 'New password (at least 6 characters)',
     gjentaNytt: 'Repeat new password', nyeUlike: "The new passwords don't match", passordByttet: 'Password changed',
     hentPaNytt: 'Reload data', oppdatert: 'Updated', sprak: 'Language',
     bt_km: 'Odometer', bt_dekk_f: 'Front tyre', bt_dekk_b: 'Rear tyre', bk_dekk_f: 'Front tyre *', bk_dekk_b: 'Rear tyre *', dekkBildeKrav: 'Take a photo of both tyres – front and rear – before saving.', bt_avis: 'Photo w/ newspaper', bt_annet: 'Photo', bt_profil: 'Profile photo', bt_sykkel: 'Photo of the bike', bk_profil: 'Change profile photo', bk_profilNy: 'Add profile photo', bk_sykkel: 'Change bike photo', bk_sykkelNy: 'Add a photo of the bike', bk_km: 'Odometer', bk_avis: 'Newspaper', bk_annet: 'Other photos',
@@ -724,6 +732,13 @@ const fmtDato = s => { if (!s) return ''; const [y, m, d] = String(s).slice(0, 1
 const hent = k => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } };
 const lagre = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) { /* private mode */ } };
 
+let KLUBB = KLUBBER[hent('tk_klubb')] ? hent('tk_klubb') : 'bmc';
+const K = () => KLUBBER[KLUBB];
+(function klubbTekster() {
+  const r = K().tekst; if (!r) return;
+  ['no', 'en'].forEach(l => Object.keys(TXT[l]).forEach(k => { if (typeof TXT[l][k] === 'string') r.forEach(([a, b]) => { TXT[l][k] = TXT[l][k].replace(a, b); }); }));
+})();
+if (K().farge) document.documentElement.style.setProperty('--klubb', K().farge);
 let LANG = hent('tk_lang') === 'en' ? 'en' : 'no';
 function t(k, ...a) {
   let s = (TXT[LANG] && TXT[LANG][k] !== undefined) ? TXT[LANG][k] : (TXT.no[k] !== undefined ? TXT.no[k] : k);
@@ -774,10 +789,10 @@ let G = null;   // self-declaration draft
 let B = null;   // member / bike form scratch
 const SKJEMA = { K: () => F, G: () => G, B: () => B };
 
-async function api(action, data) {
+async function api(action, data, url) {
   let res;
   try {
-    res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(Object.assign({ action, token: S.token, lang: LANG }, data || {})) });
+    res = await fetch(url || K().api, { method: 'POST', body: JSON.stringify(Object.assign({ action, token: S.token, lang: LANG }, data || {})) });
   } catch (e) { throw new Error(t('ingenKontakt')); }
   let j;
   try { j = await res.json(); } catch (e) { throw new Error(t('uventet', res.status)); }
@@ -1123,8 +1138,19 @@ function visLogin() {
     const f = Object.fromEntries(new FormData(ev.target));
     if (modus === 'aktiver' && f.passord !== f.passord2) return toast(t('passordUlike'), true);
     await medKnapp($('button.primar', ev.target), async () => {
-      const r = await api(modus, f);
+      // No club picker: try the last used club first, then the others. Wrong password / unknown number → next club.
+      const rekke = [KLUBB, ...Object.keys(KLUBBER).filter(k => k !== KLUBB)].filter(k => KLUBBER[k].api.indexOf('http') === 0);
+      let r = null, klubb = null, forsteFeil = null;
+      for (const k of rekke) {
+        try { r = await api(modus, f, KLUBBER[k].api); klubb = k; break; }
+        catch (e) { if (!forsteFeil) forsteFeil = e; if (e.message === t('ingenKontakt')) break; }
+      }
+      if (!r) throw forsteFeil;
       S.token = r.token; lagre('tk_token', r.token); lagre('tk_tlf', f.telefon);
+      if (klubb !== KLUBB) {   // texts/colours follow the club → reload; the one-time code is handed over so it isn't asked for twice
+        lagre('tk_klubb', klubb); if (r.maaBytte) { try { sessionStorage.setItem('tk_midl', f.passord); } catch (e) { /* ignore */ } }
+        return location.reload();
+      }
       if (r.maaBytte) { S.midlPw = f.passord; return visTvungen(); }
       await lastData(); render();
     });
@@ -1133,6 +1159,7 @@ function visLogin() {
 
 /** Shown after logging in with the temporary password: the user must pick their own before anything else. */
 function visTvungen() {
+  if (!S.midlPw) { try { S.midlPw = sessionStorage.getItem('tk_midl') || ''; sessionStorage.removeItem('tk_midl'); } catch (e) { /* ignore */ } }
   document.body.classList.add('uten-nav');
   lukkAlle();
   $('#app').innerHTML = `<main class="login">
@@ -2162,7 +2189,7 @@ const harKontakt = p => !!p.epost || p.telefon.replace(/\D/g, '').length >= 6;
 const vEsc = v => String(v || '').replace(/\\/g, '\\\\').replace(/[,;]/g, m => '\\' + m).replace(/\r?\n/g, '\\n');
 function vKort(p, avd) {
   const deler = p.navn.trim().split(/\s+/), etter = deler.length > 1 ? deler.pop() : '';
-  return ['BEGIN:VCARD', 'VERSION:3.0', `N:${vEsc(etter)};${vEsc(deler.join(' '))};;;`, `FN:${vEsc(p.navn)}`, `ORG:${vEsc('BMC ' + avd)}`,
+  return ['BEGIN:VCARD', 'VERSION:3.0', `N:${vEsc(etter)};${vEsc(deler.join(' '))};;;`, `FN:${vEsc(p.navn)}`, `ORG:${vEsc(K().prefiks + ' ' + avd)}`,
     p.status ? `TITLE:${vEsc(p.status)}` : '', p.telefon.replace(/\D/g, '').length >= 6 ? `TEL;TYPE=CELL:${e164(p.telefon)}` : '',
     p.epost ? `EMAIL;TYPE=INTERNET:${p.epost}` : '', 'END:VCARD'].filter(Boolean).join('\r\n');
 }
@@ -2216,7 +2243,8 @@ const tlfFaTekst = () => !TLF_FA.length ? t('alleAvd') : TLF_FA.length <= 2 ? TL
 const tlfStillTekst = () => !TLF_FS.length ? t('tlfAlleStillinger') : TLF_FS.length <= 2 ? TLF_FS.join(', ') : t('tlfStillingerN', TLF_FS.length);
 const tlfStillinger = avd => [...new Set(avd.flatMap(a => a.personer.map(x => String(x.status || '').trim())).filter(Boolean))];
 let TLF_AVD = [];
-const KLUBBTITTEL = '<h2 class="klubbtittel"><img src="bandidos-norway.png?v=1" alt="Bandidos MC Norway"></h2>';
+const KLUBBTITTEL = K().logo ? `<h2 class="klubbtittel"><img src="${K().logo}" alt="${K().navn}"></h2>`
+  : `<h2 class="klubbtittel klubbtekst">${K().navn.toUpperCase()}</h2>`;   // no logo: club name as text
 function tlfHtml(avd, sok) {
     const q = String(sok || '').trim().toLowerCase();
     return avd.filter(a => !TLF_FA.length || TLF_FA.includes(a.navn)).map(a => {
@@ -2631,7 +2659,7 @@ function lastJsPdf() {
 }
 let TITTELBILDE = null;
 function hentTittelbilde() {
-  if (!TITTELBILDE) TITTELBILDE = fetch('bandidos-norway.png?v=1').then(r => r.blob()).then(b => new Promise(ok => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.readAsDataURL(b); })).catch(() => '');
+  if (!TITTELBILDE) TITTELBILDE = !K().logo ? Promise.resolve('') : fetch(K().logo).then(r => r.blob()).then(b => new Promise(ok => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.readAsDataURL(b); })).catch(() => '');
   return TITTELBILDE;
 }
 // jsPDF's built-in Helvetica only has Latin-1 (æøå are fine); replace anything else
@@ -2650,6 +2678,7 @@ function nyPdf() {
 async function pdfTopp(P, tittel, under) {
   const doc = P.doc, bilde = await hentTittelbilde();
   if (bilde) { const w = 130, h = w * 93 / 777; doc.addImage(bilde, 'PNG', (P.W - w) / 2, P.y, w, h); P.y += h + 5; }
+  else if (!K().logo) { P.font(18, 'bold', K().farge || PDFF.aksent); doc.text(pdfTxt(K().navn.toUpperCase()), P.W / 2, P.y + 6, { align: 'center' }); P.y += 12; }   // club without logo: name as text
   if (tittel) { P.font(15, 'bold', PDFF.aksent); doc.text(pdfTxt(tittel), P.W / 2, P.y + 4, { align: 'center' }); P.y += 8; }
   if (under) { P.font(11, 'bold'); doc.text(pdfTxt(under), P.W / 2, P.y + 3, { align: 'center' }); P.y += 6; }
   P.font(8.5, 'normal', PDFF.dempet); doc.text(pdfTxt(t('statUtskrevet', fmtDato(new Date().toISOString().slice(0, 10)))), P.W / 2, P.y + 3, { align: 'center' }); P.y += 9;
@@ -2720,7 +2749,7 @@ async function tlfPdf() {
   });
   if (!avd.length) { P.font(10, 'normal', PDFF.dempet); doc.text(pdfTxt(t('tlfIngen')), P.W / 2, P.y + 5, { align: 'center' }); P.y += 10; }
   P.font(7.5, 'normal', PDFF.dempet); doc.text(pdfTxt(t('tlfHentet', fmtAktiv(TLF.hentet))), P.M, Math.min(P.y + 2, P.H - 6));
-  await leverPdf(doc, pdfFilnavn(['Bandidos MC Norway', t('telefonliste'), TLF_FA.length === 1 ? TLF_FA[0] : '', new Date().toISOString().slice(0, 10)]));
+  await leverPdf(doc, pdfFilnavn([K().navn, t('telefonliste'), TLF_FA.length === 1 ? TLF_FA[0] : '', new Date().toISOString().slice(0, 10)]));
 }
 
 // Statistics page as PDF (same data as on screen, see STAT in visStatistikk)
@@ -2891,6 +2920,7 @@ function visKonto() {
       <button type="button" class="bred" style="margin:0" data-a="installer">${t('inst_knapp')}</button></div>`
       : erInstallert() ? `<p class="dempet">${t('inst_ferdig')}</p>` : ''}
     <details class="kort"><summary>${t('personvern')}</summary>${t('personvernTekst')}</details>
+    ${b.rolle === 'admin' ? Object.keys(KLUBBER).filter(k => k !== KLUBB && KLUBBER[k].api.indexOf('http') === 0).map(k => `<button class="bred" data-a="byttKlubb" data-klubb="${k}">${esc(t('byttKlubb', KLUBBER[k].navn))}</button>`).join('') : ''}
     <button class="fare bred" data-a="loggUt">${t('loggUt')}</button>
     <button class="bred" data-a="oppdater">${t('hentPaNytt')}</button>`;
 }
@@ -3078,6 +3108,7 @@ const A = {
     });
   },
   loggUt() { loggUt(); },
+  byttKlubb(el) { lagre('tk_klubb', el.dataset.klubb); loggUt(); location.reload(); },
   oppfolging() { apne(visOppfolging); },
   async provBilderIgjen(btn) {
     const mine = koMine();
@@ -3098,7 +3129,7 @@ const A = {
   telefonliste() { apne(visTelefonliste); },
   tlfPdf(el) { medKnapp(el, tlfPdf); },
   vcfPerson(el) { const a = TLF.avdelinger[+el.dataset.avd], p = a && a.personer[+el.dataset.p]; if (p) lastNedVcf(p.navn, vKort(p, a.navn)); },
-  vcfAvd(el) { const a = TLF.avdelinger[+el.dataset.avd]; if (a) lastNedVcf('BMC ' + a.navn, a.personer.filter(harKontakt).map(p => vKort(p, a.navn)).join('\r\n')); },
+  vcfAvd(el) { const a = TLF.avdelinger[+el.dataset.avd]; if (a) lastNedVcf(K().prefiks + ' ' + a.navn, a.personer.filter(harKontakt).map(p => vKort(p, a.navn)).join('\r\n')); },
   kopierMelding(el) { try { navigator.clipboard.writeText(el.dataset.tekst).then(() => toast(t('meldingKopiert'))); } catch (e) { /* the link still opens Signal */ } },
   kalender() { apne(visKalender); },
   async svarKal(btn) {
