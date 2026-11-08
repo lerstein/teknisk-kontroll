@@ -2371,7 +2371,7 @@ function visEgenSkjema() {
   const JN = [['Ja', t('ja')], ['Nei', t('nei'), true]];
   tegnLag(G._endrer ? t('redigerEgenTittel') : t('egenerklaering'), `<div data-skjema="G">
     ${G._endrer ? `<div class="banner info">${t('redigerEgenInfo')}</div>` : ''}
-    ${paVegne ? `<div class="banner info">${esc(t('paVegneAv', b.navn))}</div>` : ''}
+    ${paVegne && !G._endrer ? `<div class="banner info">${esc(t('paVegneAv', b.navn))}</div>` : ''}
     <div class="kort"><h3>${paVegne ? esc(b.navn) : t('omDeg')}</h3>
       <dl class="info" style="margin-bottom:12px"><dt>${t('navn')}</dt><dd>${esc(b.navn)}</dd><dt>${t('avdeling')}</dt><dd>${esc(b.avdeling)}</dd></dl>
       ${kanEndreAvd(b.avdeling) ? `<label class="felt"><span>${t('innlevertDato')}</span><input type="date" data-f="dato" max="${idag()}" value="${esc(G.dato || idag())}"></label>` : ''}
