@@ -105,7 +105,7 @@ Columns `status`, `godkjent_av`, `godkjent_tid`, `avvist_grunn` are added to `Ko
 | Month | Form | Filled in by |
 |---|---|---|
 | April | **Egenerklæring** (self-declaration) | the member |
-| May | **Stor kontroll** (full checklist: tyres, brakes, bearings, suspension, lights, drivetrain, oils, battery) | Road Captain |
+| May | **Stor kontroll** (full checklist: tyres, rims/spokes, brakes (pads + discs), bearings, suspension, lights, drivetrain, oils, battery, brake fluid, last service) | Road Captain |
 | June–October | **Enkel kontroll** (Lys, Dekk, Bremser, Ramme, Motor, Allmenn tilstand) | Road Captain |
 
 Each inspection is saved with its month (`maaned`, e.g. `2026-06`) and form type (`skjema`: `stor`/`enkel`). The RC can switch to the other form type for a single inspection, e.g. a full check of a new member's bike in July. If a month gets a second inspection (a re-check after a repair), the newest one counts as that month's status.
@@ -117,11 +117,21 @@ The overview shows a season strip per bike (A M J J A S O): green = OK, yellow =
 The `sum_*` columns in `Kontroller` make up the tilstandsrapport. For a quick inspection, they hold the RC's ratings directly. For a full inspection, they are the highest score in each group:
 
 - **Lys**: nær, fjern, brems, blink f/b
-- **Dekk**: foran, bak
+- **Dekk**: foran, bak, felg/eiker f/b
 - **Bremser**: foran, bak
 - **Ramme**: hjullager f/b, foring baksving, styrelager, dempere f/b
 - **Motor**: belt/kjede, plus at least 1 if any oil or the battery is "Ikke OK"
 - **sum_allmenn**: highest of all (incl. `allmenn_tilstand` on quick inspections), or 2 if kjøreforbud
+
+## 2027 additions (from the Lazy Boyz winter-storage report)
+
+Added to the full inspection in November 2026, for the 2027 season:
+- **Felger / eiker** (rims/spokes) front and rear as scored points, counted in the Dekk group (`felg_f`, `felg_b`).
+- **Skiver** (discs, mm / ok) next to the pads on each brake (`brems_f_skive`, `brems_b_skive`).
+- **Bremsevæske skiftet** (`bremsevaeske_dato`) and **Siste service** date + km (`service_dato`, `service_km`) in the oil card. These are carried over to the next inspection like oil and battery, and brake fluid 2 years or older shows up under *Til oppfølging*.
+- The **egenerklæring** shows open issues from the bike's last inspection, so the member sees in April what was left from the autumn.
+
+Older inspections don't have the new points; editing one doesn't require them. Code.gs (`NYE_PUNKTER`, `NYE_TEKST`) adds the columns to `Kontroller` automatically on the first save.
 
 ## Language
 
@@ -141,7 +151,7 @@ Change the name in `Avdelinger` **and** in the `avdeling` column of `Brukere` (f
 ## Follow-up, statistics and warnings
 
 - **Overview → Til oppfølging** lists everything that needs attention in the chapter: riding bans, passed deadlines, bikes missing this month's inspection (with a **SMS** button per member that opens a ready-made reminder), health cards expiring within 60 days, and tyre/battery warnings.
-- **Tyre and battery warnings** use the latest value registered for the bike: tyres 6 years or older, tread under 2 mm, battery 5 years or older. Tyre dates may be a year (`2023`, `04.2023`) or a DOT code (`3922` = week 39, 2022). The thresholds are `DEKK_MAKS_AAR`, `MONSTER_MIN` and `BATTERI_MAKS_AAR` in `index.html`.
+- **Tyre, battery and brake-fluid warnings** use the latest value registered for the bike: tyres 6 years or older, tread under 2 mm, battery 5 years or older, brake fluid 2 years or older. Tyre dates may be a year (`2023`, `04.2023`) or a DOT code (`3922` = week 39, 2022). The thresholds are `DEKK_MAKS_AAR`, `MONSTER_MIN` and `BATTERI_MAKS_AAR` in `index.html`.
 - **Overview → Statistikk** shows how many members use the app, the share of bikes inspected per month per chapter, and the most common issues this year. RCs see their own chapter, admins the whole club.
 
 ## Feedback
