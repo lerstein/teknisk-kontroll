@@ -1,0 +1,28 @@
+intro	edge:nb-NO-FinnNeural
+login	edge:nb-NO-FinnNeural
+oversikt	edge:nb-NO-FinnNeural
+oppfolging	edge:nb-NO-FinnNeural
+kalender	gtts (No audio was received. Please verify that your parameters are correct.)
+hendelse	gtts (No audio was received. Please verify that your parameters are correct.)
+sykkel	gtts (No audio was received. Please verify that your parameters are correct.)
+stor	edge:nb-NO-FinnNeural
+felg	edge:nb-NO-FinnNeural
+service	edge:nb-NO-FinnNeural
+enkel	edge:nb-NO-FinnNeural
+ekstra	edge:nb-NO-FinnNeural
+ekstra2	gtts (No audio was received. Please verify that your parameters are correct.)
+rediger	edge:nb-NO-FinnNeural
+rediger2	edge:nb-NO-FinnNeural
+logg	edge:nb-NO-FinnNeural
+mine	edge:nb-NO-FinnNeural
+egen	edge:nb-NO-FinnNeural
+egen2	edge:nb-NO-FinnNeural
+wolfpack	gtts (No audio was received. Please verify that your parameters are correct.)
+handbok	edge:nb-NO-FinnNeural
+medlemmer	edge:nb-NO-FinnNeural
+medlem	edge:nb-NO-FinnNeural
+telefon	edge:nb-NO-FinnNeural
+rcbok	edge:nb-NO-FinnNeural
+rcstat	edge:nb-NO-FinnNeural
+stat	edge:nb-NO-FinnNeural
+outro	edge:nb-NO-FinnNeural
