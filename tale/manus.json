@@ -1,0 +1,118 @@
+{
+ "stemme": "nb-NO-FinnNeural",
+ "tempo": "+0%",
+ "scener": [
+  {
+   "id": "intro",
+   "tekst": "Dette er RC Portal, klubbens egen app for teknisk kontroll, Wolfpack, kalender og mye mer. Her får du en gjennomgang av hele appen, med alt som er nytt i november."
+  },
+  {
+   "id": "login",
+   "tekst": "Du logger inn med telefonnummeret ditt og ditt eget passord. Første gang bruker du koden du får av Road Captain, og lager deg et passord. Appen kan brukes på norsk eller engelsk."
+  },
+  {
+   "id": "oversikt",
+   "tekst": "Oversikten viser avdelingen din: hvor mange sykler dere har, hvor mange som er kontrollert denne måneden, og hvor mange som har avvik eller kjøreforbud."
+  },
+  {
+   "id": "oppfolging",
+   "tekst": "Under Til oppfølging samles alt som må følges opp. Avvik med frist, kjøreforbud, og bremsevæske som er for gammel."
+  },
+  {
+   "id": "kalender",
+   "tekst": "Kommende viser de neste arrangementene fra klubbens kalendere. Du velger selv hvilke kalendere du vil se. Jubileer og bursdager vises som markering, ikke som arrangement."
+  },
+  {
+   "id": "hendelse",
+   "tekst": "Trykk på et arrangement for å svare deltar, kanskje eller deltar ikke, og se hvem som kommer. Du kan også legge det rett inn i kalenderen på telefonen."
+  },
+  {
+   "id": "sykkel",
+   "tekst": "Hver sykkel har sin egen side, med kontrollhistorikk, kilometerstand og bilder."
+  },
+  {
+   "id": "stor",
+   "tekst": "Under Ny kontroll fyller Road Captain inn månedens kontroll. I mai er det stor kontroll, der alle punkter vurderes på tre nivåer: OK, bør utbedres, eller kjøreforbud."
+  },
+  {
+   "id": "felg",
+   "tekst": "Nytt for 2027 er felger og eiker foran og bak, og bremseskiver ved siden av beleggene."
+  },
+  {
+   "id": "service",
+   "tekst": "Oljer, batteri, bremsevæske og siste service følger med til neste kontroll. Da trenger du bare å endre det som er nytt."
+  },
+  {
+   "id": "enkel",
+   "tekst": "Fra juni til oktober er det enkel kontroll, med én vurdering per område. Bilde av kilometerstand og dekk tar du rett fra skjemaet."
+  },
+  {
+   "id": "ekstra",
+   "tekst": "Nytt er ekstra kontroll, en rask stikkontroll på treff og arrangementer. Skann skiltet med kameraet, eller registrer sykler som ikke er i appen."
+  },
+  {
+   "id": "ekstra2",
+   "tekst": "Hvert punkt står som ikke vurdert, så dere vurderer bare det dere rekker. Ekstra kontroll teller ikke som månedens kontroll, men avvik følges opp som vanlig."
+  },
+  {
+   "id": "rediger",
+   "tekst": "Nå kan lagrede kontroller redigeres. Åpne kontrollen, og trykk Rediger kontroll nederst. Det kan Road Captain gjøre i egen avdeling."
+  },
+  {
+   "id": "rediger2",
+   "tekst": "Skjemaet åpnes ferdig utfylt. Du retter det som er feil, og status og kjøreforbud regnes ut på nytt."
+  },
+  {
+   "id": "logg",
+   "tekst": "Alle endringer logges. På kontrollen ser du hvem som endret, når, og hva som ble endret fra og til."
+  },
+  {
+   "id": "mine",
+   "tekst": "Under Mine ser hvert medlem sine egne sykler, profilen sin og egenerklæringene sine."
+  },
+  {
+   "id": "egen",
+   "tekst": "I april fyller alle ut egenerklæringen. Nå vises også åpne avvik fra forrige kontroll, så du ser hva som gjenstår fra i høst."
+  },
+  {
+   "id": "egen2",
+   "tekst": "Egenerklæringen kan også redigeres. Du kan rette din egen i samme sesong, og Road Captain kan sette riktig innleveringsdato, for eksempel for papirskjemaer."
+  },
+  {
+   "id": "wolfpack",
+   "tekst": "Wolfpack viser hvor langt alle har kjørt i perioden første april til trettiende september. Kilometeravlesninger teller også uten bilde. Til Wolfpack Europe trenger du bilde innen trettiende september."
+  },
+  {
+   "id": "handbok",
+   "tekst": "I Håndbok finner du håndsignaler og råd om kjøring i gruppe, samlet i appen."
+  },
+  {
+   "id": "medlemmer",
+   "tekst": "Under Medlemmer har Road Captain oversikt over avdelingen, og deler ut aktiveringskoder til nye brukere."
+  },
+  {
+   "id": "medlem",
+   "tekst": "På medlemssiden kan Road Captain endre navn, nummer, stilling, e-post og bursdag. Endringene går rett til klubbens telefonliste."
+  },
+  {
+   "id": "telefon",
+   "tekst": "Telefonlista hentes fra klubbens liste. Du kan filtrere på avdeling og stilling, ringe eller sende Signal-melding direkte, og laste ned som PDF."
+  },
+  {
+   "id": "rcbok",
+   "tekst": "RC-boka fører avdelingen sammen hver måned, med forslag fra kalenderen, bilder, og import fra Word."
+  },
+  {
+   "id": "rcstat",
+   "tekst": "Statistikken viser antall innlegg per avdeling og måned, og hvilke måneder som er levert."
+  },
+  {
+   "id": "stat",
+   "tekst": "Under Statistikk ser du hvor stor andel som er kontrollert hver måned, for hele klubben og for hver avdeling. Den kan også lastes ned som PDF."
+  },
+  {
+   "id": "outro",
+   "tekst": "Adressen til appen står på skjermen. Lagre den på Hjem-skjermen, så fungerer den som en vanlig app. Ser du ikke det nyeste, lukker du appen og åpner den igjen. God tur!"
+  }
+ ]
+}

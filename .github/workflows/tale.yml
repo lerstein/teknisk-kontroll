@@ -1,0 +1,24 @@
+# Generates the voice-over for the RC Portal presentation video (one MP3 per scene) and commits it to this branch.
+name: Tale
+on:
+  push:
+    branches: [tale]
+    paths: ['tale/manus.json', 'tale/lag_tale.py', '.github/workflows/tale.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  tale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install edge-tts gTTS
+      - run: python tale/lag_tale.py
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tale/lyd
+          git commit -m "Tale generert" || exit 0
+          git push
