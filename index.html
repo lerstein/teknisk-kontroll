@@ -122,6 +122,8 @@ nav.bunn{position:fixed;bottom:0;left:0;right:0;z-index:6;background:#16191d;bor
 nav.bunn button{flex:1;background:none;border:0;border-radius:0;color:var(--dempet);padding:9px 2px 8px;font:600 11.5px system-ui;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:58px}
 nav.bunn svg{width:23px;height:23px}
 nav.bunn button.aktiv{color:var(--aksent)}
+nav.bunn.mange button{flex:1 1 0;min-width:0;font-size:9.5px;padding:9px 0 8px;letter-spacing:-.2px;overflow:hidden;white-space:nowrap}
+nav.bunn.mange svg{width:21px;height:21px;flex:none}
 h2{font-size:21px;margin:2px 0 14px;line-height:1.2}
 h3{font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--dempet);margin:22px 0 8px;font-weight:700}
 .kort h3:first-child{margin-top:0}
@@ -397,7 +399,7 @@ const TXT = {
     ingenKontakt: 'Får ikke kontakt med serveren. Sjekk nettet.', uventet: 'Uventet svar fra serveren ({0})', ukjentFeil: 'Ukjent feil',
     apiMangler: 'API_URL er ikke satt i index.html.', provIgjen: 'Prøv igjen', loggUt: 'Logg ut',
     r_admin: 'Administrator', r_officer: 'Officer', r_president: 'President', r_rc: 'Road Captain', r_medlem: 'Medlem',
-    f_oversikt: 'Oversikt', f_kontroll: 'Ny kontroll', f_mine: 'Mine', f_medlemmer: 'Medlemmer', f_konto: 'Konto',
+    f_oversikt: 'Oversikt', f_kontroll: 'Ny kontroll', f_mine: 'Mine', f_medlemmer: 'Medlemmer', f_konto: 'Konto', f_rcbok: 'RC-bok', f_kalender: 'Kalender',
     avdeling: 'Avdeling', alleAvd: 'Alle avdelinger',
     s0: 'OK', s1: 'Bør utbedres', s2: 'Kjøreforbud', s0k: 'OK', s1k: 'Bør<br>utbedres', s2k: 'Kjøre&shy;forbud', forbudMerke: 'KJØREFORBUD',
     g_lys: 'Lys', g_dekk: 'Dekk', g_bremser: 'Brems', g_ramme: 'Ramme', g_motor: 'Motor', g_allmenn: 'Allmenn tilstand',
@@ -465,7 +467,7 @@ const TXT = {
     tommeSkjema: 'Tømme skjemaet?', lagret: 'Kontroll lagret', provHer: ' Prøv igjen herfra.',
     skjemaFor: '{0} – {1}', brukStor: 'Bruk stor kontroll i stedet', brukEnkel: 'Bruk enkel kontroll i stedet',
     finnesAllerede: 'Det finnes allerede en kontroll for {0} ({1}). Den nye blir gjeldende status.',
-    enkelHint: 'Vurder hvert område samlet.', aprilEgen: 'April er egenerklæring. Medlemmet fyller den ut selv under «Mine», eller du kan registrere den for medlemmet her.',
+    enkelHint: 'Vurder hvert område samlet.', aprilEgen: 'April er egenerklæring. Medlemmet fyller den ut selv under «Konto» (trykk på navnet øverst), eller du kan registrere den for medlemmet her.',
     fyllEgenFor: 'Fyll ut egenerklæring for {0}', velgSykkelForst: 'Velg sykkel først.', egenAllerede: '{0} har allerede levert egenerklæring for {1} ({2}).',
     regAv: 'Registrert av {0} på vegne av medlemmet',
     forhandsutfylt: 'Olje, batteri, bremsevæske, service og dekkår er hentet fra tidligere kontroller. Endre bare det som er nytt.',
@@ -546,7 +548,7 @@ const TXT = {
     ingenKontakt: "Can't reach the server. Check your connection.", uventet: 'Unexpected response from the server ({0})', ukjentFeil: 'Unknown error',
     apiMangler: 'API_URL is not set in index.html.', provIgjen: 'Try again', loggUt: 'Log out',
     r_admin: 'Administrator', r_officer: 'Officer', r_president: 'President', r_rc: 'Road Captain', r_medlem: 'Member',
-    f_oversikt: 'Overview', f_kontroll: 'Inspect', f_mine: 'Mine', f_medlemmer: 'Members', f_konto: 'Account',
+    f_oversikt: 'Overview', f_kontroll: 'Inspect', f_mine: 'Mine', f_medlemmer: 'Members', f_konto: 'Account', f_rcbok: 'RC book', f_kalender: 'Calendar',
     avdeling: 'Chapter', alleAvd: 'All chapters',
     s0: 'OK', s1: 'Fix soon', s2: 'Do not ride', s0k: 'OK', s1k: 'Fix<br>soon', s2k: 'Do not<br>ride', forbudMerke: 'DO NOT RIDE',
     g_lys: 'Lights', g_dekk: 'Tyres', g_bremser: 'Brakes', g_ramme: 'Frame', g_motor: 'Engine', g_allmenn: 'General condition',
@@ -614,7 +616,7 @@ const TXT = {
     tommeSkjema: 'Clear the form?', lagret: 'Inspection saved', provHer: ' Try again from here.',
     skjemaFor: '{0} – {1}', brukStor: 'Use full inspection instead', brukEnkel: 'Use quick inspection instead',
     finnesAllerede: 'There is already an inspection for {0} ({1}). The new one becomes the current status.',
-    enkelHint: 'Rate each area as a whole.', aprilEgen: 'April is the self-declaration. Members fill it in themselves under "Mine", or you can register it for the member here.',
+    enkelHint: 'Rate each area as a whole.', aprilEgen: 'April is the self-declaration. Members fill it in themselves under "Account" (tap their name at the top), or you can register it for the member here.',
     fyllEgenFor: 'Fill in self-declaration for {0}', velgSykkelForst: 'Choose a bike first.', egenAllerede: '{0} has already submitted a self-declaration for {1} ({2}).',
     regAv: 'Registered by {0} on behalf of the member',
     forhandsutfylt: 'Oil, battery, brake fluid, service and tyre dates are carried over from earlier inspections. Only change what is new.',
@@ -780,6 +782,7 @@ const IKON = {
   skjema: '<path d="M9 3.5h6v3H9z"/><path d="M15 5h3.5v16h-13V5H9"/><path d="m9 13.5 2 2 4-4.5"/>',
   sykkel: '<circle cx="5.5" cy="16" r="3.5"/><circle cx="18.5" cy="16" r="3.5"/><path d="M5.5 16 9.5 9h4.5l4.5 7"/><path d="M14 9l-1.6-3.5H15.5M9.5 9 8 6.5H5.5"/>',
   folk: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c1.8.7 3 2.4 3.5 5.2"/>',
+  logg: '<path d="M13 3.5H6A1.5 1.5 0 0 0 4.5 5v14A1.5 1.5 0 0 0 6 20.5h12a1.5 1.5 0 0 0 1.5-1.5v-6.5"/><path d="M17.5 3 21 6.5l-7.5 7.5H10v-3.5z"/><path d="M8 17h8"/>',
   kal: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
   telefon: '<path d="M5 4h3.5l1.8 4.6-2.3 1.6a11.5 11.5 0 0 0 5.8 5.8l1.6-2.3L20 15.5V19a1.5 1.5 0 0 1-1.6 1.5A16.5 16.5 0 0 1 3.5 5.6 1.5 1.5 0 0 1 5 4z"/>',
   person: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.2 4-6.5 8-6.5s7 2.3 8 6.5"/>',
@@ -840,7 +843,7 @@ function brukData(d) {
   const r = rolle();
   if (r !== 'admin' && r !== 'officer') S.avd = S.d.bruker.avdeling;
   else if (S.avd !== 'Alle' && !S.d.avdelinger.includes(S.avd)) S.avd = 'Alle';
-  if (!S.fane) S.fane = r === 'medlem' ? 'mine' : 'oversikt';
+  if (!S.fane || S.fane === 'mine') S.fane = r === 'medlem' ? 'konto' : 'oversikt';
 }
 // Redraw after a background refresh, but never under someone's fingers:
 // not while a panel is open, the inspection form is showing, or a field has focus.
@@ -1209,7 +1212,8 @@ function faner() {
   const f = [];
   if (erLeder()) f.push(['oversikt', IKON.liste]);
   if (kanEndreNoe()) f.push(['kontroll', IKON.skjema]);
-  f.push(['mine', IKON.sykkel], ['wolfpack', IKON.pokal], ['haandbok', IKON.bok]);
+  // "Mine" lives under Konto (the name button at the top)
+  f.push(['kalender', IKON.kal], ['rcbok', IKON.logg], ['wolfpack', IKON.pokal], ['haandbok', IKON.bok]);
   if (erLeder()) f.push(['medlemmer', IKON.folk]);
   return f;
 }
@@ -1219,16 +1223,17 @@ function render() {
   document.body.classList.remove('uten-nav');
   document.title = t('app');
   const b = meg();
-  const innhold = { oversikt: visOversikt, kontroll: visKontrollSkjema, mine: visMine, wolfpack: visWolfpack, haandbok: visHaandbok, medlemmer: visMedlemmer, konto: visKonto }[S.fane] || visMine;
+  const innhold = { oversikt: visOversikt, kontroll: visKontrollSkjema, kalender: visKalenderFane, rcbok: visRcBokFane, wolfpack: visWolfpack, haandbok: visHaandbok, medlemmer: visMedlemmer, konto: visKonto }[S.fane] || visKonto;
   $('#app').innerHTML = `
     <header class="topp"><h1>${ordmerke(true)}</h1>
       <button type="button" class="hvem${S.fane === 'konto' ? ' aktiv' : ''}" data-fane="konto" aria-label="${esc(t('f_konto'))}"><span>${esc(b.navn)}<br>${esc(t('r_' + b.rolle))} · ${esc(b.avdeling)}</span>${avatar(b.telefon, 'avatar-liten') || svg(IKON.person)}</button>
       <button type="button" class="tlfknapp" data-a="telefonliste" aria-label="${esc(t('telefonliste'))}">${svg(IKON.telefon)}</button></header>
     <main><div id="installPlass">${installBanner()}</div>${koBanner()}${innhold()}${tilbakeLenke()}</main>
-    <nav class="bunn">${faner().map(([id, ik]) => `<button data-fane="${id}" class="${S.fane === id ? 'aktiv' : ''}">${svg(ik)}${t('f_' + id)}</button>`).join('')}</nav>`;
+    <nav class="bunn${faner().length > 5 ? ' mange' : ''}">${faner().map(([id, ik]) => `<button data-fane="${id}" class="${S.fane === id ? 'aktiv' : ''}">${svg(ik)}${t('f_' + id)}</button>`).join('')}</nav>`;
   if (S.fane === 'kontroll') oppdaterStatus();
   if (S.fane === 'wolfpack') lastWolfpack();
-  if (S.fane === 'oversikt' || S.fane === 'mine') { lastKalender(); lastBokStatus(); }
+  if (S.fane === 'kalender') lastKalender();
+  if (S.fane === 'rcbok') visRcBok();
   if (S.fane === 'oversikt' && S.sok) filtrerSykler(S.sok);
   fyllBilder($('#app'));
 }
@@ -1236,7 +1241,7 @@ function render() {
 // overlay stack
 const LAG = [];
 function apne(fn) { LAG.push(fn); fn(); }
-function tilbake() { LAG.pop(); if (LAG.length) LAG[LAG.length - 1](); else lukkAlle(); }
+function tilbake() { LAG.pop(); if (LAG.length) LAG[LAG.length - 1](); else { lukkAlle(); if (S.fane === 'rcbok') visRcBok(); } }
 function lukkAlle() { LAG.length = 0; const l = $('#lag'); l.hidden = true; l.innerHTML = ''; document.body.style.overflow = ''; }
 function tegnLag(tittel, html) {
   const l = $('#lag');
@@ -1291,7 +1296,6 @@ function visOversikt() {
         <div class="dempet">${esc(k.regnr)} · ${esc(Mnd(Number(kMnd(k).slice(5))))} · ${fmtDato(k.dato)}${S.avd === 'Alle' ? ' · ' + esc(k.avdeling) : ''}</div></button>`).join('')}</div>` : ''; })()}
     <div class="knapperad" style="margin:-4px 0 14px">${(() => { const n = oppfolgingPunkter().length; return `<button type="button" data-a="oppfolging" class="${n ? 'primar' : ''}">${n ? t('oppfolgingN', n) : t('oppfolging')}</button>`; })()}
       <button type="button" data-a="statistikk">${t('statistikk')}</button></div>
-    ${bokKnapp()}<div id="kalNeste"></div>
     <div class="forklaring" id="listeStart"><span><i style="background:var(--s0)"></i>${t('s0')}</span><span><i style="background:var(--s1)"></i>${t('s1')}</span><span><i style="background:var(--s2)"></i>${t('s2')}</span><span>${esc(t('sesong', aar()))}: ${esc(mndNavn(SESONG[0]))}–${esc(mndNavn(SESONG[SESONG.length - 1]))}</span></div>
     ${alle.length ? sokRad() : ''}
     ${liste.length ? liste.map(i => sykkelKort(i, S.avd === 'Alle')).join('') :
@@ -2162,8 +2166,11 @@ async function lastKalender() {
     KAL_HENTER = null;
     // show what went wrong instead of hiding the calendar – makes problems after an update visible
     const el = $('#kalNeste'); if (el) el.innerHTML = `<div class="kort"><h3>${t('kalNeste')}</h3><p class="dempet" style="margin:0">${esc(e.message || String(e))}</p></div>`;
+    const fe = $('#kalFane'); if (fe) fe.innerHTML = `<div class="banner v1">${esc(e.message || String(e))}</div>`;
     return;
   }
+  const fane = $('#kalFane');
+  if (fane) fane.innerHTML = kalFullHtml();
   const el = $('#kalNeste');
   if (!el || !KAL.kalendere.length) return;
   // birthdays only show up here when they are close – otherwise they would push the club's own events out
@@ -2171,13 +2178,16 @@ async function lastKalender() {
   el.innerHTML = `<div class="kort"><h3>${t('kalNeste')}</h3>${kalVelger()}${neste.length ? neste.map(({ h, i }) => kalRad(h, i)).join('') : `<p class="tom" style="margin:0">${esc(kalTomTekst())}</p>`}
     ${KAL.hendelser.length > 3 || KAL.feilet.length ? `<button type="button" class="bred kalknapp" style="margin:10px 0 0" data-a="kalender">${svg(IKON.kal)} ${t('kalAlle')} (${synlige.length})</button>` : ''}</div>`;
 }
-function visKalender() {
+function kalFullHtml() {
   let mnd = '';
   const html = kalSynlige().map(({ h, i }) => { const m = h.start.slice(0, 7); const ny = m !== mnd; mnd = m;
     return (ny ? `<h3 style="margin:18px 0 4px">${esc(Mnd(Number(m.slice(5))))} ${m.slice(0, 4)}</h3>` : '') + kalRad(h, i); }).join('');
-  tegnLag(t('kalTittel'), `${KAL.feilet.length ? `<div class="banner v1">${esc(t('kalFeilet', KAL.feilet.join(', ')))}</div>` : ''}
-    <div class="kort">${kalVelger()}${html || `<p class="tom" style="margin:0">${esc(kalTomTekst())}</p>`}</div>`);
+  return `${KAL.feilet.length ? `<div class="banner v1">${esc(t('kalFeilet', KAL.feilet.join(', ')))}</div>` : ''}
+    <div class="kort">${kalVelger()}${html || `<p class="tom" style="margin:0">${esc(kalTomTekst())}</p>`}</div>`;
 }
+function visKalender() { tegnLag(t('kalTittel'), kalFullHtml()); }
+/** Calendar as its own bottom tab: filled straight away when the calendar is loaded, otherwise by lastKalender(). */
+const visKalenderFane = () => `<h2>${t('kalTittel')}</h2><div id="kalFane">${KAL ? kalFullHtml() : `<p class="dempet">${t('laster')}</p>`}</div>`;
 function visHendelse(i) {
   const h = KAL.hendelser[i]; if (!h) return tilbake();
   tegnLag(h.tittel, `<div class="kort"><div class="kalrad" style="padding-top:0">${kalDag(h)}<div class="kalinfo"><b>${esc(h.tittel)}</b>
@@ -2318,7 +2328,7 @@ function visMine() {
   const y = String(aar());
   const iAar = egne.find(e => String(e.dato).startsWith(y));
   const avviste = (S.d.avviste || []).filter(k => k.telefon === b.telefon && alderTimer(k.godkjent_tid || k.tidspunkt) < 60 * 24);
-  return `<div id="kalNeste"></div>${bokKnapp()}${avviste.map(k => `<div class="banner v1">${esc(t('avvistBanner', k.regnr, Mnd(Number(kMnd(k).slice(5))), k.godkjent_av || 'RC'))}${k.avvist_grunn ? `:<br><i>${esc(k.avvist_grunn)}</i>` : ''}</div>`).join('')}
+  return `${avviste.map(k => `<div class="banner v1">${esc(t('avvistBanner', k.regnr, Mnd(Number(kMnd(k).slice(5))), k.godkjent_av || 'RC'))}${k.avvist_grunn ? `:<br><i>${esc(k.avvist_grunn)}</i>` : ''}</div>`).join('')}
     ${profilKort(b.telefon)}
     <h2>${t('mineSykler')}</h2>
     ${mine.length ? mine.map(i => sykkelKort(i, false)).join('') : `<p class="tom">${t('ingenMine')}</p>`}
@@ -2931,7 +2941,8 @@ function visBruker(tlf) {
 // ─── Account ────────────────────────────────────────────────
 function visKonto() {
   const b = meg();
-  return `<h2>${t('konto')}</h2>
+  return `${visMine()}
+    <h2 style="margin-top:28px">${t('konto')}</h2>
     <div class="kort"><dl class="info"><dt>${t('navn')}</dt><dd>${esc(b.navn)}</dd><dt>${t('telefonKort')}</dt><dd>${esc(b.telefon)}</dd>
       <dt>${t('avdeling')}</dt><dd>${esc(b.avdeling)}</dd><dt>${t('rolle')}</dt><dd>${t('r_' + b.rolle)}</dd></dl></div>
     <h3>${t('sprak')}</h3>
@@ -2967,7 +2978,7 @@ const A = {
   alleBra() { punktIder().forEach(p => { if (F[p] === undefined || F[p] === '') F[p] = 0; }); lagreUtkast(); render(); toast(t('alleOkToast')); },
   byttSkjema() { F.skjema = F.skjema === 'stor' ? 'enkel' : 'stor'; lagreUtkast(); render(); },
   forkastKontroll() {
-    if (F && F._endrer) { const id = F._endrer; F = null; lagre('tk_utkast', null); S.fane = kanEndreNoe() ? 'oversikt' : 'mine'; render(); return apne(() => visKontroll(id)); }
+    if (F && F._endrer) { const id = F._endrer; F = null; lagre('tk_utkast', null); S.fane = kanEndreNoe() ? 'oversikt' : 'konto'; render(); return apne(() => visKontroll(id)); }
     if (!confirm(t('tommeSkjema'))) return; F = nyttSkjema(F && F.sykkel_id); forhandsutfyll(); lagreUtkast(); render(); },
   async lagreKontroll(btn) {
     if (!F.sykkel_id && !(F.skjema === 'ekstra' && F.uregistrert)) { toast(t('velgSykkelToast'), true); const el = $('[data-f="sykkel_id"]'); return el && el.focus(); }
@@ -3025,7 +3036,7 @@ const A = {
         S.fane = 'kontroll'; lukkAlle(); render(); scrollTo(0, 0);
         return toast(t('lagretNeste', neste[0].eier, neste.length - 1));
       }
-      S.fane = kanEndreNoe() ? 'oversikt' : 'mine'; render(); scrollTo(0, 0);
+      S.fane = kanEndreNoe() ? 'oversikt' : 'konto'; render(); scrollTo(0, 0);
       if (endrer) { apne(() => visSykkel(id)); apne(() => visKontroll(endrer)); return feil ? toast(feil, true) : toast(r.ingenEndring ? t('ingenEndringer') : t('endretToast')); }
       apne(() => visSykkel(id));   // the receipt at the top shows what was saved, with «Try again» for photos still on the phone
       if (feil) toast(feil, true);
@@ -3288,7 +3299,7 @@ document.addEventListener('change', ev => {
   const iLag = !!el.closest('#lag');
   if (iLag) visKalender();
   lastKalender();
-  const rot = $(iLag ? '#lag' : '#kalNeste');
+  const rot = $(iLag ? '#lag' : '#kalFane, #kalNeste');
   const fokus = rot && Array.from(rot.querySelectorAll('input[data-kalender-filter]')).find(x => x.dataset.kalenderFilter === navn);
   if (fokus) fokus.focus();
 });
@@ -3404,14 +3415,23 @@ function bokForslagListe() {
   return ut;
 }
 
+/** The book is its own bottom tab; it only opens as a panel from the chapter overview (bokStat). */
+const bokILag = () => LAG.includes(visRcBok);
+const visRcBokFane = () => `<div id="bokFane"></div>`;
+function tegnBok(tittel, html) {
+  if (bokILag()) return tegnLag(tittel, html);
+  const el = $('#bokFane'); if (!el) return;
+  el.innerHTML = `<h2>${esc(tittel)}</h2>${html}`;
+  fyllBilder(el);
+}
 async function visRcBok() {
   bokStart();
   const tittel = t('bokTittel');
   if (!BOK || BOK.avdeling !== BOKV.avd || BOK.aar !== BOKV.aar || BOK._forslag !== BOKV.mnd) {
-    tegnLag(tittel, `<p class="dempet">${t('laster')}</p>`);
+    tegnBok(tittel, `<p class="dempet">${t('laster')}</p>`);
     try { await lastBok(true); }
-    catch (e) { return tegnLag(tittel, `<div class="banner v1">${esc(e.message)}</div>`); }
-    if (!LAG.length || LAG[LAG.length - 1] !== visRcBok) return;   // the user went elsewhere while loading
+    catch (e) { return tegnBok(tittel, `<div class="banner v1">${esc(e.message)}</div>`); }
+    if (bokILag() ? LAG[LAG.length - 1] !== visRcBok : S.fane !== 'rcbok') return;   // the user went elsewhere while loading
   }
   const mnd = BOKV.mnd, info = bokMndInfo(mnd), poster = bokPosterMnd(mnd);
   const iAar = n => BOKV.aar + '-' + String(n).padStart(2, '0');
@@ -3419,7 +3439,7 @@ async function visRcBok() {
   const naaMnd = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0');
   const ventende = poster.filter(p => p.status === 'innlevert');
   const forslag = bokForslagListe();
-  tegnLag(tittel, `
+  tegnBok(tittel, `
     <div class="bokvelg">
       ${(BOK.lesbare || []).length > 1 ? `<select data-bok-avd aria-label="${esc(t('avdeling'))}">${BOK.lesbare.map(a => `<option${a === BOKV.avd ? ' selected' : ''}>${esc(a)}</option>`).join('')}</select>` : `<b>${esc(BOKV.avd)}</b>`}
       <div class="aarvelg"><button type="button" data-a="bokAar" data-d="-1" aria-label="${esc(t('bokForrigeAar'))}">‹</button><b>${BOKV.aar}</b><button type="button" data-a="bokAar" data-d="1" aria-label="${esc(t('bokNesteAar'))}">›</button></div>
@@ -3683,7 +3703,7 @@ Object.assign(A, {
   bokStat() { bokStart(); apne(visBokStat); },
   bokStatAar(el) { const a = Number(BOKV.aar) + Number(el.dataset.d); BOKV.aar = String(a); BOKV.mnd = a + BOKV.mnd.slice(4); visBokStat(); },
   bokStatApne(el) { BOKV.avd = el.dataset.avd; BOKV.mnd = el.dataset.m; BOKV.aar = el.dataset.m.slice(0, 4); apne(visRcBok); },
-  rcBok() { bokStart(); BOKV.avd = BOKV.avd || meg().avdeling; apne(visRcBok); },
+  rcBok() { bokStart(); BOKV.avd = BOKV.avd || meg().avdeling; S.fane = 'rcbok'; lukkAlle(); render(); scrollTo(0, 0); },
   bokMnd(el) { BOKV.mnd = el.dataset.m; visRcBok(); },
   bokSe(el) { BOKV.avd = el.dataset.avd; visRcBok(); },
   bokAar(el) { const a = Number(BOKV.aar) + Number(el.dataset.d); BOKV.aar = String(a); BOKV.mnd = a + BOKV.mnd.slice(4); visRcBok(); },
