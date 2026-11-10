@@ -222,3 +222,18 @@ licence plate or picks one from the photo library; the app first looks for the w
 it against the bikes the user can see, allowing for typical misreadings (O/0, I/1, S/5, B/8 …). A sure match opens the bike;
 otherwise the closest bikes are shown in the list. If the centre of the picture gives no sure match, the whole picture is read. The photo never leaves the phone. Works best when the plate fills the picture.
 On iPhone, the search field also supports the keyboard's built-in "Scan Text".
+
+## Several clubs
+`KLUBBER` in `index.html` lists the clubs sharing the app. Each has its own Google Sheet + Apps Script backend (`api`), so data never mixes. Login tries the clubs in turn; a club with an empty `api` is skipped.
+
+| Key | Club | Backend sheet | Phone list tab |
+|---|---|---|---|
+| `bmc` | Bandidos MC Norway | Teknisk kontroll | Telefonliste BMC |
+| `cmc` | Camaradas MC | Teknisk kontroll – Camaradas MC | Telefonliste CMC |
+| `imc` | Inmortales MC | Teknisk kontroll – Inmortales MC | Telefonliste IMC |
+
+The phone list parser in each Code.gs looks for chapter headings `<prefix> <chapter>` in column B (e.g. `IMC Riverside`). Inmortales has one RC per chapter (role `rc`), like Bandidos; Camaradas gives everyone `rc`.
+
+Per-club options: `farge` (overrides `--klubb`), `logo`, `ordmerke` (prefix of the RC PORTAL wordmark images, e.g. `rcportal-imc` → `rcportal-imc.png` and `rcportal-imc-topp.png`) and `tekst` (text replacements, e.g. Wolfpack → Camino).
+
+The Camaradas and Inmortales wordmarks are drawn in their club font, Swiss 921 BT. The font file itself is **not** in this public repo: it is posted as a document (category *Grafikk*) on the Documents page of the Camaradas and Inmortales backends, behind login.

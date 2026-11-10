@@ -218,8 +218,6 @@ dl.info dd{margin:0;font-weight:600;text-align:right}
 .login{max-width:420px;padding-top:calc(48px + env(safe-area-inset-top))}
 .ordmerke{height:46px;width:auto;display:block;margin:0 auto}
 .ordmerke-topp{height:24px;width:auto;display:block}
-.ordmerke-tekst{display:block;white-space:nowrap;text-align:center;font-size:44px;line-height:1.05;letter-spacing:.05em;color:var(--klubb);font-weight:400;-webkit-text-stroke:1.5px #000;paint-order:stroke fill;text-shadow:0 2px 0 #000}
-.ordmerke-tekst.topp{font-size:24px;text-align:left;-webkit-text-stroke:1px #000;text-shadow:0 1px 0 #000}
 .logo{width:72px;height:72px;border-radius:18px;display:block;margin:0 auto 14px}
 div.logo{width:64px;height:64px;border-radius:16px;background:var(--aksent);color:var(--aksent-t);display:grid;place-items:center}
 .logo svg{width:40px;height:40px}
@@ -377,13 +375,21 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbzQ6G2EWbndE-2-MohZIaGe
 // There is no club picker: at login the app tries the clubs in order (last used first) and keeps the one that accepts.
 const KLUBBER = {
   bmc: { api: API_URL, navn: 'Bandidos MC Norway', prefiks: 'BMC', logo: 'bandidos-norway.png?v=1', farge: '' },
-  cmc: { api: 'https://script.google.com/macros/s/AKfycbxRp62JGS9OklbeEOrgGBFdgMe1lHwjP5F3D2AzcAszYdCVVzpptcZb0P-LJ1wdiTMxZA/exec', navn: 'Camaradas MC', prefiks: 'CMC', logo: 'camaradas-logo.png?v=1', farge: '#e5722f', ordmerkeFont: 'Anton',
+  cmc: { api: 'https://script.google.com/macros/s/AKfycbxRp62JGS9OklbeEOrgGBFdgMe1lHwjP5F3D2AzcAszYdCVVzpptcZb0P-LJ1wdiTMxZA/exec', navn: 'Camaradas MC', prefiks: 'CMC', logo: 'camaradas-logo.png?v=1', farge: '#e5722f', ordmerke: 'rcportal-cmc',   // wordmark drawn in the club font (Swiss 921 BT)
          // Same rules and pages as BMC, other names
          tekst: [[/ – men til Wolfpack Europe må du ha bilde av km-stand levert innen 30\. september\./, '. For å få Camino-merket må du levere bilde av km-standen til Road King innen 30. september.'],
         [/ – but for Wolfpack Europe you need an odometer photo delivered by 30 September\./, '. To get the Camino patch, give the Road King a photo of your odometer by 30 September.'],
         [/Wolfpack Europe/g, 'Road King'], [/Wolfpack/g, 'Camino'],   // no Europe office: proof goes to the Road King
-         [/RC-boka/g, 'Bloggen'], [/RC-bok/g, 'Blogg'], [/RC book/g, 'Blog'], [/Road Captain/g, 'Road King'], [/BMC Norway/g, 'Camaradas MC']] }
+         [/RC-boka/g, 'Bloggen'], [/RC-bok/g, 'Blogg'], [/RC book/g, 'Blog'], [/Road Captain/g, 'Road King'], [/BMC Norway/g, 'Camaradas MC']] },
+  // Inmortales MC: Bandidos gold and red (no own --klubb colour); wordmark in gold with a red outline, like their lettering
+  imc: { api: 'https://script.google.com/macros/s/AKfycbxE4AfdvY3bfN_nW3CtxVeBemQgMxjAh16_AILn2vIZDZZB_zH7I1bOHjfcPlIhVZb06A/exec', navn: 'Inmortales MC', prefiks: 'IMC', logo: 'inmortales-logo.png?v=1', farge: '', ordmerke: 'rcportal-imc',
+         // Same rules and pages as BMC; Camino is a placeholder until their own patches and km goals are in. RC is called Road Captain.
+         tekst: [[/ – men til Wolfpack Europe må du ha bilde av km-stand levert innen 30\. september\./, '. For å få Camino-merket må du levere bilde av km-standen til Road Captain innen 30. september.'],
+        [/ – but for Wolfpack Europe you need an odometer photo delivered by 30 September\./, '. To get the Camino patch, give the Road Captain a photo of your odometer by 30 September.'],
+        [/Wolfpack Europe/g, 'Road Captain'], [/Wolfpack/g, 'Camino'],
+         [/RC-boka/g, 'Bloggen'], [/RC-bok/g, 'Blogg'], [/RC book/g, 'Blog'], [/BMC Norway/g, 'Inmortales MC']] }
 };
+
 
 // ─── Texts (Norwegian / English) ────────────────────────────
 const TXT = {
@@ -753,11 +759,12 @@ const K = () => KLUBBER[KLUBB];
   ['no', 'en'].forEach(l => Object.keys(TXT[l]).forEach(k => { if (typeof TXT[l][k] === 'string') r.forEach(([a, b]) => { TXT[l][k] = TXT[l][k].replace(a, b); }); }));
 })();
 if (K().farge) document.documentElement.style.setProperty('--klubb', K().farge);
-// Wordmark: BMC uses the drawn RC Portal images; a club with ordmerkeFont gets "RC PORTAL" as text in a font close to its patches
-if (K().ordmerkeFont) document.head.insertAdjacentHTML('beforeend', `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(K().ordmerkeFont)}&display=swap">`);
-const ordmerke = (topp) => K().ordmerkeFont
-  ? `<span class="ordmerke-tekst${topp ? ' topp' : ''}" style="font-family:'${K().ordmerkeFont}',Impact,'Arial Narrow',sans-serif">RC PORTAL</span>`
-  : `<img src="${topp ? 'rcportal-topp.png?v=2' : 'rcportal-logo.png?v=2'}" alt="RC Portal" class="${topp ? 'ordmerke-topp' : 'ordmerke'}">`;
+// Wordmark: drawn images. BMC uses rcportal-logo/-topp; other clubs have their own, rendered in their club font
+// (the font itself is not public – it is only on the Documents page behind login).
+const ordmerke = (topp) => {
+  const navn = K().ordmerke ? K().ordmerke + (topp ? '-topp' : '') : (topp ? 'rcportal-topp' : 'rcportal-logo');
+  return `<img src="${navn}.png?v=2" alt="RC Portal" class="${topp ? 'ordmerke-topp' : 'ordmerke'}">`;
+};
 let LANG = hent('tk_lang') === 'en' ? 'en' : 'no';
 function t(k, ...a) {
   let s = (TXT[LANG] && TXT[LANG][k] !== undefined) ? TXT[LANG][k] : (TXT.no[k] !== undefined ? TXT.no[k] : k);
@@ -3785,7 +3792,7 @@ document.addEventListener('change', async ev => {
 let FILER = null, FILER_HENTER = null;
 const FIL_MAKS_MB = 10;
 const filStr = n => n >= 1048576 ? (n / 1048576).toFixed(1).replace('.', LANG === 'en' ? '.' : ',') + ' MB' : Math.max(1, Math.round(n / 1024)) + ' kB';
-const filIkon = f => /pdf/i.test(f.mime) || /\.pdf$/i.test(f.filnavn) ? 'PDF' : /word|\.docx?$/i.test(f.mime + ' ' + f.filnavn) ? 'DOC' : /sheet|excel|\.xlsx?$|\.csv$/i.test(f.mime + ' ' + f.filnavn) ? 'XLS' : /^image\//i.test(f.mime) ? 'BILDE' : 'FIL';
+const filIkon = f => /pdf/i.test(f.mime) || /\.pdf$/i.test(f.filnavn) ? 'PDF' : /word|\.docx?$/i.test(f.mime + ' ' + f.filnavn) ? 'DOC' : /sheet|excel|\.xlsx?$|\.csv$/i.test(f.mime + ' ' + f.filnavn) ? 'XLS' : /^image\//i.test(f.mime) ? 'BILDE' : /^font\/|\.(ttf|otf|woff2?)$/i.test(f.mime + ' ' + f.filnavn) ? 'FONT' : 'FIL';
 function visDokumenter() {
   if (!FILER) return `<h2>${t('dokTittel')}</h2><div id="dokListe"><p class="dempet">${t('laster')}</p></div>`;
   return `<h2>${t('dokTittel')}</h2><div id="dokListe">${dokListeHtml()}</div>`;
@@ -3798,7 +3805,7 @@ function dokListeHtml() {
   const navn = Object.keys(grupper).sort((a, b) => a === t('dokAndre') ? 1 : b === t('dokAndre') ? -1 : a.localeCompare(b, 'nb'));
   const liste = navn.length ? navn.map(k => `<h3>${esc(k)}</h3>${grupper[k].sort((a, b) => a.tittel.localeCompare(b.tittel, 'nb')).map(f => `
     <div class="kort dokrad"><span class="dokikon">${filIkon(f)}</span><div class="dokinfo"><b>${esc(f.tittel)}</b>
-      ${f.beskrivelse ? `<div class="dempet">${esc(f.beskrivelse)}</div>` : ''}<small class="dempet">${esc(t('dokLastetOppDato', fmtDato(String(f.tidspunkt).slice(0, 10))))}</small><small class="dempet">${esc(f.filnavn)} · ${filStr(f.storrelse)}</small></div>
+      ${f.beskrivelse ? `<div class="dempet">${esc(f.beskrivelse)}</div>` : ''}${f.tidspunkt ? `<small class="dempet">${esc(t('dokLastetOppDato', fmtDato(String(f.tidspunkt).slice(0, 10))))}</small>` : ''}<small class="dempet">${esc(f.filnavn)} · ${filStr(f.storrelse)}</small></div>
       <div class="dokknapper"><button type="button" class="primar" data-a="filLastNed" data-id="${esc(f.id)}">${t('dokLastNed')}</button>
       ${FILER.kanLasteOpp ? `<button type="button" class="lenkeknapp" data-a="filEndre" data-id="${esc(f.id)}">${t('dokEndre')}</button>` : ''}</div></div>`).join('')}`).join('')
     : `<p class="tom">${t('dokIngen')}</p>`;
