@@ -1344,7 +1344,7 @@ function profilKort(tlf) {
   const pb = sisteBilde('profil', tlf);
   return `<div class="kort"><h3>${t('profil')}</h3>
     <div class="profiltopp">${pb ? `<button type="button" class="avatar" style="padding:0" data-vis-bilde="${esc(pb.id)}"><img class="avatar" style="border:0" data-bilde-id="${esc(pb.id)}" alt=""></button>` : avatar(tlf)}
-      <div><div class="navn">${esc(u.navn || '')}</div>${aarSiden(u.medlem_siden) !== null ? `<div class="dempet">${esc(t('medlemSiden'))} ${esc(t('medlemSidenAar', fmtDato(u.medlem_siden), aarSiden(u.medlem_siden)))}</div>` : ''}${[['hang_siden', 'hangSiden'], ['prospect_siden', 'prospSiden']].map(([f, k]) => aarSiden(u[f]) !== null ? `<div class="dempet">${esc(t(k))} ${esc(t('medlemSidenAar', fmtDato(u[f]), aarSiden(u[f])))}</div>` : '').join('')}${aarSiden(u.fodt) !== null ? `<div class="dempet">${esc(t('bursdagKort'))} ${esc(t('medlemSidenAar', fmtDato(u.fodt), aarSiden(u.fodt)))}</div>` : ''}${kanProfilbilde(u) ? filKnapp('profil', tlf, pb ? t('bk_profil') : t('bk_profilNy')) : ''}</div></div>
+      <div><div class="navn">${esc(u.navn || '')}</div>${aarSiden(u.medlem_siden) !== null ? `<div class="dempet">${esc(t('medlemSiden'))} ${esc(t('medlemSidenAar', fmtDato(u.medlem_siden), aarSiden(u.medlem_siden)))}</div>` : ''}${(u.medlem_siden ? [] : [['hang_siden', 'hangSiden'], ['prospect_siden', 'prospSiden']]).map(([f, k]) => aarSiden(u[f]) !== null ? `<div class="dempet">${esc(t(k))} ${esc(t('medlemSidenAar', fmtDato(u[f]), aarSiden(u[f])))}</div>` : '').join('')}${aarSiden(u.fodt) !== null ? `<div class="dempet">${esc(t('bursdagKort'))} ${esc(t('medlemSidenAar', fmtDato(u.fodt), aarSiden(u.fodt)))}</div>` : ''}${kanProfilbilde(u) ? filKnapp('profil', tlf, pb ? t('bk_profil') : t('bk_profilNy')) : ''}</div></div>
     ${e ? `<dl class="info">
       <dt>${t('reiseforsikring')}</dt><dd>${jaNei(e.reiseforsikring)}${e.reiseforsikring_selskap ? ' – ' + esc(e.reiseforsikring_selskap) : ''}</dd>
       <dt>${t('forerkortKort')}</dt><dd>${esc(e.forerkort_klasse) || '–'}${e.forerkort_merknad ? ' (' + esc(e.forerkort_merknad) + ')' : ''}</dd>
@@ -2874,7 +2874,7 @@ function smsLenke(u, kode) {
 }
 
 // ─── Phone-list fields on the member page (status, e-mail, birthday, Vida Miembro, licences) ───
-const TLF_FELTER = ['status', 'epost', 'fodt', 'livstid', 'bil', 'mc', 'buss'];
+const TLF_FELTER = ['status', 'epost', 'fodt', 'livstid', 'bil', 'mc', 'buss', 'hang_siden', 'prospect_siden'];
 const tlf8 = n => String(n || '').replace(/\D/g, '').replace(/^(0047|47)(?=\d{8}$)/, '');
 function tlfPerson(tlf) {
   if (!TLF || !tlf) return null;
@@ -2883,8 +2883,8 @@ function tlfPerson(tlf) {
 }
 const harKryss = v => !!String(v || '').trim() && !/^(nei|no|-)$/i.test(String(v).trim());
 const norskDatoTilIso = d => { const m = String(d || '').match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/); return m ? `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}` : ''; };
-function tlfFeltFra(p) {
-  return { status: p ? p.status || '' : '', epost: p ? (p.epost_raa != null ? p.epost_raa : p.epost) || '' : '', fodt: p ? norskDatoTilIso(p.fodt) : '',
+function tlfFeltFra(p, u) {
+  return { hang_siden: u ? u.hang_siden || '' : '', prospect_siden: u ? u.prospect_siden || '' : '', status: p ? p.status || '' : '', epost: p ? (p.epost_raa != null ? p.epost_raa : p.epost) || '' : '', fodt: p ? norskDatoTilIso(p.fodt) : '',
     livstid: p ? harKryss(p.livstid) : false, bil: p ? harKryss(p.bil) : false, mc: p ? harKryss(p.mc) : false, buss: p ? harKryss(p.buss) : false };
 }
 // Only what was actually changed is sent, so the phone list keeps its own spelling («JA», «x» …) where nothing changed.
@@ -2895,6 +2895,8 @@ function tlfFeltEndret() {
   return Object.keys(ut).length ? ut : null;
 }
 let TLF_HENTER = null;
+/** Hangaround/Prospect dates only matter until they become members: status says hangaround/prospect, or no «Medlem siden» yet. */
+const erHangProsp = (status, medlemSiden) => /hang|prosp/i.test(String(status || '')) || !medlemSiden;
 function visBruker(tlf) {
   const u = tlf ? S.d.brukere.find(x => x.telefon === tlf) : null;
   if (tlf && !u) return tilbake();
@@ -2908,7 +2910,7 @@ function visBruker(tlf) {
   if (medTlf && !TLF && !TLF_HENTER) {
     TLF_HENTER = api('telefonliste').then(d => { TLF = d; }).catch(() => {}).finally(() => { TLF_HENTER = null; if (B && B._for === nokkel && $('[data-skjema="B"]')) visBruker(tlf); });
   }
-  if (medTlf && TLF && !B._tlfOrig) { B._tlfOrig = tlfFeltFra(u ? tlfPerson(u.telefon) : null); TLF_FELTER.forEach(f => { B[f] = B._tlfOrig[f]; }); }
+  if (medTlf && TLF && !B._tlfOrig) { B._tlfOrig = tlfFeltFra(u ? tlfPerson(u.telefon) : null, u); TLF_FELTER.forEach(f => { B[f] = B._tlfOrig[f]; }); }
   const statuser = TLF ? [...new Set(TLF.avdelinger.flatMap(a => a.personer.map(x => String(x.status || '').trim())).filter(Boolean))] : [];
   const tlfKort = !medTlf ? '' : !B._tlfOrig ? `<div class="kort"><h3>${t('tlfFeltTittel')}</h3><p class="dempet">${t('laster')}</p></div>` : `<div class="kort"><h3>${t('tlfFeltTittel')}</h3>
       ${u && !tlfPerson(u.telefon) ? `<p class="oransje" style="margin-top:0">${t('tlfIkkeFunnet')}</p>` : ''}
@@ -2916,6 +2918,8 @@ function visBruker(tlf) {
       <datalist id="statusvalg">${statuser.map(x => `<option value="${esc(x)}">`).join('')}</datalist>
       <label class="felt"><span>${t('epost')}</span><input data-f="epost" type="email" inputmode="email" autocapitalize="off" value="${esc(B.epost)}" autocomplete="off" maxlength="80"></label>
       <label class="felt"><span>${t('bursdagKort')}</span><input data-f="fodt" type="date" value="${esc(B.fodt)}"></label>
+      ${erHangProsp(B.status, B.medlem_siden) ? `<label class="felt"><span>${t('hangSiden')}</span><input data-f="hang_siden" type="date" value="${esc(B.hang_siden)}"></label>
+      <label class="felt"><span>${t('prospSiden')}</span><input data-f="prospect_siden" type="date" value="${esc(B.prospect_siden)}"></label>` : ''}
       <label class="sjekk"><input type="checkbox" data-f="livstid" ${B.livstid ? 'checked' : ''}> Vida Miembro</label>
       <p class="dempet" style="margin:10px 0 4px">${t('sertifikater')}</p>
       <div class="sertrad"><label class="sjekk"><input type="checkbox" data-f="bil" ${B.bil ? 'checked' : ''}> ${t('sertBil')}</label>
