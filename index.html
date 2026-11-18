@@ -2212,7 +2212,7 @@ function visHendelse(i) {
     ${h.beskrivelse ? `<p class="kalbesk">${esc(h.beskrivelse)}</p>` : ''}</div>
     ${kalMarkering(h) ? `<p class="dempet" style="margin:10px 2px">${esc(t('kalMerkeInfo'))}</p>` : `<div class="svarknapper">${['ja', 'kanskje', 'nei'].map(k => `<button type="button" class="${k}${h.mittSvar === k ? ' valgt' : ''}" data-a="svarKal" data-i="${i}" data-svar="${k}">${t({ ja: 'svarJa', kanskje: 'svarKanskje', nei: 'svarNei' }[k])}</button>`).join('')}</div>
     ${h.gjesterTillatt ? (h.mittSvar === 'ja' ? `<div class="gjestrad"><b>${esc(t('gjestSporsmal'))}</b><div class="stepper"><button type="button" data-a="gjestKal" data-i="${i}" data-d="-1"${h.mineGjester ? '' : ' disabled'} aria-label="−">−</button><b>${Number(h.mineGjester) || 0}</b><button type="button" data-a="gjestKal" data-i="${i}" data-d="1" aria-label="+">+</button></div></div>`
-      : `<p class="dempet" style="margin:0 2px 12px">${esc(t('gjestInfo'))}</p>`) : ''}
+      : '') : ''}
     <div class="kort svarliste">${(() => { const s = h.svar || { ja: [], kanskje: [], nei: [] }; const n = s.ja.length + s.kanskje.length + s.nei.length, g = gjesterSum(h);
       const navn = (k, x) => esc(x) + (k === 'ja' && h.gjesterTillatt && h.gjester && Number(h.gjester[x]) ? ' +' + Number(h.gjester[x]) : '');
       return n ? (h.gjesterTillatt && s.ja.length ? `<p style="margin:0 0 6px"><b>${esc(t('gjestTotalt', s.ja.length + g, s.ja.length, g))}</b></p>` : '')
