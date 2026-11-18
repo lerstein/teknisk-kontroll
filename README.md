@@ -2,6 +2,8 @@
 
 Same stack as the club sales app: **Google Sheet** (storage) + **Apps Script** (API) + **GitHub Pages** (phone app).
 
+> `Code.gs` is no longer in this repo. The three backends (Bandidos, Camaradas, Inmortales) are kept in the private repo `lerstein/rcportal-backend`, because they contain sheet and calendar IDs.
+
 | File | Goes where |
 |---|---|
 | `Code.gs` | Apps Script editor of a new Google Sheet |
