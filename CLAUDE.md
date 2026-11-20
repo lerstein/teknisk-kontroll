@@ -27,6 +27,8 @@ The Apps Script backends live in the **private** repo `lerstein/rcportal-backend
   and members who answer Deltar can add guests (stepper appears only after Deltar).
 - Chapter calendars are visible only to that chapter (enforced in the backend). Camaradas never sees Eastside (Bandidos Fredrikstad).
 - Installed from the browser (home screen/Dock); no App Store.
+- RC/officer and secretaries (position in the phone list) can answer events for members of their own chapter; admin for anyone.
+  Admin registers attendance (Kalender → Oppmøte, or the button in an event). Vaktlister: button on the calendar when the backend sends lists.
 
 ## Working on it
 

@@ -330,6 +330,15 @@ details.kort p{font-size:14.5px;color:#cfd3d9}
 .bokmnder button.aktiv{background:var(--aksent);color:#111;border-color:var(--aksent)}
 .bokmnder button.aktiv small{color:#111}
 .bokmnder button.fremtid{opacity:.55}
+.svarknapper.mini{display:flex;gap:4px;margin:0;flex:none}
+.svarknapper.mini button{min-height:36px;min-width:44px;padding:0 7px;font-size:12.5px;border-width:1px}
+.hsrad{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--linje)}
+.hsnavn{flex:1;min-width:0}.hsnavn small{display:block;color:var(--dempet);font-size:12px}
+.hsmott{display:flex;width:100%;align-items:center;gap:12px;text-align:left;padding:10px 4px;background:none;border:0;border-bottom:1px solid var(--linje);color:var(--tekst);font:inherit;border-radius:0}
+.hsmott .boks{width:26px;height:26px;border:2px solid var(--linje);border-radius:7px;flex:none;display:grid;place-items:center;font-weight:800}
+.hsmott.mott .boks{background:var(--s0);border-color:var(--s0);color:#fff}
+.hsmott small{display:block;color:var(--dempet);font-size:12px}
+.hstall{font-size:17px;font-weight:700;margin:0 0 6px}
 .vakttab{width:100%;border-collapse:collapse;font-size:14.5px;margin-top:8px}
 .vakttab th{text-align:left;font-size:11.5px;font-weight:600;color:var(--dempet);padding:4px 6px;border-bottom:1px solid var(--linje)}
 .vakttab td{padding:8px 6px;border-bottom:1px solid var(--linje);vertical-align:top}
@@ -453,6 +462,8 @@ const TXT = {
     bokImportBeholder: 'Hendelser som er skrevet direkte i appen, blir ikke rørt. Innledning og oppsummering fra filen erstatter de gamle.',
     bokForhandsvis: 'Forhåndsvisning', bokImportTil: 'Importer til RC-boka for {0}', bokImportOk: '{0} hendelser i {1} måneder er lagt inn',
     bokForbereder: 'Gjør klar utskrift …',
+    forKnapp: 'Svar for andre i {0}', forKnappAlle: 'Svar for andre', forTittel: 'Svar for andre', forHint: 'Trykk Ja, Kanskje eller Nei for hver person. Trykk samme svar igjen for å fjerne det.', forSok: 'Søk på navn', forIkke: 'Ikke svart', forAv: 'svart av {0}', forLagret: 'Svar lagret for {0}', kortJa: 'Ja', kortKanskje: 'Kanskje', kortNei: 'Nei',
+    oppKnapp: 'Registrer oppmøte', oppTittel: 'Oppmøte', oppListeHint: 'Velg arrangement. Arrangementer som var de siste 3 dagene er også med.', oppTall: 'Møtt: {0} · Påmeldt: {1}', oppPameldt: 'Påmeldt', oppKanskje: 'Kanskje', oppUten: 'Møtt uten påmelding', oppAndre: 'Andre medlemmer', oppSokHint: 'Søk for å finne andre som har møtt.', oppIngen: 'Ingen arrangementer.', oppGjester: '+{0} gjester',
     vaktlister: 'Vaktlister', vaktTid: 'Tid', vaktHvem: 'Avdeling / lokasjon', vaktMerknad: 'Merknad', vaktVisesTil: 'Vises til og med {0}', vaktDin: 'din avdeling', vaktIngen: 'Ingen vaktlister nå.', vaktFeil: 'Fikk ikke hentet lista: {0}',
     kalTittel: 'Kalender', kalVisKalendere: 'Vis kalendere', kalIngenValgt: 'Ingen kalendere valgt. Kryss av kalenderne du vil se.', kalDittSvar: 'Ditt svar: {0}', kalIkkeSvart: 'Ikke svart', svarJa: 'Deltar', svarKanskje: 'Kanskje', svarNei: 'Avslår', svarIngen: 'Ingen svar ennå.', svarLagret: 'Svar lagret', svarFjernet: 'Svar fjernet', gjestSporsmal: 'Hvor mange tar du med?', gjestInfo: 'Trykk «Deltar» først, så kan du legge til hvor mange du tar med.', gjestTotalt: 'Totalt {0} personer ({1} medlemmer + {2} gjester)', gjestKort: '+{0} gjester', gjestLagret: 'Antall gjester lagret', kalNeste: 'Kommende', kalAlle: 'Hele kalenderen', kalHeldag: 'Hele dagen', kalMerke: 'Markering – ikke et arrangement', kalMerkeInfo: 'Dette er bare en markering i kalenderen, ikke et arrangement. Det er ingen påmelding, og du trenger ikke svare.', kalLeggTil: 'Legg i min kalender', kalTom: 'Ingen kommende arrangementer.', kalFeilet: 'Fikk ikke hentet: {0}',
     sokSykkel: 'Søk regnr, navn eller modell', skannSkilt: 'Ta bilde av skiltet eller velg fra bilder', skannLeser: 'Leser skiltet…', skannLaster: 'Laster skiltleser (første gang tar litt tid)…', skannFant: 'Fant {0}', skannUsikker: 'Usikker – velg riktig sykkel i lista', skannUkjentNaer: 'Leste {0} – den er ikke registrert. Lista viser de som ligner.', skannUkjent: 'Leste {0}, men den sykkelen er ikke registrert i appen (eller hører til en annen avdeling).', skannIngen: 'Fant ikke noe skilt. Ta bildet nærmere, så skiltet fyller bildet.', skannFeil: 'Skiltleseren kunne ikke lastes. Sjekk nettet, eller skriv regnr.',
@@ -603,6 +614,8 @@ const TXT = {
     bokImportBeholder: 'Entries written directly in the app are kept. Introduction and summary from the file replace the old ones.',
     bokForhandsvis: 'Preview', bokImportTil: 'Import into the RC book for {0}', bokImportOk: '{0} entries in {1} months added',
     bokForbereder: 'Preparing print …',
+    forKnapp: 'Answer for others in {0}', forKnappAlle: 'Answer for others', forTittel: 'Answer for others', forHint: 'Tap Yes, Maybe or No for each person. Tap the same answer again to remove it.', forSok: 'Search name', forIkke: 'Not answered', forAv: 'answered by {0}', forLagret: 'Answer saved for {0}', kortJa: 'Yes', kortKanskje: 'Maybe', kortNei: 'No',
+    oppKnapp: 'Register attendance', oppTittel: 'Attendance', oppListeHint: 'Choose an event. Events from the last 3 days are included.', oppTall: 'Arrived: {0} · Signed up: {1}', oppPameldt: 'Signed up', oppKanskje: 'Maybe', oppUten: 'Arrived without signing up', oppAndre: 'Other members', oppSokHint: 'Search to find others who arrived.', oppIngen: 'No events.', oppGjester: '+{0} guests',
     vaktlister: 'Shift lists', vaktTid: 'Time', vaktHvem: 'Chapter / location', vaktMerknad: 'Note', vaktVisesTil: 'Shown until {0}', vaktDin: 'your chapter', vaktIngen: 'No shift lists right now.', vaktFeil: 'Could not load the list: {0}',
     kalTittel: 'Calendar', kalVisKalendere: 'Show calendars', kalIngenValgt: 'No calendars selected. Select the calendars you want to see.', kalDittSvar: 'Your answer: {0}', kalIkkeSvart: 'Not answered', svarJa: 'Going', svarKanskje: 'Maybe', svarNei: 'Not going', svarIngen: 'No answers yet.', svarLagret: 'Answer saved', svarFjernet: 'Answer removed', gjestSporsmal: 'How many are you bringing?', gjestInfo: 'Tap “Going” first, then add how many you are bringing.', gjestTotalt: 'Total {0} people ({1} members + {2} guests)', gjestKort: '+{0} guests', gjestLagret: 'Number of guests saved', kalNeste: 'Coming up', kalAlle: 'Full calendar', kalHeldag: 'All day', kalMerke: 'Marker – not an event', kalMerkeInfo: 'This is only a marker in the calendar, not an event. There is no sign-up, and you do not need to reply.', kalLeggTil: 'Add to my calendar', kalTom: 'No upcoming events.', kalFeilet: 'Could not load: {0}',
     sokSykkel: 'Search reg. no., name or model', skannSkilt: 'Take or choose a photo of the plate', skannLeser: 'Reading the plate…', skannLaster: 'Loading the plate reader (takes a moment the first time)…', skannFant: 'Found {0}', skannUsikker: 'Not sure – pick the right bike in the list', skannUkjentNaer: 'Read {0} – not registered. The list shows similar ones.', skannUkjent: 'Read {0}, but that bike is not registered in the app (or belongs to another chapter).', skannIngen: 'No plate found. Take the photo closer, so the plate fills the picture.', skannFeil: 'Could not load the plate reader. Check your connection, or type the reg. no.',
@@ -2219,8 +2232,10 @@ function visKalender() { tegnLag(t('kalTittel'), kalFullHtml()); }
 const vaktLister = () => (KAL && KAL.vaktlister) || [];
 function vaktKnapp() {
   const n = vaktLister().length;
-  return n ? `<button type="button" class="bred kalknapp" style="margin:0 0 12px" data-a="vaktlister">${svg(IKON.liste)} ${t('vaktlister')} (${n})</button>` : '';
+  return oppKnapp() + (n ? `<button type="button" class="bred kalknapp" style="margin:0 0 12px" data-a="vaktlister">${svg(IKON.liste)} ${t('vaktlister')} (${n})</button>` : '');
 }
+const kalRett = () => (KAL && KAL.rettigheter) || {};
+const oppKnapp = () => kalRett().oppmote ? `<button type="button" class="bred kalknapp" style="margin:0 0 12px" data-a="oppmoteListe">${svg(IKON.liste)} ${t('oppTittel')}</button>` : '';
 function vaktDel(v) { return String(v || '').toLowerCase().split(/[\/,&()]| og | and /).map(x => x.trim()); }
 function visVaktlister() {
   // chapter names as members write them in shift lists (Fredrikstad is Eastside)
@@ -2263,7 +2278,57 @@ function visHendelse(i) {
       const navn = (k, x) => esc(x) + (k === 'ja' && h.gjesterTillatt && h.gjester && Number(h.gjester[x]) ? ' +' + Number(h.gjester[x]) : '');
       return n ? (h.gjesterTillatt && s.ja.length ? `<p style="margin:0 0 6px"><b>${esc(t('gjestTotalt', s.ja.length + g, s.ja.length, g))}</b></p>` : '')
         + ['ja', 'kanskje', 'nei'].filter(k => s[k].length).map(k => `<h4 style="color:${SVAR_FARGE[k]}">${t({ ja: 'svarJa', kanskje: 'svarKanskje', nei: 'svarNei' }[k])} (${s[k].length})</h4><p>${s[k].map(x => navn(k, x)).join(', ')}</p>`).join('') : `<p class="dempet">${t('svarIngen')}</p>`; })()}</div>`}
+    ${!kalMarkering(h) && kalRett().forAndre ? `<button type="button" class="bred kalknapp" style="margin-bottom:10px" data-a="svarForAndre" data-i="${i}">${svg(IKON.folk)} ${esc(kalRett().alle ? t('forKnappAlle') : t('forKnapp', meg().avdeling))}</button>` : ''}
+    ${!kalMarkering(h) && kalRett().oppmote ? `<button type="button" class="bred kalknapp" style="margin-bottom:10px" data-a="oppmoteKal" data-i="${i}">${svg(IKON.liste)} ${t('oppKnapp')}</button>` : ''}
     <button type="button" class="bred kalknapp" data-a="kalIcs" data-i="${i}">${svg(IKON.kal)} ${t('kalLeggTil')}</button>`);
+}
+// ─── Answering for others (RC/officer/secretary: own chapter, admin: all) and attendance (admin) ───
+let HS = null;    // { h, modus: 'svar' | 'oppmote', data, feil, sok }
+let OPP = null;   // events for the attendance list (incl. the last 3 days)
+async function apneHendelseSvar(h, modus) {
+  HS = { h, modus, data: null, feil: '', sok: '' };
+  apne(visHS);
+  try { HS.data = await api('hendelseSvar', { id: h.id }); } catch (e) { HS.feil = e.message || String(e); }
+  if (LAG[LAG.length - 1] === visHS) visHS();
+}
+function visHS() {
+  const tittel = HS.modus === 'oppmote' ? t('oppTittel') : t('forTittel'), h = (HS.data && HS.data.hendelse) || HS.h;
+  const topp = `<div class="kort"><b>${esc(h.tittel)}</b><div class="dempet">${esc(kalTid(h))}</div></div>`;
+  if (!HS.data) return tegnLag(tittel, topp + (HS.feil ? `<div class="banner v1">${esc(HS.feil)}</div>` : `<p class="dempet">${t('laster')}</p>`));
+  tegnLag(tittel, `${topp}<div class="kort">${HS.modus === 'svar' ? `<p class="dempet" style="margin:0 0 10px">${t('forHint')}</p>` : ''}
+    <input class="tlfsok" type="search" data-hssok placeholder="${esc(t('forSok'))}" value="${esc(HS.sok)}" autocomplete="off"><div id="hsListe"></div></div>`);
+  const inp = $('#lag [data-hssok]'); if (inp) inp.oninput = () => { HS.sok = inp.value; tegnHS(); };
+  tegnHS();
+}
+function tegnHS() {
+  const el = $('#hsListe'); if (!el || !HS || !HS.data) return;
+  const alle = HS.data.medlemmer, sok = HS.sok.trim().toLowerCase(), visAvd = !!(HS.data.rettigheter || {}).alle;
+  const treff = m => !sok || (m.navn + ' ' + m.avdeling + ' ' + m.status).toLowerCase().indexOf(sok) >= 0;
+  const info = m => [visAvd ? m.avdeling : '', m.status].filter(String).map(esc).join(' · ');
+  if (HS.modus === 'svar') {
+    const n = k => alle.filter(m => (m.svar || '') === k).length;
+    el.innerHTML = `<p class="dempet" style="margin:0 0 6px">${t('svarJa')} ${n('ja')} · ${t('svarKanskje')} ${n('kanskje')} · ${t('svarNei')} ${n('nei')} · ${t('forIkke')} ${n('')}</p>`
+      + alle.filter(treff).map(m => `<div class="hsrad"><div class="hsnavn"><b>${esc(m.navn)}</b><small>${info(m)}${m.svartAv ? (info(m) ? ' · ' : '') + esc(t('forAv', m.svartAv)) : ''}</small></div>
+        <div class="svarknapper mini">${['ja', 'kanskje', 'nei'].map(k => `<button type="button" class="${k}${m.svar === k ? ' valgt' : ''}" data-a="hsSvar" data-tlf="${esc(m.telefon)}" data-svar="${k}">${t({ ja: 'kortJa', kanskje: 'kortKanskje', nei: 'kortNei' }[k])}</button>`).join('')}</div></div>`).join('');
+    return;
+  }
+  const pameldt = alle.filter(m => m.svar === 'ja'), mott = alle.filter(m => m.motte);
+  const gjester = pameldt.reduce((s, m) => s + (Number(m.gjester) || 0), 0);
+  const rad = m => `<button type="button" class="hsmott${m.motte ? ' mott' : ''}" data-a="hsMott" data-tlf="${esc(m.telefon)}" data-klubb="${esc(m.klubb || '')}"><span class="boks">${m.motte ? '✓' : ''}</span>
+    <span style="flex:1;min-width:0"><b>${esc(m.navn)}</b>${m.gjester && m.svar === 'ja' ? ` <span class="dempet">${esc(t('oppGjester', m.gjester))}</span>` : ''}<small>${info(m)}</small></span></button>`;
+  const del = (tittel, liste) => liste.length ? `<h4 style="margin:16px 0 2px">${esc(tittel)} (${liste.length})</h4>` + liste.map(rad).join('') : '';
+  const andre = alle.filter(m => !m.motte && m.svar !== 'ja' && m.svar !== 'kanskje');
+  el.innerHTML = `<p class="hstall">${esc(t('oppTall', mott.length, pameldt.length))}${gjester ? ` <span class="dempet" style="font-weight:400">${esc(t('oppGjester', gjester))}</span>` : ''}</p>`
+    + del(t('oppPameldt'), pameldt.filter(treff)) + del(t('oppKanskje'), alle.filter(m => m.svar === 'kanskje').filter(treff))
+    + del(t('oppUten'), alle.filter(m => m.motte && m.svar !== 'ja' && m.svar !== 'kanskje').filter(treff))
+    + (sok ? del(t('oppAndre'), andre.filter(treff)) : `<p class="dempet" style="margin:14px 0 0">${t('oppSokHint')}</p>`);
+}
+/** After a change: fetch the calendar again in the background, so counts and «your answer» are current. */
+function oppfriskKal() { api('kalender').then(n => { KAL = n; KAL_HENTER = Promise.resolve(n); lastKalender(); }).catch(() => {}); }
+function visOppListe() {
+  if (!OPP) return tegnLag(t('oppTittel'), `<p class="dempet">${t('laster')}</p>`);
+  const liste = OPP.filter(h => !kalMarkering(h));
+  tegnLag(t('oppTittel'), `<p class="dempet">${t('oppListeHint')}</p><div class="kort">${liste.length ? liste.map((h, j) => `<button type="button" class="kort" style="width:100%;text-align:left;margin:0 0 8px" data-a="oppmoteVelg" data-j="${OPP.indexOf(h)}"><b>${esc(h.tittel)}</b><div class="dempet">${esc(kalTid(h))}${kalFlere() ? ' · ' + esc(h.kalender) : ''}</div></button>`).join('') : `<p class="tom">${t('oppIngen')}</p>`}</div>`);
 }
 /** An .ics file for one event, so it can be added to the phone's own calendar. */
 function kalIcs(h) {
@@ -3245,6 +3310,27 @@ const A = {
   kopierMelding(el) { try { navigator.clipboard.writeText(el.dataset.tekst).then(() => toast(t('meldingKopiert'))); } catch (e) { /* the link still opens Signal */ } },
   kalender() { apne(visKalender); },
   vaktlister() { apne(visVaktlister); oppdaterVaktlister(); },
+  svarForAndre(el) { const h = KAL && KAL.hendelser[Number(el.dataset.i)]; if (h) apneHendelseSvar(h, 'svar'); },
+  oppmoteKal(el) { const h = KAL && KAL.hendelser[Number(el.dataset.i)]; if (h) apneHendelseSvar(h, 'oppmote'); },
+  async oppmoteListe() {
+    OPP = null; apne(visOppListe);
+    try { OPP = (await api('kalender', { nylige: true })).hendelser; } catch (e) { toast(e.message, true); OPP = []; }
+    if (LAG[LAG.length - 1] === visOppListe) visOppListe();
+  },
+  oppmoteVelg(el) { const h = OPP && OPP[Number(el.dataset.j)]; if (h) apneHendelseSvar(h, 'oppmote'); },
+  async hsSvar(btn) {
+    const m = HS && HS.data && HS.data.medlemmer.find(x => x.telefon === btn.dataset.tlf); if (!m) return;
+    const ny = m.svar === btn.dataset.svar ? '' : btn.dataset.svar, gammel = { svar: m.svar, svartAv: m.svartAv };
+    m.svar = ny; m.svartAv = ny ? meg().navn : ''; tegnHS();
+    try { await api('svarHendelse', { id: HS.data.hendelse.id, svar: ny, for: m.telefon, gjester: m.gjester || 0 }); toast(t('forLagret', m.navn)); oppfriskKal(); }
+    catch (e) { Object.assign(m, gammel); tegnHS(); toast(e.message, true); }
+  },
+  async hsMott(btn) {
+    const m = HS && HS.data && HS.data.medlemmer.find(x => x.telefon === btn.dataset.tlf && (x.klubb || '') === btn.dataset.klubb); if (!m) return;
+    m.motte = !m.motte; tegnHS();
+    try { await api('registrerOppmote', Object.assign({ id: HS.data.hendelse.id, telefon: m.telefon, motte: m.motte }, m.klubb ? { klubb: m.klubb } : {})); }
+    catch (e) { m.motte = !m.motte; tegnHS(); toast(e.message, true); }
+  },
   vaktHopp(el) { const m = document.getElementById(el.dataset.mal); if (m) m.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
   async svarKal(btn) {
     const h = KAL && KAL.hendelser[Number(btn.dataset.i)]; if (!h) return;
