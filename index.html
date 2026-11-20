@@ -2223,8 +2223,9 @@ function vaktKnapp() {
 }
 function vaktDel(v) { return String(v || '').toLowerCase().split(/[\/,&()]| og | and /).map(x => x.trim()); }
 function visVaktlister() {
-  const avd = String(meg().avdeling || '').toLowerCase();
-  const min = celler => !!avd && celler.some(c => vaktDel(c).indexOf(avd) >= 0);
+  // chapter names as members write them in shift lists (Fredrikstad is Eastside)
+  const avd = String(meg().avdeling || '').toLowerCase(), navn = [avd].concat({ fredrikstad: ['eastside'] }[avd] || []);
+  const min = celler => !!avd && celler.some(c => vaktDel(c).some(x => navn.indexOf(x) >= 0));
   const celle = (k, x) => /^telefon/i.test(k) && /\d{5}/.test(x) ? `<a href="tel:${esc(x.replace(/[^\d+]/g, ''))}">${esc(x)}</a>` : esc(x);
   const seksjon = (s, li, si) => `<h4 class="vaktdel" id="vakt-${li}-${si}">${esc(s.tittel || '')}</h4><div class="vaktrull"><table class="vakttab"><thead><tr>${s.kolonner.map(k => `<th>${esc(k)}</th>`).join('')}</tr></thead><tbody>
     ${s.rader.map(r => `<tr class="${min(r) ? 'min' : ''}">${r.map((x, j) => `<td${/^tid$/i.test(s.kolonner[j]) ? ' class="tid"' : ''}>${celle(s.kolonner[j], x)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
