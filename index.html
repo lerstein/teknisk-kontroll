@@ -336,6 +336,11 @@ details.kort p{font-size:14.5px;color:#cfd3d9}
 .vakttab td.tid{white-space:nowrap;font-variant-numeric:tabular-nums}
 .vakttab tr.min td{background:var(--kort2);font-weight:650}
 .vakttab tr.min td.hvem{color:var(--aksent)}
+.vaktrull{overflow-x:auto;margin:0 -4px;padding:0 4px}
+.vaktrull .vakttab{margin-top:2px}
+.vaktdel{margin:20px 0 0;font-size:15px;scroll-margin-top:70px}
+.vakthopp{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.vakthopp button{font-size:12.5px;padding:5px 9px;border-radius:14px;border:1px solid var(--linje);background:var(--kort2);color:var(--tekst)}
 .bokstat{overflow-x:auto;margin:0 -4px 14px;padding:0 4px}
 .bokstat table{border-collapse:separate;border-spacing:3px;font-size:13px;min-width:100%}
 .bokstat th{font-weight:600;color:var(--dempet);font-size:11.5px;padding:2px 3px;text-align:center}
@@ -448,7 +453,7 @@ const TXT = {
     bokImportBeholder: 'Hendelser som er skrevet direkte i appen, blir ikke rørt. Innledning og oppsummering fra filen erstatter de gamle.',
     bokForhandsvis: 'Forhåndsvisning', bokImportTil: 'Importer til RC-boka for {0}', bokImportOk: '{0} hendelser i {1} måneder er lagt inn',
     bokForbereder: 'Gjør klar utskrift …',
-    vaktlister: 'Vaktlister', vaktTid: 'Tid', vaktHvem: 'Avdeling / lokasjon', vaktMerknad: 'Merknad', vaktVisesTil: 'Vises til og med {0}', vaktDin: 'din avdeling', vaktIngen: 'Ingen vaktlister nå.',
+    vaktlister: 'Vaktlister', vaktTid: 'Tid', vaktHvem: 'Avdeling / lokasjon', vaktMerknad: 'Merknad', vaktVisesTil: 'Vises til og med {0}', vaktDin: 'din avdeling', vaktIngen: 'Ingen vaktlister nå.', vaktFeil: 'Fikk ikke hentet lista: {0}',
     kalTittel: 'Kalender', kalVisKalendere: 'Vis kalendere', kalIngenValgt: 'Ingen kalendere valgt. Kryss av kalenderne du vil se.', kalDittSvar: 'Ditt svar: {0}', kalIkkeSvart: 'Ikke svart', svarJa: 'Deltar', svarKanskje: 'Kanskje', svarNei: 'Avslår', svarIngen: 'Ingen svar ennå.', svarLagret: 'Svar lagret', svarFjernet: 'Svar fjernet', gjestSporsmal: 'Hvor mange tar du med?', gjestInfo: 'Trykk «Deltar» først, så kan du legge til hvor mange du tar med.', gjestTotalt: 'Totalt {0} personer ({1} medlemmer + {2} gjester)', gjestKort: '+{0} gjester', gjestLagret: 'Antall gjester lagret', kalNeste: 'Kommende', kalAlle: 'Hele kalenderen', kalHeldag: 'Hele dagen', kalMerke: 'Markering – ikke et arrangement', kalMerkeInfo: 'Dette er bare en markering i kalenderen, ikke et arrangement. Det er ingen påmelding, og du trenger ikke svare.', kalLeggTil: 'Legg i min kalender', kalTom: 'Ingen kommende arrangementer.', kalFeilet: 'Fikk ikke hentet: {0}',
     sokSykkel: 'Søk regnr, navn eller modell', skannSkilt: 'Ta bilde av skiltet eller velg fra bilder', skannLeser: 'Leser skiltet…', skannLaster: 'Laster skiltleser (første gang tar litt tid)…', skannFant: 'Fant {0}', skannUsikker: 'Usikker – velg riktig sykkel i lista', skannUkjentNaer: 'Leste {0} – den er ikke registrert. Lista viser de som ligner.', skannUkjent: 'Leste {0}, men den sykkelen er ikke registrert i appen (eller hører til en annen avdeling).', skannIngen: 'Fant ikke noe skilt. Ta bildet nærmere, så skiltet fyller bildet.', skannFeil: 'Skiltleseren kunne ikke lastes. Sjekk nettet, eller skriv regnr.',
     eierMeldTittel: 'Melding til eieren', sendSmsKort: 'Send SMS', eierMeldHint: 'Åpner meldingen på din telefon, så du kan endre teksten før du sender. For Signal kopieres teksten – lim den inn i chatten.', meldingKopiert: 'Teksten er kopiert – lim den inn i Signal',
@@ -598,7 +603,7 @@ const TXT = {
     bokImportBeholder: 'Entries written directly in the app are kept. Introduction and summary from the file replace the old ones.',
     bokForhandsvis: 'Preview', bokImportTil: 'Import into the RC book for {0}', bokImportOk: '{0} entries in {1} months added',
     bokForbereder: 'Preparing print …',
-    vaktlister: 'Shift lists', vaktTid: 'Time', vaktHvem: 'Chapter / location', vaktMerknad: 'Note', vaktVisesTil: 'Shown until {0}', vaktDin: 'your chapter', vaktIngen: 'No shift lists right now.',
+    vaktlister: 'Shift lists', vaktTid: 'Time', vaktHvem: 'Chapter / location', vaktMerknad: 'Note', vaktVisesTil: 'Shown until {0}', vaktDin: 'your chapter', vaktIngen: 'No shift lists right now.', vaktFeil: 'Could not load the list: {0}',
     kalTittel: 'Calendar', kalVisKalendere: 'Show calendars', kalIngenValgt: 'No calendars selected. Select the calendars you want to see.', kalDittSvar: 'Your answer: {0}', kalIkkeSvart: 'Not answered', svarJa: 'Going', svarKanskje: 'Maybe', svarNei: 'Not going', svarIngen: 'No answers yet.', svarLagret: 'Answer saved', svarFjernet: 'Answer removed', gjestSporsmal: 'How many are you bringing?', gjestInfo: 'Tap “Going” first, then add how many you are bringing.', gjestTotalt: 'Total {0} people ({1} members + {2} guests)', gjestKort: '+{0} guests', gjestLagret: 'Number of guests saved', kalNeste: 'Coming up', kalAlle: 'Full calendar', kalHeldag: 'All day', kalMerke: 'Marker – not an event', kalMerkeInfo: 'This is only a marker in the calendar, not an event. There is no sign-up, and you do not need to reply.', kalLeggTil: 'Add to my calendar', kalTom: 'No upcoming events.', kalFeilet: 'Could not load: {0}',
     sokSykkel: 'Search reg. no., name or model', skannSkilt: 'Take or choose a photo of the plate', skannLeser: 'Reading the plate…', skannLaster: 'Loading the plate reader (takes a moment the first time)…', skannFant: 'Found {0}', skannUsikker: 'Not sure – pick the right bike in the list', skannUkjentNaer: 'Read {0} – not registered. The list shows similar ones.', skannUkjent: 'Read {0}, but that bike is not registered in the app (or belongs to another chapter).', skannIngen: 'No plate found. Take the photo closer, so the plate fills the picture.', skannFeil: 'Could not load the plate reader. Check your connection, or type the reg. no.',
     eierMeldTittel: 'Message to the owner', sendSmsKort: 'Send SMS', eierMeldHint: 'Opens the message on your phone, so you can edit it before sending. For Signal the text is copied – paste it into the chat.', meldingKopiert: 'Text copied – paste it into Signal',
@@ -2216,15 +2221,31 @@ function vaktKnapp() {
   const n = vaktLister().length;
   return n ? `<button type="button" class="bred kalknapp" style="margin:0 0 12px" data-a="vaktlister">${svg(IKON.liste)} ${t('vaktlister')} (${n})</button>` : '';
 }
+function vaktDel(v) { return String(v || '').toLowerCase().split(/[\/,&()]| og | and /).map(x => x.trim()); }
 function visVaktlister() {
   const avd = String(meg().avdeling || '').toLowerCase();
-  const min = v => avd && String(v.hvem).toLowerCase().split(/[\/,&]| og | and /).some(x => x.trim() === avd);
-  const html = vaktLister().map(l => `<div class="kort"><h3 style="margin:0">${esc(l.tittel)}</h3>
+  const min = celler => !!avd && celler.some(c => vaktDel(c).indexOf(avd) >= 0);
+  const celle = (k, x) => /^telefon/i.test(k) && /\d{5}/.test(x) ? `<a href="tel:${esc(x.replace(/[^\d+]/g, ''))}">${esc(x)}</a>` : esc(x);
+  const seksjon = (s, li, si) => `<h4 class="vaktdel" id="vakt-${li}-${si}">${esc(s.tittel || '')}</h4><div class="vaktrull"><table class="vakttab"><thead><tr>${s.kolonner.map(k => `<th>${esc(k)}</th>`).join('')}</tr></thead><tbody>
+    ${s.rader.map(r => `<tr class="${min(r) ? 'min' : ''}">${r.map((x, j) => `<td${/^tid$/i.test(s.kolonner[j]) ? ' class="tid"' : ''}>${celle(s.kolonner[j], x)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  const html = vaktLister().map((l, li) => `<div class="kort"><h3 style="margin:0">${esc(l.tittel)}</h3>
     ${l.beskrivelse ? `<p class="kalbesk" style="margin:6px 0 0">${esc(l.beskrivelse)}</p>` : ''}
-    <table class="vakttab"><thead><tr><th>${t('vaktTid')}</th><th>${t('vaktHvem')}</th><th>${t('vaktMerknad')}</th></tr></thead><tbody>
-    ${l.vakter.map(v => `<tr class="${min(v) ? 'min' : ''}"><td class="tid">${esc(v.tid)}</td><td class="hvem">${esc(v.hvem)}${min(v) ? ` <span class="dempet" style="font-weight:400">(${t('vaktDin')})</span>` : ''}</td><td>${esc(v.merknad)}</td></tr>`).join('')}
-    </tbody></table>${l.visTil ? `<p class="dempet" style="margin:8px 0 0;font-size:12.5px">${t('vaktVisesTil', fmtDato(l.visTil))}</p>` : ''}</div>`).join('');
+    ${l.feil ? `<div class="banner v1" style="margin-top:8px">${esc(t('vaktFeil', l.feil))}</div>` : ''}
+    ${(l.seksjoner || []).length > 3 ? `<div class="vakthopp">${l.seksjoner.map((s, si) => `<button type="button" data-a="vaktHopp" data-mal="vakt-${li}-${si}">${esc(s.tittel || '–')}</button>`).join('')}</div>` : ''}
+    ${(l.seksjoner || []).map((s, si) => seksjon(s, li, si)).join('')}
+    ${l.vakter.length ? `<table class="vakttab"><thead><tr><th>${t('vaktTid')}</th><th>${t('vaktHvem')}</th><th>${t('vaktMerknad')}</th></tr></thead><tbody>
+    ${l.vakter.map(v => `<tr class="${min([v.hvem]) ? 'min' : ''}"><td class="tid">${esc(v.tid)}</td><td class="hvem">${esc(v.hvem)}${min([v.hvem]) ? ` <span class="dempet" style="font-weight:400">(${t('vaktDin')})</span>` : ''}</td><td>${esc(v.merknad)}</td></tr>`).join('')}
+    </tbody></table>` : ''}${l.visTil ? `<p class="dempet" style="margin:8px 0 0;font-size:12.5px">${t('vaktVisesTil', fmtDato(l.visTil))}</p>` : ''}</div>`).join('');
   tegnLag(t('vaktlister'), html || `<p class="tom">${t('vaktIngen')}</p>`);
+}
+/** Fetch the shift lists again (lists linked to another spreadsheet change there) and redraw if the page is still open. */
+async function oppdaterVaktlister() {
+  try {
+    const r = await api('vaktlister'); if (!KAL || !r) return;
+    KAL.vaktlister = r.vaktlister || [];
+    if (LAG[LAG.length - 1] === visVaktlister) visVaktlister();
+    const fane = $('#kalFane'); if (fane) fane.innerHTML = kalFullHtml();
+  } catch (e) { /* keep what we have */ }
 }
 /** Calendar as its own bottom tab: filled straight away when the calendar is loaded, otherwise by lastKalender(). */
 const visKalenderFane = () => `<h2>${t('kalTittel')}</h2><div id="kalFane">${KAL ? kalFullHtml() : `<p class="dempet">${t('laster')}</p>`}</div>`;
@@ -3222,7 +3243,8 @@ const A = {
   vcfAvd(el) { const a = TLF.avdelinger[+el.dataset.avd]; if (a) lastNedVcf(K().prefiks + ' ' + a.navn, a.personer.filter(harKontakt).map(p => vKort(p, a.navn)).join('\r\n')); },
   kopierMelding(el) { try { navigator.clipboard.writeText(el.dataset.tekst).then(() => toast(t('meldingKopiert'))); } catch (e) { /* the link still opens Signal */ } },
   kalender() { apne(visKalender); },
-  vaktlister() { apne(visVaktlister); },
+  vaktlister() { apne(visVaktlister); oppdaterVaktlister(); },
+  vaktHopp(el) { const m = document.getElementById(el.dataset.mal); if (m) m.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
   async svarKal(btn) {
     const h = KAL && KAL.hendelser[Number(btn.dataset.i)]; if (!h) return;
     const svar = h.mittSvar === btn.dataset.svar ? '' : btn.dataset.svar;   // tap the chosen one again to remove the answer
