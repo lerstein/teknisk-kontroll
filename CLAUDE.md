@@ -37,3 +37,7 @@ The Apps Script backends live in the **private** repo `lerstein/rcportal-backend
 2. If it needs backend changes, do those first in all affected backends (see `rcportal-backend/CLAUDE.md`) – the frontend must not call an action that isn't deployed.
 3. Commit and push to `main`; GitHub Pages updates within a minute or two.
 4. Verify on rcportal.mooo.com in Magnus's Chrome (Claude in Chrome), e.g. `await api('kalender')` in the console.
+
+## Julepynt
+
+`julepynt()` (end of the script) adds `body.jul` from 20 Nov to 6 Jan: string of lights under the header (CSS `body.jul header::before/::after`) and snow in a canvas `#julsno` (paused when hidden, off with reduced motion). Turns itself off by date; no need to remove it.

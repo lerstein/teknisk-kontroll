@@ -390,6 +390,28 @@ details.kort p{font-size:14.5px;color:#cfd3d9}
   #utskrift h1{font-size:20pt}#utskrift h2{font-size:16pt;margin-top:22pt;page-break-before:always}#utskrift section:first-of-type h2{page-break-before:auto}
   #utskrift h3{text-transform:none;letter-spacing:0;color:#000;font-weight:700;font-size:12pt;margin:12pt 0 3pt;page-break-after:avoid}#utskrift article{page-break-inside:auto}
   #utskrift figure{display:inline-block;margin:4pt 6pt 4pt 0;max-width:48%;vertical-align:top}#utskrift img{max-width:100%;max-height:7cm}#utskrift figcaption{font-size:9pt}}
+/* Julepynt (20. nov – 6. jan, styres av body.jul): lysslynge under toppen + snø */
+body.jul header{overflow:visible}
+body.jul header::before,body.jul header::after{content:'';position:absolute;left:0;right:0;bottom:-13px;height:14px;pointer-events:none;
+  background-size:96px 14px;background-repeat:repeat-x}
+body.jul header::before{background-image:
+  radial-gradient(circle at 12px 8px,#ff3b3b 3.5px,rgba(255,59,59,.35) 5px,transparent 7px),
+  radial-gradient(circle at 36px 9px,#ffd23f 3.5px,rgba(255,210,63,.35) 5px,transparent 7px),
+  radial-gradient(circle at 60px 8px,#35d06a 3.5px,rgba(53,208,106,.35) 5px,transparent 7px),
+  radial-gradient(circle at 84px 9px,#4aa8ff 3.5px,rgba(74,168,255,.35) 5px,transparent 7px),
+  radial-gradient(ellipse 52px 6px at 24px 0,transparent 4.2px,#3a3f47 4.4px,#3a3f47 5.2px,transparent 5.6px),
+  radial-gradient(ellipse 52px 6px at 72px 0,transparent 4.2px,#3a3f47 4.4px,#3a3f47 5.2px,transparent 5.6px);
+  animation:julblink 2.4s ease-in-out infinite}
+body.jul header::after{background-image:
+  radial-gradient(circle at 12px 8px,#ffd23f 3.5px,rgba(255,210,63,.45) 5px,transparent 7px),
+  radial-gradient(circle at 36px 9px,#35d06a 3.5px,rgba(53,208,106,.45) 5px,transparent 7px),
+  radial-gradient(circle at 60px 8px,#4aa8ff 3.5px,rgba(74,168,255,.45) 5px,transparent 7px),
+  radial-gradient(circle at 84px 9px,#ff3b3b 3.5px,rgba(255,59,59,.45) 5px,transparent 7px);
+  opacity:0;animation:julblink2 2.4s ease-in-out infinite}
+@keyframes julblink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes julblink2{0%,100%{opacity:0}50%{opacity:1}}
+#julsno{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:15}
+@media (prefers-reduced-motion:reduce){body.jul header::before,body.jul header::after{animation:none}#julsno{display:none}}
 </style>
 </head>
 <body>
@@ -4080,6 +4102,36 @@ Object.assign(A, {
       $('#app').innerHTML = `<main class="login"><div class="banner v1">${esc(e.message)}</div><button class="primar bred" onclick="location.reload()">${t('provIgjen')}</button><button class="bred" data-a="loggUt">${t('loggUt')}</button></main>`;
     }
   }
+})();
+// Julepynt: på fra 20. november til 6. januar. Snø i et lett canvas som pauser når appen ikke vises.
+(function julepynt() {
+  const d = new Date(), m = d.getMonth(), dag = d.getDate();
+  if (!((m === 10 && dag >= 20) || m === 11 || (m === 0 && dag <= 6))) return;
+  document.body.classList.add('jul');
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c = document.createElement('canvas'); c.id = 'julsno'; c.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(c);
+  const g = c.getContext('2d'); let W = 0, H = 0, fnugg = [], sist = 0;
+  function str() {
+    const r = Math.min(window.devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight;
+    c.width = W * r; c.height = H * r; g.setTransform(r, 0, 0, r, 0, 0);
+    const n = Math.round(Math.min(70, W * H / 9000));
+    while (fnugg.length < n) fnugg.push(nytt(true)); fnugg.length = n;
+  }
+  function nytt(hvor) { return { x: Math.random() * W, y: hvor ? Math.random() * H : -6, r: 1 + Math.random() * 2.2, v: 18 + Math.random() * 30, f: Math.random() * 6.3, a: .35 + Math.random() * .5 }; }
+  function tegn(t) {
+    const dt = Math.min(.05, (t - (sist || t)) / 1000); sist = t;
+    g.clearRect(0, 0, W, H);
+    for (const s of fnugg) {
+      s.y += s.v * dt; s.f += dt; s.x += Math.sin(s.f) * 12 * dt;
+      if (s.y > H + 6) Object.assign(s, nytt(false));
+      g.globalAlpha = s.a; g.fillStyle = '#fff'; g.beginPath(); g.arc(s.x, s.y, s.r, 0, 6.283); g.fill();
+    }
+    if (!document.hidden) requestAnimationFrame(tegn);
+  }
+  addEventListener('resize', str);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { sist = 0; requestAnimationFrame(tegn); } });
+  str(); requestAnimationFrame(tegn);
 })();
 </script>
 </body>
