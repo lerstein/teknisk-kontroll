@@ -345,6 +345,11 @@ details.kort p{font-size:14.5px;color:#cfd3d9}
 .vakttab td.tid{white-space:nowrap;font-variant-numeric:tabular-nums}
 .vakttab tr.min td{background:var(--kort2);font-weight:650}
 .vakttab tr.min td.hvem{color:var(--aksent)}
+.vaktbilde{margin:10px 0 0;overflow-x:auto}
+.vaktzoom{display:block;width:100%;padding:0;border:0;background:none;min-height:0}
+.vaktbilde.stor .vaktzoom{width:260%}
+.vaktbilde img{display:block;width:100%;min-height:60px;border-radius:8px;background:var(--kort2);cursor:zoom-in}
+.vaktbilde.stor img{cursor:zoom-out}
 .vaktrull{overflow-x:auto;margin:0 -4px;padding:0 4px}
 .vaktrull .vakttab{margin-top:2px}
 .vaktdel{margin:20px 0 0;font-size:15px;scroll-margin-top:70px}
@@ -464,7 +469,7 @@ const TXT = {
     bokForbereder: 'Gjør klar utskrift …',
     forKnapp: 'Svar for andre i {0}', forKnappAlle: 'Svar for andre', forTittel: 'Svar for andre', forHint: 'Trykk Ja, Kanskje eller Nei for hver person. Trykk samme svar igjen for å fjerne det.', forSok: 'Søk på navn', forIkke: 'Ikke svart', forAv: 'svart av {0}', forLagret: 'Svar lagret for {0}', kortJa: 'Ja', kortKanskje: 'Kanskje', kortNei: 'Nei',
     oppKnapp: 'Registrer oppmøte', oppTittel: 'Oppmøte', oppListeHint: 'Velg arrangement. Arrangementer som var de siste 3 dagene er også med.', oppTall: 'Møtt: {0} · Påmeldt: {1}', oppPameldt: 'Påmeldt', oppKanskje: 'Kanskje', oppUten: 'Møtt uten påmelding', oppAndre: 'Andre medlemmer', oppSokHint: 'Søk for å finne andre som har møtt.', oppIngen: 'Ingen arrangementer.', oppGjester: '+{0} gjester',
-    vaktlister: 'Vaktlister', vaktTid: 'Tid', vaktHvem: 'Avdeling / lokasjon', vaktMerknad: 'Merknad', vaktVisesTil: 'Vises til og med {0}', vaktDin: 'din avdeling', vaktIngen: 'Ingen vaktlister nå.', vaktFeil: 'Fikk ikke hentet lista: {0}',
+    vaktlister: 'Vaktlister', vaktTid: 'Tid', vaktHvem: 'Avdeling / lokasjon', vaktMerknad: 'Merknad', vaktVisesTil: 'Vises til og med {0}', vaktDin: 'din avdeling', vaktIngen: 'Ingen vaktlister nå.', vaktFeil: 'Fikk ikke hentet lista: {0}', vaktBildeHint: 'Trykk på bildet for å forstørre.',
     kalTittel: 'Kalender', kalVisKalendere: 'Vis kalendere', kalIngenValgt: 'Ingen kalendere valgt. Kryss av kalenderne du vil se.', kalDittSvar: 'Ditt svar: {0}', kalIkkeSvart: 'Ikke svart', svarJa: 'Deltar', svarKanskje: 'Kanskje', svarNei: 'Avslår', svarIngen: 'Ingen svar ennå.', svarLagret: 'Svar lagret', svarFjernet: 'Svar fjernet', gjestSporsmal: 'Hvor mange tar du med?', gjestInfo: 'Trykk «Deltar» først, så kan du legge til hvor mange du tar med.', gjestTotalt: 'Totalt {0} personer ({1} medlemmer + {2} gjester)', gjestKort: '+{0} gjester', gjestLagret: 'Antall gjester lagret', kalNeste: 'Kommende', kalAlle: 'Hele kalenderen', kalHeldag: 'Hele dagen', kalMerke: 'Markering – ikke et arrangement', kalMerkeInfo: 'Dette er bare en markering i kalenderen, ikke et arrangement. Det er ingen påmelding, og du trenger ikke svare.', kalLeggTil: 'Legg i min kalender', kalTom: 'Ingen kommende arrangementer.', kalFeilet: 'Fikk ikke hentet: {0}',
     sokSykkel: 'Søk regnr, navn eller modell', skannSkilt: 'Ta bilde av skiltet eller velg fra bilder', skannLeser: 'Leser skiltet…', skannLaster: 'Laster skiltleser (første gang tar litt tid)…', skannFant: 'Fant {0}', skannUsikker: 'Usikker – velg riktig sykkel i lista', skannUkjentNaer: 'Leste {0} – den er ikke registrert. Lista viser de som ligner.', skannUkjent: 'Leste {0}, men den sykkelen er ikke registrert i appen (eller hører til en annen avdeling).', skannIngen: 'Fant ikke noe skilt. Ta bildet nærmere, så skiltet fyller bildet.', skannFeil: 'Skiltleseren kunne ikke lastes. Sjekk nettet, eller skriv regnr.',
     eierMeldTittel: 'Melding til eieren', sendSmsKort: 'Send SMS', eierMeldHint: 'Åpner meldingen på din telefon, så du kan endre teksten før du sender. For Signal kopieres teksten – lim den inn i chatten.', meldingKopiert: 'Teksten er kopiert – lim den inn i Signal',
@@ -616,7 +621,7 @@ const TXT = {
     bokForbereder: 'Preparing print …',
     forKnapp: 'Answer for others in {0}', forKnappAlle: 'Answer for others', forTittel: 'Answer for others', forHint: 'Tap Yes, Maybe or No for each person. Tap the same answer again to remove it.', forSok: 'Search name', forIkke: 'Not answered', forAv: 'answered by {0}', forLagret: 'Answer saved for {0}', kortJa: 'Yes', kortKanskje: 'Maybe', kortNei: 'No',
     oppKnapp: 'Register attendance', oppTittel: 'Attendance', oppListeHint: 'Choose an event. Events from the last 3 days are included.', oppTall: 'Arrived: {0} · Signed up: {1}', oppPameldt: 'Signed up', oppKanskje: 'Maybe', oppUten: 'Arrived without signing up', oppAndre: 'Other members', oppSokHint: 'Search to find others who arrived.', oppIngen: 'No events.', oppGjester: '+{0} guests',
-    vaktlister: 'Shift lists', vaktTid: 'Time', vaktHvem: 'Chapter / location', vaktMerknad: 'Note', vaktVisesTil: 'Shown until {0}', vaktDin: 'your chapter', vaktIngen: 'No shift lists right now.', vaktFeil: 'Could not load the list: {0}',
+    vaktlister: 'Shift lists', vaktTid: 'Time', vaktHvem: 'Chapter / location', vaktMerknad: 'Note', vaktVisesTil: 'Shown until {0}', vaktDin: 'your chapter', vaktIngen: 'No shift lists right now.', vaktFeil: 'Could not load the list: {0}', vaktBildeHint: 'Tap the image to enlarge.',
     kalTittel: 'Calendar', kalVisKalendere: 'Show calendars', kalIngenValgt: 'No calendars selected. Select the calendars you want to see.', kalDittSvar: 'Your answer: {0}', kalIkkeSvart: 'Not answered', svarJa: 'Going', svarKanskje: 'Maybe', svarNei: 'Not going', svarIngen: 'No answers yet.', svarLagret: 'Answer saved', svarFjernet: 'Answer removed', gjestSporsmal: 'How many are you bringing?', gjestInfo: 'Tap “Going” first, then add how many you are bringing.', gjestTotalt: 'Total {0} people ({1} members + {2} guests)', gjestKort: '+{0} guests', gjestLagret: 'Number of guests saved', kalNeste: 'Coming up', kalAlle: 'Full calendar', kalHeldag: 'All day', kalMerke: 'Marker – not an event', kalMerkeInfo: 'This is only a marker in the calendar, not an event. There is no sign-up, and you do not need to reply.', kalLeggTil: 'Add to my calendar', kalTom: 'No upcoming events.', kalFeilet: 'Could not load: {0}',
     sokSykkel: 'Search reg. no., name or model', skannSkilt: 'Take or choose a photo of the plate', skannLeser: 'Reading the plate…', skannLaster: 'Loading the plate reader (takes a moment the first time)…', skannFant: 'Found {0}', skannUsikker: 'Not sure – pick the right bike in the list', skannUkjentNaer: 'Read {0} – not registered. The list shows similar ones.', skannUkjent: 'Read {0}, but that bike is not registered in the app (or belongs to another chapter).', skannIngen: 'No plate found. Take the photo closer, so the plate fills the picture.', skannFeil: 'Could not load the plate reader. Check your connection, or type the reg. no.',
     eierMeldTittel: 'Message to the owner', sendSmsKort: 'Send SMS', eierMeldHint: 'Opens the message on your phone, so you can edit it before sending. For Signal the text is copied – paste it into the chat.', meldingKopiert: 'Text copied – paste it into Signal',
@@ -2247,12 +2252,22 @@ function visVaktlister() {
   const html = vaktLister().map((l, li) => `<div class="kort"><h3 style="margin:0">${esc(l.tittel)}</h3>
     ${l.beskrivelse ? `<p class="kalbesk" style="margin:6px 0 0">${esc(l.beskrivelse)}</p>` : ''}
     ${l.feil ? `<div class="banner v1" style="margin-top:8px">${esc(t('vaktFeil', l.feil))}</div>` : ''}
+    ${l.bilde ? `<div class="vaktbilde"><button type="button" class="vaktzoom" data-a="vaktZoom"><img data-vaktbilde="${esc(l.bilde)}" alt="${esc(l.tittel)}"${VAKT_BILDE[l.bilde] ? ` src="${VAKT_BILDE[l.bilde]}"` : ''}></button><p class="dempet" style="margin:4px 0 0;font-size:12px">${t('vaktBildeHint')}</p></div>` : ''}
     ${(l.seksjoner || []).length > 3 ? `<div class="vakthopp">${l.seksjoner.map((s, si) => `<button type="button" data-a="vaktHopp" data-mal="vakt-${li}-${si}">${esc(s.tittel || '–')}</button>`).join('')}</div>` : ''}
     ${(l.seksjoner || []).map((s, si) => seksjon(s, li, si)).join('')}
     ${l.vakter.length ? `<table class="vakttab"><thead><tr><th>${t('vaktTid')}</th><th>${t('vaktHvem')}</th><th>${t('vaktMerknad')}</th></tr></thead><tbody>
     ${l.vakter.map(v => `<tr class="${min([v.hvem]) ? 'min' : ''}"><td class="tid">${esc(v.tid)}</td><td class="hvem">${esc(v.hvem)}${min([v.hvem]) ? ` <span class="dempet" style="font-weight:400">(${t('vaktDin')})</span>` : ''}</td><td>${esc(v.merknad)}</td></tr>`).join('')}
     </tbody></table>` : ''}${l.visTil ? `<p class="dempet" style="margin:8px 0 0;font-size:12.5px">${t('vaktVisesTil', fmtDato(l.visTil))}</p>` : ''}</div>`).join('');
   tegnLag(t('vaktlister'), html || `<p class="tom">${t('vaktIngen')}</p>`);
+  lastVaktBilder();
+}
+/** Images on shift lists (e.g. a floor plan) come from Drive through the backend, only for logged-in members – kept for the session. */
+const VAKT_BILDE = {};
+function lastVaktBilder() {
+  document.querySelectorAll('#lag img[data-vaktbilde]:not([src])').forEach(img => {
+    const id = img.dataset.vaktbilde;
+    api('vaktBilde', { id }).then(b => { VAKT_BILDE[id] = 'data:' + b.type + ';base64,' + b.data; document.querySelectorAll(`#lag img[data-vaktbilde="${id}"]`).forEach(x => { x.src = VAKT_BILDE[id]; }); }).catch(() => {});
+  });
 }
 /** Fetch the shift lists again (lists linked to another spreadsheet change there) and redraw if the page is still open. */
 async function oppdaterVaktlister() {
@@ -3331,6 +3346,7 @@ const A = {
     try { await api('registrerOppmote', Object.assign({ id: HS.data.hendelse.id, telefon: m.telefon, motte: m.motte }, m.klubb ? { klubb: m.klubb } : {})); }
     catch (e) { m.motte = !m.motte; tegnHS(); toast(e.message, true); }
   },
+  vaktZoom(el) { el.closest('.vaktbilde').classList.toggle('stor'); },
   vaktHopp(el) { const m = document.getElementById(el.dataset.mal); if (m) m.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
   async svarKal(btn) {
     const h = KAL && KAL.hendelser[Number(btn.dataset.i)]; if (!h) return;
