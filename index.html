@@ -881,7 +881,7 @@ function brukData(d) {
   const r = rolle();
   if (r !== 'admin' && r !== 'officer') S.avd = S.d.bruker.avdeling;
   else if (S.avd !== 'Alle' && !S.d.avdelinger.includes(S.avd)) S.avd = 'Alle';
-  if (!S.fane || S.fane === 'mine') S.fane = r === 'medlem' ? 'konto' : 'oversikt';
+  if (!S.fane || S.fane === 'mine') S.fane = 'kalender';   // the calendar is what most members use – start there
 }
 // Redraw after a background refresh, but never under someone's fingers:
 // not while a panel is open, the inspection form is showing, or a field has focus.
@@ -1247,11 +1247,11 @@ function visTvungen() {
 
 // ─── Shell ──────────────────────────────────────────────────
 function faner() {
-  const f = [];
+  const f = [['kalender', IKON.kal]];   // first: most members use the calendar
   if (erLeder()) f.push(['oversikt', IKON.liste]);
   if (kanEndreNoe()) f.push(['kontroll', IKON.skjema]);
   // "Mine" lives under Konto (the name button at the top)
-  f.push(['kalender', IKON.kal], ['rcbok', IKON.logg], ['wolfpack', IKON.pokal], ['haandbok', IKON.bok]);
+  f.push(['rcbok', IKON.logg], ['wolfpack', IKON.pokal], ['haandbok', IKON.bok]);
   if (erLeder()) f.push(['medlemmer', IKON.folk]);
   return f;
 }
